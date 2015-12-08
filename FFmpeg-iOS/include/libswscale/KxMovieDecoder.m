@@ -237,8 +237,11 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
         fps = av_q2d(st->r_frame_rate);
     else
         fps = 1.0 / timebase;
-    //    fps = 25.0;
+
     if (pFPS)
+        //hgc test start
+//                fps = 2.0;
+        //hgc test end
         *pFPS = fps;
     if (pTimeBase)
         *pTimeBase = timebase;

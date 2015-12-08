@@ -471,7 +471,7 @@ static NSString *NumOfAlarmList = @"10";
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         [weakSelf refreshData];
-        NSLog(@"refresh data11111");
+//        NSLog(@"refresh data11111");
     }];
     
     // 马上进入刷新状态
@@ -485,7 +485,7 @@ static NSString *NumOfAlarmList = @"10";
     // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
         [weakSelf loadMoreData];
-        NSLog(@"more data11111");
+//        NSLog(@"more data11111");
     }];
 }
 @end

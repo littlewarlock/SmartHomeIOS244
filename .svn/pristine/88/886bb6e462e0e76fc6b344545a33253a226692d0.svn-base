@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="CameraSnapshotHistoryCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="322" height="554"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="322" height="554"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hcZ-eq-95z">
+                        <rect key="frame" x="8" y="8" width="306" height="538"/>
+                    </imageView>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            </view>
+            <constraints>
+                <constraint firstItem="hcZ-eq-95z" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="8" id="BMa-OQ-9Dq"/>
+                <constraint firstItem="hcZ-eq-95z" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="JAs-0Y-dcN"/>
+                <constraint firstAttribute="trailing" secondItem="hcZ-eq-95z" secondAttribute="trailing" constant="8" id="k1J-5l-onO"/>
+                <constraint firstAttribute="bottom" secondItem="hcZ-eq-95z" secondAttribute="bottom" constant="8" id="vMr-xx-mPY"/>
+            </constraints>
+            <size key="customSize" width="322" height="554"/>
+            <connections>
+                <outlet property="showImg" destination="hcZ-eq-95z" id="BMl-t7-upY"/>
+            </connections>
+            <point key="canvasLocation" x="151" y="334"/>
+        </collectionViewCell>
+    </objects>
+</document>

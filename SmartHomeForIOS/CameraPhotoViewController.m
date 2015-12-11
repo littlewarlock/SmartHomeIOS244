@@ -1,0 +1,172 @@
+//
+//  PhotoViewController.m
+//  photoView
+//
+//  Created by apple3 on 15/12/10.
+//  Copyright © 2015年 apple3. All rights reserved.
+//
+
+#import "CameraPhotoViewController.h"
+#import "BigCollectionViewCell.h"
+#import "SmallCollectionViewCell.h"
+#import "BigLayout.h"
+#import "SmallLayout.h"
+
+@interface CameraPhotoViewController (){
+    NSArray* big;
+    NSMutableArray* small;
+}
+
+@property (strong, nonatomic) IBOutlet UINavigationBar *myNavigationBar;
+
+@end
+
+@implementation CameraPhotoViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    //
+    [self.myNavigationBar setBackgroundImage:[UIImage new]  forBarMetrics:UIBarMetricsDefault];
+    self.myNavigationBar.shadowImage = [UIImage new];
+    self.myNavigationBar.translucent = YES;
+    
+    
+    self.bigPhoto.dataSource = self;
+    self.smallPhoto.dataSource = self;
+    self.bigPhoto.delegate = self;
+    self.smallPhoto.delegate = self;
+    self.bigPhoto.bounds = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 400);
+    self.smallPhoto.bounds = CGRectMake(0, 480, [[UIScreen mainScreen] bounds].size.width, 80);
+//    self.bigPhoto.backgroundColor = [UIColor whiteColor];
+//    self.smallPhoto.backgroundColor = [UIColor whiteColor];
+    
+    big = @[@"01.jpg",@"02.jpg",@"03.jpg",@"04.jpg",@"05.jpg",@"04.jpg",@"02.jpg",@"01.jpg"];
+//    big = self.arrayPhotoes;
+    small = [[NSMutableArray alloc]init];
+    [small addObject:@""];
+    [small addObjectsFromArray:big];
+    [small addObject:@""];
+    
+    NSLog(@"small==%@",small);
+    
+
+    [self.bigPhoto registerNib:[UINib nibWithNibName:@"BigCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"bigs"];
+    [self.smallPhoto registerNib:[UINib nibWithNibName:@"SmallCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"smalls"];
+    BigLayout* bigLayout = [[BigLayout alloc]init];
+    SmallLayout* smallLayout = [[SmallLayout alloc]init];
+    self.bigPhoto.collectionViewLayout = bigLayout;
+    self.smallPhoto.collectionViewLayout = smallLayout;
+
+    self.bigPhoto.alwaysBounceVertical=YES;
+    self.smallPhoto.alwaysBounceVertical=YES;
+    [self.bigPhoto reloadData];
+    [self.smallPhoto reloadData];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+}
+//item个数
+
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    if(collectionView == self.bigPhoto){
+        return big.count;
+    }else if(collectionView == self.smallPhoto){
+        return small.count;
+    }else{
+        return 0;
+    }
+}
+
+#pragma mark cell的视图
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                 cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(collectionView == self.bigPhoto){
+        
+        BigCollectionViewCell* cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"bigs" forIndexPath:indexPath];
+        NSInteger row = indexPath.row;
+
+        if ([big[row] isEqualToString:@""]) {
+            cell.bigImage.image = [UIImage new];
+        }else{
+            cell.bigImage.image = [UIImage imageNamed:big[row]];
+//            cell.bigImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://172.16.1.216:8080/smarthome/snapshot/common/snapshotcommon_1_20151211104000.jpg"]]];
+        }
+        return cell;
+        
+    }else if (collectionView ==self.smallPhoto){
+        
+        SmallCollectionViewCell* cell=[collectionView dequeueReusableCellWithReuseIdentifier:@"smalls" forIndexPath:indexPath];
+        NSInteger row = indexPath.row;
+        if ([small[row] isEqualToString:@""]) {
+            cell.smallImage.image = [UIImage new];
+        }else{
+            cell.smallImage.image = [UIImage imageNamed:small[row]];
+//            cell.smallImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://172.16.1.216:8080/smarthome/snapshot/common/snapshotcommon_1_20151211104000.jpg"]]];
+        }
+        return cell;
+        
+    }else{
+        return nil;
+    }
+}
+
+- (void)scrollViewDidScroll:(UICollectionView *)scrollView
+{
+    float bigX = (self.bigPhoto.bounds.size.width)*3.0/(self.smallPhoto.bounds.size.width -3.0);
+    float littleX = (self.smallPhoto.bounds.size.width -3.0)/(self.bigPhoto.bounds.size.width)/3.0;
+    if (scrollView == self.bigPhoto) {
+        self.smallPhoto.delegate = nil;
+        self.smallPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * littleX, scrollView.contentOffset.y);
+        self.smallPhoto.delegate = self;
+        NSLog(@"sdfsdfsd");
+    }
+    else
+    {
+        self.bigPhoto.delegate = nil;
+        self.bigPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * bigX, scrollView.contentOffset.y);
+        self.bigPhoto.delegate = self;
+        NSLog(@"1111sdfsdfsd");
+    }
+}
+
+#pragma mark cell的大小
+
+#pragma mark cell的点击事件
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(collectionView == self.smallPhoto){
+        if (indexPath.row == 0 || indexPath.row == small.count -1 ) {
+            NSLog(@"bu neng dian");
+        }else{
+            [self.bigPhoto setContentOffset:CGPointMake(([[UIScreen mainScreen] applicationFrame].size.width + 3)*(indexPath.row - 1) , 0.0f) animated:YES];
+        }
+        
+    }else if(collectionView == self.bigPhoto){
+        return;
+    }else{
+        return;
+    }
+}
+
+
+- (IBAction)backbarButtonPressed:(UIBarButtonItem *)sender {
+    
+    //    if (self.presentingViewController || !self.navigationController)
+    //        [self dismissViewControllerAnimated:YES completion:nil];
+    //    else
+    //        [self.navigationController popViewControllerAnimated:YES];
+    [self.view removeFromSuperview];
+    
+}
+
+@end

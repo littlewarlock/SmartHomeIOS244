@@ -13,6 +13,7 @@
 #import "CameraRecordHistoryViewHeader.h"
 #import "CameraRecodHistoryCanlender.h"
 #import "CameraSnapshotHistoryViewController.h"
+#import "CameraPhotoViewController.h"
 
 @interface CameraRecordHistoryViewController ()
 @property (strong, nonatomic) IBOutlet UICollectionView *collectionView;
@@ -398,7 +399,9 @@ static NSString *footerId = @"footerId";
         NSLog(@"url==%@",self.doubleArrayUrl[section][row]);
         NSLog(@"time==%@",self.testArray[section][row]);
         
-        CameraSnapshotHistoryViewController *vc = [[CameraSnapshotHistoryViewController alloc]initWithNibName:@"CameraSnapshotHistoryViewController" bundle:nil];
+        CameraPhotoViewController *vc = [[CameraPhotoViewController alloc]initWithNibName:@"CameraPhotoViewController" bundle:nil];
+        
+//        CameraSnapshotHistoryViewController *vc = [[CameraSnapshotHistoryViewController alloc]initWithNibName:@"CameraSnapshotHistoryViewController" bundle:nil];
 //        [self.navigationController pushViewController:vc animated:YES];
         [self addChildViewController:vc];
         vc.view.frame = self.view.frame;

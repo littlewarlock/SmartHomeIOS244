@@ -55,6 +55,8 @@
 		20699D491BFAFAEA002BA63E /* AlarmMessageListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 20699D471BFAFAEA002BA63E /* AlarmMessageListCell.m */; };
 		20699D4A1BFAFAEA002BA63E /* AlarmMessageListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20699D481BFAFAEA002BA63E /* AlarmMessageListCell.xib */; };
 		2069DFF11BF1E3CE00EAFAF7 /* DeckTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20DF81621BF1E1410031ADC7 /* DeckTableViewController.m */; };
+		206C95CD1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 206C95CB1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.m */; };
+		206C95CE1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 206C95CC1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.xib */; };
 		206F58731BCB719000B9F449 /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 206F58721BCB719000B9F449 /* libiconv.2.dylib */; };
 		206F58751BCB71F600B9F449 /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 206F58741BCB71F600B9F449 /* libz.1.dylib */; };
 		206F58771BCB72AF00B9F449 /* libbz2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 206F58761BCB72AF00B9F449 /* libbz2.1.0.dylib */; };
@@ -63,6 +65,8 @@
 		207088EB1BF97D1D00386EA4 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 207088EA1BF97D1D00386EA4 /* CoreTelephony.framework */; };
 		207088ED1BF97D2700386EA4 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 207088EC1BF97D2700386EA4 /* CoreLocation.framework */; };
 		207088EF1BF97FF100386EA4 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 207088EE1BF97FF100386EA4 /* libsqlite3.tbd */; };
+		20786F1E1C1E65A3007410BF /* KxMovieView.m in Sources */ = {isa = PBXBuildFile; fileRef = 20786F1C1C1E65A3007410BF /* KxMovieView.m */; };
+		20786F1F1C1E65A3007410BF /* KxMovieView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20786F1D1C1E65A3007410BF /* KxMovieView.xib */; };
 		2088BE011C0ED55200FDBE35 /* DWFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2088BDFE1C0ED55200FDBE35 /* DWFlowLayout.m */; };
 		2088BE031C0ED55900FDBE35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2088BE021C0ED55900FDBE35 /* Assets.xcassets */; };
 		2088BE081C0ED63200FDBE35 /* CameraSnapshotHistoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2088BE061C0ED63200FDBE35 /* CameraSnapshotHistoryCollectionViewCell.m */; };
@@ -606,6 +610,9 @@
 		20699D461BFAFAEA002BA63E /* AlarmMessageListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlarmMessageListCell.h; sourceTree = "<group>"; };
 		20699D471BFAFAEA002BA63E /* AlarmMessageListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlarmMessageListCell.m; sourceTree = "<group>"; };
 		20699D481BFAFAEA002BA63E /* AlarmMessageListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AlarmMessageListCell.xib; sourceTree = "<group>"; };
+		206C95CA1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraPhotoMagnifyVC.h; sourceTree = "<group>"; };
+		206C95CB1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraPhotoMagnifyVC.m; sourceTree = "<group>"; };
+		206C95CC1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraPhotoMagnifyVC.xib; sourceTree = "<group>"; };
 		206F58721BCB719000B9F449 /* libiconv.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.2.dylib; path = ../../../../Downloads/libiconv.2.dylib; sourceTree = "<group>"; };
 		206F58741BCB71F600B9F449 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../Downloads/libz.1.dylib; sourceTree = "<group>"; };
 		206F58761BCB72AF00B9F449 /* libbz2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.1.0.dylib; path = ../../../../Downloads/libbz2.1.0.dylib; sourceTree = "<group>"; };
@@ -614,6 +621,9 @@
 		207088EA1BF97D1D00386EA4 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		207088EC1BF97D2700386EA4 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		207088EE1BF97FF100386EA4 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		20786F1B1C1E65A3007410BF /* KxMovieView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxMovieView.h; sourceTree = "<group>"; };
+		20786F1C1C1E65A3007410BF /* KxMovieView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxMovieView.m; sourceTree = "<group>"; };
+		20786F1D1C1E65A3007410BF /* KxMovieView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KxMovieView.xib; sourceTree = "<group>"; };
 		2088BDFD1C0ED55200FDBE35 /* DWFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWFlowLayout.h; sourceTree = "<group>"; };
 		2088BDFE1C0ED55200FDBE35 /* DWFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWFlowLayout.m; sourceTree = "<group>"; };
 		2088BE021C0ED55900FDBE35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -1881,6 +1891,9 @@
 				20DEA01E1C1A65610037F1C6 /* CameraPhotoViewController.h */,
 				20DEA01F1C1A65610037F1C6 /* CameraPhotoViewController.m */,
 				20DEA0201C1A65610037F1C6 /* CameraPhotoViewController.xib */,
+				206C95CA1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.h */,
+				206C95CB1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.m */,
+				206C95CC1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.xib */,
 			);
 			name = NewSnapshot;
 			sourceTree = "<group>";
@@ -2473,6 +2486,9 @@
 		483F537D1B96CDE90011E153 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				20786F1B1C1E65A3007410BF /* KxMovieView.h */,
+				20786F1C1C1E65A3007410BF /* KxMovieView.m */,
+				20786F1D1C1E65A3007410BF /* KxMovieView.xib */,
 				20D76AD71C1674D400C62AB9 /* AlbumUploadByBlockTool.h */,
 				20D76AD81C1674D400C62AB9 /* AlbumUploadByBlockTool.m */,
 				20D76AD21C1674AB00C62AB9 /* UpdatePasswordViewController.h */,
@@ -3151,6 +3167,7 @@
 				48D8A9A41B9EBA8D00DC0D97 /* mpeg.png in Resources */,
 				22F7E59B1BE849DB007AD9AA /* home-down@2x.png in Resources */,
 				22C352E11BE222B700C48F86 /* stop.png in Resources */,
+				206C95CE1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.xib in Resources */,
 				22C352461BE21C2300C48F86 /* ProgressBarViewController.xib in Resources */,
 				20D76AD11C16749700C62AB9 /* RootLoginViewController.xib in Resources */,
 				204DF03A1C0EC6EA00560370 /* CameraSnapshotHistoryViewController.xib in Resources */,
@@ -3183,6 +3200,7 @@
 				22A4E7961BEB61A700184279 /* LoginViewController.xib in Resources */,
 				48D8A9891B9EBA8D00DC0D97 /* ini.png in Resources */,
 				48D8A9511B9EBA8D00DC0D97 /* backitembuttonup.png in Resources */,
+				20786F1F1C1E65A3007410BF /* KxMovieView.xib in Resources */,
 				2221F4251BEB6C5600E9A776 /* CloudFileViewController.xib in Resources */,
 				48D8A9B61B9EBA8D00DC0D97 /* renamebuttondown.png in Resources */,
 				48D8A9C81B9EBA8D00DC0D97 /* tab-netdisk.png in Resources */,
@@ -3383,6 +3401,7 @@
 				204CB0A51C0D9B1800191E1D /* CloudRegisterViewController.m in Sources */,
 				48F4A3061BACF536007F13D9 /* MWZoomingScrollView.m in Sources */,
 				483F53711B96C88B0011E153 /* NSDictionary+RequestEncoding.m in Sources */,
+				206C95CD1C1EA9E100DB30F7 /* CameraPhotoMagnifyVC.m in Sources */,
 				205B83351C04754A00B19DFD /* FileCopyAndMoveTools.m in Sources */,
 				48F4A3031BACF536007F13D9 /* MWPhotoBrowser.m in Sources */,
 				2289589D1BE8BD2500EE86F7 /* KxAudioManager.m in Sources */,
@@ -3525,6 +3544,7 @@
 				22C352C31BE21D3500C48F86 /* HomeViewController.m in Sources */,
 				22C352B21BE21D2800C48F86 /* FDTableViewCell.m in Sources */,
 				20548E1F1C08012700E19F66 /* UIScrollView+MJExtension.m in Sources */,
+				20786F1E1C1E65A3007410BF /* KxMovieView.m in Sources */,
 				48F4A3021BACF536007F13D9 /* MWPhoto.m in Sources */,
 				226498D61BDA098B00E080A2 /* JTCircleView.m in Sources */,
 				22C3525D1BE21C7400C48F86 /* PlayViewController.m in Sources */,

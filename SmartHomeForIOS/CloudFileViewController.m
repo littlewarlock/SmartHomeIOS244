@@ -20,7 +20,7 @@
 #import "CustomActionSheet.h"
 #import "HomeViewController.h"
 #import "DeckTableViewController.h"
-#import "PlayViewController.h"
+#import "KxMovieView.h"
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
 #define AU_Cell_Height 52
 
@@ -165,7 +165,7 @@
     BOOL isDocument = [documentArray containsObject:[subType lowercaseString]];
     NSArray *audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
     BOOL isAudio = [audioArray containsObject:[subType lowercaseString]];
-    NSArray *videoArray=  [NSArray arrayWithObjects:@"mp4", nil];
+    NSArray *videoArray=  [NSArray arrayWithObjects:@"mp4",@"mkv",@"wmv",@"rmvb",@"avi",@"h264", nil];
     BOOL isVideo = [videoArray containsObject:[subType lowercaseString]];
     
     NSArray *picArray=  [NSArray arrayWithObjects:@"jpg",@"png",@"jpeg", nil];
@@ -987,7 +987,7 @@
                 //NSString *subVideoPath = [videoPath substringFromIndex:11];
                 
                 NSString *videoUrl = [NSString stringWithFormat:@"%@%@%@",@"http://",requestHost,subVideoPath];
-                PlayViewController *playerView= [[PlayViewController alloc] initWithNibName:@"PlayViewController" bundle:nil];
+                KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
                 
                 playerView.filePath =videoUrl;
                 playerView.netOrLocalFlag  =@"0";

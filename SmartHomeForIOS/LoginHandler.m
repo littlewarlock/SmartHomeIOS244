@@ -39,11 +39,11 @@
     NSLog(@"onUdpSocket:decode ip:---%@",dataDecodeAfter);
     if(![dataDecodeAfter isEqualToString: @""] ){
         if(![self.ipArray containsObject:dataDecodeAfter]){
-            NSRange range  = [dataDecodeAfter rangeOfString:@"="];
+            NSRange range  = [dataDecodeAfter rangeOfString:@"/"];
             if([[dataDecodeAfter  substringFromIndex:range.location+1]  isEqualToString:self.postLoginIp]){
                 [self.ipArray addObject:dataDecodeAfter];
                 self.postLoginIp =[dataDecodeAfter  substringToIndex:range.location];
-
+                
                 if ([self.loginHandlerDelegate respondsToSelector:@selector(handlerDidReceiveData:) ]) {
                     [self.loginHandlerDelegate handlerDidReceiveData:self.postLoginIp];//调用委托方法
                 }

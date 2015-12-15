@@ -12,7 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UICollectionView *bigPhoto;
 @property (strong, nonatomic) IBOutlet UICollectionView *smallPhoto;
-@property (strong, nonatomic) NSArray* arrayPhotoes;
+@property (strong, nonatomic) NSArray* arrayPhotos;
 
 
 @end

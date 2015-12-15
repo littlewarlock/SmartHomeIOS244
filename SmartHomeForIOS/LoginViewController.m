@@ -147,11 +147,11 @@
     dataDecodeBefore=  [GTMBase64 decodeData:dataDecodeBefore];
     NSString *dataDecodeAfter=[[NSString alloc] initWithData:dataDecodeBefore encoding:NSUTF8StringEncoding] ;
     NSLog(@"onUdpSocket:decode ip:---%@",dataDecodeAfter);
-        self.tvSearch.hidden=NO;
-        if(![self.arrayIps2 containsObject:dataDecodeAfter]){
-            [self.arrayIps2 addObject:dataDecodeAfter];
-            [self.tvSearch reloadData];
-        }
+    self.tvSearch.hidden=NO;
+    if(![self.arrayIps2 containsObject:dataDecodeAfter]){
+        [self.arrayIps2 addObject:dataDecodeAfter];
+        [self.tvSearch reloadData];
+    }
     if (self.loadingView && !self.isConnetNetServer)
     {
         [self.loadingView removeFromSuperview];
@@ -238,7 +238,7 @@
     }
 }
 - (void)handlerDidSendDataWithTag{
-
+    
 }
 
 - (void)handlerOnUdpSocketDidClose{
@@ -585,7 +585,7 @@
         self.isConnetNetServer =NO;
         [alertView show];
     }];
-
+    
     [engine enqueueOperation:op];
 }
 
@@ -649,15 +649,15 @@
 
 -(void) setLoginIp:(NSString*)searchedOrSavedAdressStr {
     
-    if([searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//非ip也非id 转成ip
-        NSRange range  = [searchedOrSavedAdressStr rangeOfString:@"="];
+    if([searchedOrSavedAdressStr containsString:@"/"] && ![self isIP:searchedOrSavedAdressStr]){//非ip也非id 转成ip
+        NSRange range  = [searchedOrSavedAdressStr rangeOfString:@"/"];
         //NSString *subIP = [searchedOrSavedAdressStr  substringFromIndex:range.location+1];
         self.textFieldIp.text = [searchedOrSavedAdressStr  substringToIndex:range.location];
         self.postLoginIp =[searchedOrSavedAdressStr  substringToIndex:range.location];
-    }else if(![searchedOrSavedAdressStr containsString:@"="] && [self isIP:searchedOrSavedAdressStr]){//ip 登录
+    }else if(![searchedOrSavedAdressStr containsString:@"/"] && [self isIP:searchedOrSavedAdressStr]){//ip 登录
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;
-    }else if(![searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//id mac 登录 转成ip
+    }else if(![searchedOrSavedAdressStr containsString:@"/"] && ![self isIP:searchedOrSavedAdressStr]){//id mac 登录 转成ip
         //self.ifConvertIdToIp = YES;
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;

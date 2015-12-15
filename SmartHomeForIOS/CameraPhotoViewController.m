@@ -18,6 +18,10 @@
 }
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *myNavigationBar;
+@property Boolean beSingleTaped;
+@property Boolean beDoubleTaped;
+@property (strong,nonatomic) UIImageView *myBigImage;
+
 
 @end
 
@@ -25,24 +29,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    //
+    self.beSingleTaped = NO;
+    self.beDoubleTaped = NO;
     //
     [self.myNavigationBar setBackgroundImage:[UIImage new]  forBarMetrics:UIBarMetricsDefault];
     self.myNavigationBar.shadowImage = [UIImage new];
     self.myNavigationBar.translucent = YES;
     
-    
+    //dataSource delegate
     self.bigPhoto.dataSource = self;
     self.smallPhoto.dataSource = self;
     self.bigPhoto.delegate = self;
     self.smallPhoto.delegate = self;
+    //
     self.bigPhoto.bounds = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 400);
     self.smallPhoto.bounds = CGRectMake(0, 480, [[UIScreen mainScreen] bounds].size.width, 80);
 //    self.bigPhoto.backgroundColor = [UIColor whiteColor];
 //    self.smallPhoto.backgroundColor = [UIColor whiteColor];
     
     big = @[@"01.jpg",@"02.jpg",@"03.jpg",@"04.jpg",@"05.jpg",@"04.jpg",@"02.jpg",@"01.jpg"];
-//    big = self.arrayPhotoes;
+//    big = self.arrayPhotos;
     small = [[NSMutableArray alloc]init];
     [small addObject:@""];
     [small addObjectsFromArray:big];
@@ -125,16 +132,16 @@
     float bigX = (self.bigPhoto.bounds.size.width)*3.0/(self.smallPhoto.bounds.size.width -3.0);
     float littleX = (self.smallPhoto.bounds.size.width -3.0)/(self.bigPhoto.bounds.size.width)/3.0;
     if (scrollView == self.bigPhoto) {
-        self.smallPhoto.delegate = nil;
+//        self.smallPhoto.delegate = nil;
         self.smallPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * littleX, scrollView.contentOffset.y);
-        self.smallPhoto.delegate = self;
+//        self.smallPhoto.delegate = self;
         NSLog(@"sdfsdfsd");
     }
     else
     {
-        self.bigPhoto.delegate = nil;
+//        self.bigPhoto.delegate = nil;
         self.bigPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * bigX, scrollView.contentOffset.y);
-        self.bigPhoto.delegate = self;
+//        self.bigPhoto.delegate = self;
         NSLog(@"1111sdfsdfsd");
     }
 }
@@ -152,10 +159,83 @@
         }
         
     }else if(collectionView == self.bigPhoto){
-        return;
+        
+        if (!self.beSingleTaped) {
+            //
+            //navigation bar
+//            [self.navigationController setNavigationBarHidden:YES animated:YES];
+            //
+            //cell
+            UICollectionViewCell *cell = [self.bigPhoto cellForItemAtIndexPath:indexPath];
+            BigCollectionViewCell *bigcell;
+            if ([cell isKindOfClass:[BigCollectionViewCell class]]) {
+                bigcell =  cell;
+            }
+            //mybigimage
+            self.myBigImage = [[UIImageView alloc]initWithImage:bigcell.bigImage.image];
+            [self.view addSubview:self.myBigImage];
+            //show
+            self.myBigImage.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width - 10, self.view.frame.size.height - 100);
+            self.myBigImage.alpha = 0.0f;
+            [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationCurveEaseInOut| UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                [self.myBigImage setFrame:CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + 65, self.view.frame.size.width, self.view.frame.size.height - 65)];
+                self.myBigImage.alpha = 1.0f;
+            } completion:^(BOOL finished) {
+            }];
+            
+            //aspect fit
+            [self.myBigImage setContentMode:UIViewContentModeScaleAspectFit];
+            UIColor *color = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.5];
+            [self.myBigImage setBackgroundColor:color];
+            //
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapImage)];
+            [tapGesture setNumberOfTapsRequired:1];
+            [tapGesture setNumberOfTouchesRequired:1];
+            [self.myBigImage addGestureRecognizer:tapGesture];
+            [self.myBigImage setUserInteractionEnabled:YES];
+            
+            UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapImage:)];
+            [doubleTapGesture setNumberOfTapsRequired:2];
+            [doubleTapGesture setNumberOfTouchesRequired:1];
+            [self.myBigImage addGestureRecognizer:doubleTapGesture];
+            
+            [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+            NSLog(@"bigPhoto pressed");
+
+            self.beSingleTaped = !self.beSingleTaped;
+        }else{
+            //
+            NSLog(@"back");
+//            [self.myBigImage removeFromSuperview];
+            //
+            
+        }
     }else{
         return;
     }
+}
+
+-(void)tapImage
+{
+    //navigation bar
+//    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    //
+    [UIView animateWithDuration:0.3f delay:0.0f options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.myBigImage.alpha = 0.0;
+        self.myBigImage.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width - 10, self.view.frame.size.height - 100);
+    } completion:^(BOOL finished) {
+        [self.myBigImage removeFromSuperview];
+    }];
+    
+    
+    NSLog(@"tapping");
+    self.beSingleTaped = !self.beSingleTaped;
+}
+
+-(void)doubleTapImage:(id)sender{
+//    NSLog(@"sender==%@",sender);
+    NSLog(@"doubleTapImage");
 }
 
 
@@ -166,7 +246,5 @@
     //    else
     //        [self.navigationController popViewControllerAnimated:YES];
     [self.view removeFromSuperview];
-    
 }
-
 @end

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CameraPhotoViewController">
@@ -20,19 +20,16 @@
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Oml-40-VHC">
                     <rect key="frame" x="8" y="562" width="398" height="97"/>
-                    <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <collectionViewLayout key="collectionViewLayout" id="aXh-kv-oRb"/>
                 </collectionView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="lcm-83-ARz">
                     <rect key="frame" x="8" y="89" width="398" height="407"/>
-                    <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <collectionViewLayout key="collectionViewLayout" id="gAD-PG-fgw"/>
                 </collectionView>
                 <navigationBar contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="v0A-aI-Ndl">
                     <rect key="frame" x="8" y="28" width="398" height="44"/>
-                    <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <textAttributes key="titleTextAttributes">
                         <color key="textColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -50,8 +47,7 @@
                     </items>
                 </navigationBar>
             </subviews>
-            <animations/>
-            <color key="backgroundColor" red="0.90588235289999997" green="0.90588235289999997" blue="0.90588235289999997" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.78743222663737367" green="0.78743222663737367" blue="0.78743222663737367" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="v0A-aI-Ndl" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="65" id="GIP-zF-CZn"/>
                 <constraint firstItem="Oml-40-VHC" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="HsB-uf-M6w"/>
@@ -61,7 +57,6 @@
                 <constraint firstItem="v0A-aI-Ndl" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Zb7-8M-C6V"/>
                 <constraint firstItem="lcm-83-ARz" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="100" id="ZdB-qr-qcM"/>
                 <constraint firstAttribute="trailing" secondItem="v0A-aI-Ndl" secondAttribute="trailing" id="fgJ-rU-2F8"/>
-                <constraint firstItem="Oml-40-VHC" firstAttribute="top" secondItem="lcm-83-ARz" secondAttribute="bottom" constant="40" id="vjW-Zw-0gn"/>
             </constraints>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
             <point key="canvasLocation" x="337" y="302"/>

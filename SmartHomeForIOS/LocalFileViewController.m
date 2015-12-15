@@ -23,7 +23,8 @@
 #import "RequestConstant.h"
 #import "CustomActionSheet.h"
 #import "AudioViewController.h"
-#import "PlayViewController.h"
+#import "KxMovieView.h"
+//#import "PlayViewController.h"
 #import "BackupTool.h"
 #import "FileUploadByBlockTool.h"
 #import "AlbumCollectionViewController.h"
@@ -91,7 +92,7 @@
     localFileHandler.tableDataDic = self.tableDataDic;
     
     audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
-    videoArray=  [NSArray arrayWithObjects:@"mp4",@"mkv",@"mwv",@"rmvb",@"avi", nil];
+    videoArray=  [NSArray arrayWithObjects:@"mp4",@"mkv",@"wmv",@"rmvb",@"avi",@"h264", nil];
     picArray=  [NSArray arrayWithObjects:@"jpg",@"jpeg",@"png", nil];
     pics = [[NSMutableArray alloc] init];
     audiosUrl = [[NSMutableArray alloc] init];
@@ -213,7 +214,7 @@
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"请先选择文件" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alertView show];
     }
-
+    
 }
 -(void)downloadAction{
     localFileHandler.opType=7;
@@ -336,7 +337,7 @@
             UINavigationController *localFileNav =[[UINavigationController alloc]initWithRootViewController:localFileView];
             [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
             
-
+            
         }
         else if ([fileinfo.fileType isEqualToString:@"folder"] )
         {
@@ -432,7 +433,7 @@
         if(tappedCellPath)
         {
             self.curCel = (FDTableViewCell* )[self.fileListTableView cellForRowAtIndexPath:tappedCellPath];
-            PlayViewController *playerView= [[PlayViewController alloc] initWithNibName:@"PlayViewController" bundle:nil];
+            KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
             playerView.filePath =(NSMutableString*)self.curCel.fileinfo.fileUrl;
             [self.navigationController pushViewController:playerView animated:YES ];
         }
@@ -502,7 +503,7 @@
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
     return pics.count;
 }
-    
+
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
     if (index < pics.count)
     {
@@ -513,20 +514,20 @@
     }
     return nil;
 }
-    
+
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser thumbPhotoAtIndex:(NSUInteger)index {
     return nil;
 }
-    
+
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser didDisplayPhotoAtIndex:(NSUInteger)index {
     NSLog(@"Did start viewing photo at index %lu", (unsigned long)index);
 }
-    
+
 - (BOOL)photoBrowser:(MWPhotoBrowser *)photoBrowser isPhotoSelectedAtIndex:(NSUInteger)index {
     return false;
 }
 
-    
+
 - (void)photoBrowserDidFinishModalPresentation:(MWPhotoBrowser *)photoBrowser {
     // If we subscribe to this method we must dismiss the view controller ourselves
     NSLog(@"Did finish modal presentation");
@@ -699,11 +700,11 @@
                 for (NSString *filePath in [selectedTableDataDic allKeys]){
                     NSString *fileName = [filePath lastPathComponent];
                     BOOL operationIsExist = NO;
-//                    for (FileUploadByBlockTool *operation in [uploadQueue operations]) {
-//                        if ([operation.fileName isEqualToString:fileName]) {
-//                            operationIsExist = YES;
-//                        }
-//                    }
+                    //                    for (FileUploadByBlockTool *operation in [uploadQueue operations]) {
+                    //                        if ([operation.fileName isEqualToString:fileName]) {
+                    //                            operationIsExist = YES;
+                    //                        }
+                    //                    }
                     if (!operationIsExist) {
                         FileUploadByBlockTool *operation = [[FileUploadByBlockTool alloc] initWithLocalPath:filePath ip:[g_sDataManager requestHost]withServer:uploadUrl withName:[g_sDataManager userName] withPass:[g_sDataManager password]];
                         TaskInfo* task = [[TaskInfo alloc] init];
@@ -717,12 +718,12 @@
                         [[ProgressBarViewController sharedInstance].taskDic  setObject:task forKey:task.taskId];
                         [[ProgressBarViewController sharedInstance] addProgressBarRow:task];
                     }
-
+                    
                 }
                 [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
                 break;
             }
-
+                
             case 3:{//复制
                 if(!isLegal){
                     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"错误" message:@"操作非法:不能操作至对象子目录" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -748,11 +749,11 @@
                         opreation.opType = @"copy";
                         [copyAndMoveQueue addOperation:opreation];
                     }
-                 }
+                }
                 [self loadFileData];
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"文件已复制" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
                 [alertView show];
-                 [self requestSuccessCallBack];
+                [self requestSuccessCallBack];
                 break;
             }
             case 4:{//移动
@@ -917,7 +918,7 @@
         localFileHandler.queue =copyAndMoveQueue;
         [localFileHandler renameFile:(FileInfo *)self.curCel.fileinfo ];
         
-    }else if(buttonIndex==4){//删除        
+    }else if(buttonIndex==4){//删除
         localFileHandler.opType=1;
         self.curCel.fileinfo.isSelect=YES;
         [self.fileListTableView setEditing:YES animated:YES];

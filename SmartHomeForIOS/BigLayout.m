@@ -48,7 +48,7 @@ static CGFloat const ScaleFactor = 0.05;
     
     for (UICollectionViewLayoutAttributes* attributes in array) {
         CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;
-        NSLog(@"%f",distance);
+//        NSLog(@"%f",distance);
         CGFloat normalizedDistance = distance / ActiveDistance;
         CGFloat zoom = 1 + ScaleFactor*(1 - ABS(normalizedDistance));
         attributes.transform3D = CATransform3DMakeScale(1.0, zoom, 1.0);

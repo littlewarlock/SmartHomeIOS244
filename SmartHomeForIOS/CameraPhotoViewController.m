@@ -132,16 +132,16 @@
     float bigX = (self.bigPhoto.bounds.size.width)*3.0/(self.smallPhoto.bounds.size.width -3.0);
     float littleX = (self.smallPhoto.bounds.size.width -3.0)/(self.bigPhoto.bounds.size.width)/3.0;
     if (scrollView == self.bigPhoto) {
-//        self.smallPhoto.delegate = nil;
+        self.smallPhoto.delegate = nil;
         self.smallPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * littleX, scrollView.contentOffset.y);
-//        self.smallPhoto.delegate = self;
+        self.smallPhoto.delegate = self;
         NSLog(@"sdfsdfsd");
     }
     else
     {
-//        self.bigPhoto.delegate = nil;
+        self.bigPhoto.delegate = nil;
         self.bigPhoto.contentOffset = CGPointMake(scrollView.contentOffset.x * bigX, scrollView.contentOffset.y);
-//        self.bigPhoto.delegate = self;
+        self.bigPhoto.delegate = self;
         NSLog(@"1111sdfsdfsd");
     }
 }
@@ -172,6 +172,8 @@
                 bigcell =  cell;
             }
             //mybigimage
+            [bigcell setFrame:CGRectMake(bigcell.frame.origin.x, bigcell.frame.origin.y, bigcell.frame.size.width + 200, bigcell.frame.size.height + 201)];
+            
             self.myBigImage = [[UIImageView alloc]initWithImage:bigcell.bigImage.image];
             [self.view addSubview:self.myBigImage];
             //show
@@ -208,8 +210,6 @@
             //
             NSLog(@"back");
 //            [self.myBigImage removeFromSuperview];
-            //
-            
         }
     }else{
         return;
@@ -238,6 +238,14 @@
     NSLog(@"doubleTapImage");
 }
 
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 2) {
+        return CGSizeMake(200, 200);
+    }
+    return CGSizeMake(100, 100);
+}
 
 - (IBAction)backbarButtonPressed:(UIBarButtonItem *)sender {
     

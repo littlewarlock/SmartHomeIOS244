@@ -107,6 +107,7 @@
 		20DEA0321C1A656C0037F1C6 /* SmallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 20DEA02C1C1A656C0037F1C6 /* SmallLayout.m */; };
 		20DF81641BF1E1410031ADC7 /* DeckTableViewController.h in Resources */ = {isa = PBXBuildFile; fileRef = 20DF81611BF1E1410031ADC7 /* DeckTableViewController.h */; };
 		20DF81661BF1E1410031ADC7 /* DeckTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20DF81631BF1E1410031ADC7 /* DeckTableViewController.xib */; };
+		20E0BAC21C200C3A003D1CF5 /* UIView+PBExtend.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E0BAC11C200C3A003D1CF5 /* UIView+PBExtend.m */; };
 		20EC766C1C17C28C0026C91B /* H264ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EC766A1C17C28C0026C91B /* H264ViewController.m */; };
 		20EC766D1C17C28C0026C91B /* H264ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20EC766B1C17C28C0026C91B /* H264ViewController.xib */; };
 		221AC7771BE07091005643CC /* iconfont-luzhiguanli.png in Resources */ = {isa = PBXBuildFile; fileRef = 221AC76D1BE07091005643CC /* iconfont-luzhiguanli.png */; };
@@ -693,6 +694,8 @@
 		20DF81611BF1E1410031ADC7 /* DeckTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeckTableViewController.h; sourceTree = "<group>"; };
 		20DF81621BF1E1410031ADC7 /* DeckTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeckTableViewController.m; sourceTree = "<group>"; };
 		20DF81631BF1E1410031ADC7 /* DeckTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeckTableViewController.xib; sourceTree = "<group>"; };
+		20E0BAC01C200C3A003D1CF5 /* UIView+PBExtend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+PBExtend.h"; sourceTree = "<group>"; };
+		20E0BAC11C200C3A003D1CF5 /* UIView+PBExtend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+PBExtend.m"; sourceTree = "<group>"; };
 		20EC76691C17C28C0026C91B /* H264ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264ViewController.h; sourceTree = "<group>"; };
 		20EC766A1C17C28C0026C91B /* H264ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = H264ViewController.m; sourceTree = "<group>"; };
 		20EC766B1C17C28C0026C91B /* H264ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = H264ViewController.xib; sourceTree = "<group>"; };
@@ -1635,6 +1638,8 @@
 				2088BE051C0ED63200FDBE35 /* CameraSnapshotHistoryCollectionViewCell.h */,
 				2088BE061C0ED63200FDBE35 /* CameraSnapshotHistoryCollectionViewCell.m */,
 				2088BE071C0ED63200FDBE35 /* CameraSnapshotHistoryCollectionViewCell.xib */,
+				20E0BAC01C200C3A003D1CF5 /* UIView+PBExtend.h */,
+				20E0BAC11C200C3A003D1CF5 /* UIView+PBExtend.m */,
 			);
 			name = Snapshot;
 			sourceTree = "<group>";
@@ -3395,6 +3400,7 @@
 				20AE979C1BCE6E710041AB50 /* AsyncUdpSocket.m in Sources */,
 				20AE983A1BCE70FC0041AB50 /* TaskInfo.m in Sources */,
 				48F4A3011BACF536007F13D9 /* MWGridViewController.m in Sources */,
+				20E0BAC21C200C3A003D1CF5 /* UIView+PBExtend.m in Sources */,
 				20548E131C08012700E19F66 /* MJRefreshHeader.m in Sources */,
 				22C352921BE21CD000C48F86 /* AlbumHeaderCell.m in Sources */,
 				48F4A2DB1BACF4EA007F13D9 /* NSData+ImageContentType.m in Sources */,

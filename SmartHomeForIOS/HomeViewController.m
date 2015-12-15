@@ -30,7 +30,8 @@
 #import "CloudLoginViewController.h"
 #import "CloudLoginSuccessViewController.h"
 #import "H264ViewController.h"
-
+#import "CameraPhotoViewController.h"
+#import "CameraSnapshotHistoryViewController.h"
 
 #define kMainScreenHeight [[UIScreen mainScreen] bounds].size.height
 #define kMainScreenWidth  [[UIScreen mainScreen] bounds].size.width
@@ -273,9 +274,12 @@ AppDelegate *appDelegate ;
 //            H264ViewController *h264 = [[H264ViewController alloc]initWithNibName:@"H264ViewController" bundle:nil];
 //            [self.navigationController pushViewController:h264 animated:YES];
             
-            AlarmMessageListViewController *alarmList = [[AlarmMessageListViewController alloc]
-                                                 initWithNibName:@"AlarmMessageListViewController" bundle:nil];
-            [self.navigationController pushViewController:alarmList animated:YES];
+            CameraSnapshotHistoryViewController *vc = [[CameraSnapshotHistoryViewController alloc]initWithNibName:@"CameraSnapshotHistoryViewController" bundle:nil];
+            [self.navigationController pushViewController:vc animated:YES];
+            
+//            AlarmMessageListViewController *alarmList = [[AlarmMessageListViewController alloc]
+//                                                 initWithNibName:@"AlarmMessageListViewController" bundle:nil];
+//            [self.navigationController pushViewController:alarmList animated:YES];
             break;
         }
         case 7:{

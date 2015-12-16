@@ -55,6 +55,10 @@
 + (void)delAlarmMsgWithMsgIds:(NSArray *)msgIds withBlock:(void (^)(NSString *result, NSString *message, NSError *error))block;
 //set readed
 + (void)setAlarmMsgReadedWithMsgIds:(NSArray *)msgIds withBlock:(void (^)(NSString *result, NSString *message, NSError *error))block;
+//取得摄像头截图历史录像记录
++ (void)getCameraSnapshotHistoryWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *result, NSString *message, NSArray *times,NSArray *videos, NSError *error))block;
+
+
 
 //
 + (Boolean)isObjectNULLwith:(NSObject *)obj;

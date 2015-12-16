@@ -818,7 +818,7 @@
 + (void)getCameraRecordHistoryDatesWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *, NSString *, NSArray *, NSError *))block
 {
     NSDictionary *requestParam = @{@"session_id":@"session_id",
-                                   @"opt":@"videocalendar",
+                                   @"opt":@"calendarlist",
                                    @"devid":deviceId,
                                    @"mon":day
                                    };
@@ -1139,5 +1139,45 @@
     [engine enqueueOperation:op];
 }
 
++ (void)getCameraSnapshotHistoryWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *, NSString *, NSArray *, NSArray *, NSError *))block
+{
+    NSLog(@"day====%@",deviceId);
+    NSLog(@"day====%@",day);
+    NSDictionary *requestParam = @{@"session_id":@"session_id",
+                                   @"opt":@"snapshotlist",
+                                   @"devid":deviceId,
+                                   @"day":day
+                                   };
+    //请求php
+    NSString* url = [DeviceNetworkInterface getRequestUrl];
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
+    [engine useCache];
+    MKNetworkOperation *op = [engine operationWithPath:@"camera.php" params:requestParam httpMethod:@"POST"];
+    //操作返回数据
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        
+        if([operation isCachedResponse]) {
+            NSLog(@"Data from cache %@", [operation responseString]);
+        }
+        else {
+            NSLog(@"Data from server %@", [operation responseString]);
+        }
+        //get data
+        NSString *result = op.responseJSON[@"result"];
+        NSString *message = op.responseJSON[@"message"];
+        NSArray *times = op.responseJSON[@"times"];
+        NSArray *videos = op.responseJSON[@"snapshots"];
+        if (block) {
+            block(result,message,times,videos,nil);
+        }
+    } errorHandler:^(MKNetworkOperation *errorOp,NSError *error) {
+        NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+        if (block) {
+            block(nil,@"网络异常",nil,nil,error);
+        }
+    }];
+    
+    [engine enqueueOperation:op];
+}
 
 @end

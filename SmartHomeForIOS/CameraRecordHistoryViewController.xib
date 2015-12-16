@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CameraRecordHistoryViewController">
@@ -21,7 +21,6 @@
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" tag="100" contentMode="scaleToFill" misplaced="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="sFZ-EK-3hX">
                     <rect key="frame" x="8" y="8" width="304" height="560"/>
-                    <animations/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="bDl-Cw-e16">
                         <size key="itemSize" width="90" height="90"/>
                         <size key="headerReferenceSize" width="0.0" height="20"/>
@@ -35,7 +34,6 @@
                 </collectionView>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Eni-PI-egf">
                     <rect key="frame" x="0.0" y="524" width="320" height="44"/>
-                    <animations/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Djt-c8-zjt"/>
                         <barButtonItem image="camera_history_video_down" width="125" id="0ky-fE-hQM">
@@ -55,7 +53,6 @@
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </toolbar>
             </subviews>
-            <animations/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="sFZ-EK-3hX" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="8" id="3mw-lk-0zG"/>

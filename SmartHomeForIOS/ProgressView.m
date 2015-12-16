@@ -14,18 +14,78 @@
 
 @implementation ProgressView
 
-- (id)initWithTask:(TaskInfo *)task
+- (id)initWithTask:(TaskInfo *)taskInfo
 {
     self = [[ProgressView alloc] init];
+    self.taskInfo = taskInfo;
     self.progressBar.progress = 0.0f;
     self.progressBar.layer.masksToBounds = YES;
     self.progressBar.layer.cornerRadius = 4;
     //设置进度条的高度
     CGAffineTransform transform = CGAffineTransformMakeScale(1.0f, 7.0f);
     self.progressBar.transform = transform;
-    self.taskNameLabel.text =task.taskName;
-    self.taskDetailLabel.text =(NSString*)task.currentProgress;
+    self.taskNameLabel.text = taskInfo.taskName;
+    self.taskDetailLabel.text =(NSString*)taskInfo.currentProgress;
     return self;
 }
 
+#pragma mark setTaskStateAction 设置任务的状态 暂停 继续
+- (IBAction)setTaskStateAction:(UIButton *)sender {
+    if (self.taskInfo && ![self.taskInfo.taskId isEqualToString:@""]) {
+        NSOperationDownloadQueue *downloadQueue = [NSOperationDownloadQueue sharedInstance];
+        if (downloadQueue) {
+            FileDownloadOperation *downloadOperation;
+            for(FileDownloadOperation *operation in downloadQueue.operations)
+            {
+                if([operation.taskId isEqualToString:self.taskInfo.taskId] && !operation.cancelled){
+                    downloadOperation = operation;
+                    break;
+                }
+            }
+            if (downloadOperation && !self.taskInfo.isCanceled) {
+                [downloadOperation cancel]; //（暂停）取消当前操作
+                self.pauseBtn.enabled = NO;
+            }else{
+                [sender setTitle:@"暂停" forState:UIControlStateNormal];
+                self.taskInfo.isCanceled = NO;
+                FileDownloadOperation *downloadOperation = [[FileDownloadOperation alloc] initWithTaskInfo:self.taskInfo];
+                downloadOperation.taskId = self.taskInfo.taskId;
+                downloadOperation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
+                    if (downloadOperation.taskInfo.totalBytes<= (downloadOperation.taskInfo.transferedBlocks+1) *DOWNLOAD_STREAM_SIZE) {
+                        NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
+                        [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];
+                        //更新进度条的状态信息
+                        NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已完成" ,@"taskStatus", nil];
+                        //在主线程刷新UI
+                        [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setTaskStatusInfo:) withObject:taskStatusDic waitUntilDone:NO];
+                    }
+                };
+                [downloadQueue addOperation:downloadOperation];
+                if(downloadOperation.isExecuting){
+                    
+                    
+                    
+                    
+                    self.taskDetailLabel.text = @"正在下载";
+                }else{
+                    self.taskDetailLabel.text = @"排队等待";
+                }
+            }
+        }
+    }
+}
+
+- (void)setPauseBtnState:(BOOL )btnState{
+    self.pauseBtn.enabled = btnState;
+}
+
+- (void)setTaskStatusInfo:(NSString *)taskStatus{
+    self.taskDetailLabel.text = taskStatus;
+}
+
+- (void)setPauseBtnStateCaptionAndTaskStatus:(BOOL) btnState caption:(NSString*)caption taskStatus:(NSString*)taskStatus{
+    self.pauseBtn.enabled = btnState;
+    [self.pauseBtn setTitle:caption forState:UIControlStateNormal];
+    self.taskDetailLabel.text = taskStatus;
+}
 @end

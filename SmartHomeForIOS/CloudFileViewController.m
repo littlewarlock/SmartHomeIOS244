@@ -3,7 +3,7 @@
 //  SmartHomeForIOS===
 //
 //  Created by riqiao on 15/10/13.
-//  Copyright © 2015年 riqiao. All rights reserved.
+//  Copyright © 2014年 riqiao. All rights reserved.
 //
 #import "CloudFileViewController.h"
 #import "FileInfo.h"
@@ -860,7 +860,7 @@
             }
         }
         else if(sender==self.footerBtn_2){//下载
-            [fileHandler downloadFiles:downloadQueue selectedItemsDic:  selectedItemsDic cpath:self.cpath];
+            [fileHandler downloadFiles:[NSOperationDownloadQueue sharedInstance] selectedItemsDic:  selectedItemsDic cpath:self.cpath];
             [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
             [selectedItemsDic removeAllObjects];
         }

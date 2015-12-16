@@ -143,6 +143,7 @@ static NSString *footerId = @"footerId";
     self.collectionView = (id)[self.view viewWithTag:100];
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top = 0;
+    contentInset.bottom = 40;
     [self.collectionView setContentInset:contentInset];
     
     //collection nib
@@ -286,7 +287,7 @@ static NSString *footerId = @"footerId";
     NSString *paramDate = [df stringFromDate:_titleDate];
     
     //getdata
-    [DeviceNetworkInterface getCameraRecordHistoryWithDeviceId:_deviceID andDay:paramDate withBlock:^(NSString *result, NSString *message, NSArray *times, NSArray *videos, NSError *error) {
+    [DeviceNetworkInterface getCameraSnapshotHistoryWithDeviceId:_deviceID andDay:paramDate withBlock:^(NSString *result, NSString *message, NSArray *times, NSArray *videos, NSError *error) {
         if (!error) {
             NSLog(@"result===%@",result);
             NSLog(@"mseeage===%@",message);
@@ -303,8 +304,8 @@ static NSString *footerId = @"footerId";
                     NSLog(@"videos==%@",j[0]);
                     [arrayTimes addObject:j[0]];
 //hgc 2015 12 02 photo
-//                    [arrayUrls addObject:j[1]];
-                    [arrayUrls addObject:@"hello world"];
+                    [arrayUrls addObject:j[1]];
+//                    [arrayUrls addObject:@"hello world"];
 //hgc 2015 12 02 photo
                 }
                 
@@ -355,6 +356,18 @@ static NSString *footerId = @"footerId";
 //    cell.image.image = image;
     [cell.image setImage:image];
     [cell.image setHighlightedImage:highlightedImage];
+    
+    // 2015 12 16 hgc added
+    if (!self.isVideoPressing) {
+        
+        NSInteger section = indexPath.section;
+        NSInteger row = indexPath.row;
+        
+        [cell.image setImage:[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.doubleArrayUrl[section][row]]]]];
+        [cell.image setHighlightedImage:cell.image.image];
+//        NSLog(@"sdfsdfsdfsdimag==%@",self.doubleArrayUrl[section][row]);
+    }
+    // 2015 12 16 hgc end
     return cell;
     
 }
@@ -401,6 +414,16 @@ static NSString *footerId = @"footerId";
         
         CameraPhotoViewController *vc = [[CameraPhotoViewController alloc]initWithNibName:@"CameraPhotoViewController" bundle:nil];
         
+        //2015 12 16 added
+        NSMutableArray *array = [[NSMutableArray alloc]init];
+        
+        for (NSArray* single in self.doubleArrayUrl ) {
+            [array addObjectsFromArray:single];
+        }
+        NSLog(@"array==%@",array);
+        vc.arrayPhotos = array;
+        //2015 12 16 end
+        
 //        CameraSnapshotHistoryViewController *vc = [[CameraSnapshotHistoryViewController alloc]initWithNibName:@"CameraSnapshotHistoryViewController" bundle:nil];
 //        [self.navigationController pushViewController:vc animated:YES];
         [self addChildViewController:vc];
@@ -409,7 +432,8 @@ static NSString *footerId = @"footerId";
         
         [UIView animateWithDuration:0.3f animations:^{
             [self.view addSubview:vc.view];
-            [vc.view setAlpha:0.9f];
+            [vc.view setAlpha:1.0f];
+            [vc.view setBackgroundColor:[UIColor colorWithRed:240.0/255 green:240.0/255 blue:240.0/255 alpha:0.90]];
         } completion:^(BOOL finished) {
             
         }];
@@ -446,7 +470,6 @@ static NSString *footerId = @"footerId";
     
 //20151202
     self.isKxvcAppear = YES;
-
 
     //为kxvc添加一个新view
     if (self.buttonFullScreen == NULL) {

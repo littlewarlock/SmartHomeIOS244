@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FileHandlerDelegate.h"
+#import "NSOperationDownloadQueue.h"
 @interface FileHandler : NSObject
 
 @property(assign, nonatomic) NSUInteger opType;
@@ -28,8 +29,9 @@
 
 #pragma mark -
 #pragma mark downLoadFiles 下载文件的处理
-- (void)downloadFiles:(NSOperationQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
+//- (void)downloadFiles:(NSOperationQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
 
+- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
 #pragma mark -
 #pragma mark deleteFiles 删除文件的处理(可多个)
 -(void)deleteFiles:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
@@ -54,4 +56,6 @@
 -(NSDictionary*)getAllFilesByPath:(NSString*)path;
 
 -(void)signal:(NSString*)opType;
+
+-(long long int)getFileSize:(NSString*)filePath fileName:(NSString*)fileName;
 @end

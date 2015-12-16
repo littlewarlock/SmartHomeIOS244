@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2002B11B1BF1E5AF008743B5 /* FunctionManageTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 2002B11A1BF1E5AF008743B5 /* FunctionManageTools.m */; };
+		200563D21C20FEA70062B193 /* KxMovieDecoderVer2.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D11C20FEA70062B193 /* KxMovieDecoderVer2.m */; };
+		200563D51C20FF000062B193 /* FileDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D41C20FF000062B193 /* FileDownloadOperation.m */; };
+		200563D81C20FF0B0062B193 /* NSOperationDownloadQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */; };
 		20463ECB1BCB5B9100B3B8B7 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC41BCB5B9100B3B8B7 /* libavcodec.a */; };
 		20463ECC1BCB5B9100B3B8B7 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC51BCB5B9100B3B8B7 /* libavdevice.a */; };
 		20463ECD1BCB5B9100B3B8B7 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC61BCB5B9100B3B8B7 /* libavfilter.a */; };
@@ -532,6 +535,12 @@
 /* Begin PBXFileReference section */
 		2002B1191BF1E5AF008743B5 /* FunctionManageTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionManageTools.h; sourceTree = "<group>"; };
 		2002B11A1BF1E5AF008743B5 /* FunctionManageTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionManageTools.m; sourceTree = "<group>"; };
+		200563D01C20FEA70062B193 /* KxMovieDecoderVer2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxMovieDecoderVer2.h; sourceTree = "<group>"; };
+		200563D11C20FEA70062B193 /* KxMovieDecoderVer2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxMovieDecoderVer2.m; sourceTree = "<group>"; };
+		200563D31C20FF000062B193 /* FileDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownloadOperation.h; sourceTree = "<group>"; };
+		200563D41C20FF000062B193 /* FileDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileDownloadOperation.m; sourceTree = "<group>"; };
+		200563D61C20FF0B0062B193 /* NSOperationDownloadQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSOperationDownloadQueue.h; sourceTree = "<group>"; };
+		200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOperationDownloadQueue.m; sourceTree = "<group>"; };
 		20463EC41BCB5B9100B3B8B7 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
 		20463EC51BCB5B9100B3B8B7 /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavdevice.a; sourceTree = "<group>"; };
 		20463EC61BCB5B9100B3B8B7 /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
@@ -1583,6 +1592,8 @@
 		20463EC01BCB5B9100B3B8B7 /* libswscale */ = {
 			isa = PBXGroup;
 			children = (
+				200563D01C20FEA70062B193 /* KxMovieDecoderVer2.h */,
+				200563D11C20FEA70062B193 /* KxMovieDecoderVer2.m */,
 				228958901BE8BD2500EE86F7 /* KxAudioManager.h */,
 				228958911BE8BD2500EE86F7 /* KxAudioManager.m */,
 				228958921BE8BD2500EE86F7 /* KxLogger.h */,
@@ -2491,6 +2502,10 @@
 		483F537D1B96CDE90011E153 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				200563D61C20FF0B0062B193 /* NSOperationDownloadQueue.h */,
+				200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */,
+				200563D31C20FF000062B193 /* FileDownloadOperation.h */,
+				200563D41C20FF000062B193 /* FileDownloadOperation.m */,
 				20786F1B1C1E65A3007410BF /* KxMovieView.h */,
 				20786F1C1C1E65A3007410BF /* KxMovieView.m */,
 				20786F1D1C1E65A3007410BF /* KxMovieView.xib */,
@@ -3453,6 +3468,7 @@
 				48F4A31A1BACF9A9007F13D9 /* DACircularProgressView.m in Sources */,
 				226498CD1BDA098B00E080A2 /* JTCalendar.m in Sources */,
 				2289589F1BE8BD2500EE86F7 /* KxMovieDecoder.m in Sources */,
+				200563D21C20FEA70062B193 /* KxMovieDecoderVer2.m in Sources */,
 				2095E2211BFD6B68008507E8 /* HSK_CFUtilities.m in Sources */,
 				204CB0AA1C0D9B4B00191E1D /* LoginHandler.m in Sources */,
 				226498CE1BDA098B00E080A2 /* JTCalendarAppearance.m in Sources */,
@@ -3493,7 +3509,9 @@
 				226498D51BDA098B00E080A2 /* JTCalendarWeekView.m in Sources */,
 				22C352C91BE21D3500C48F86 /* AppInfoViewController.m in Sources */,
 				20AE98401BCE711D0041AB50 /* FileInfo.m in Sources */,
+				200563D81C20FF0B0062B193 /* NSOperationDownloadQueue.m in Sources */,
 				22C3524F1BE21C4200C48F86 /* AudioViewController.m in Sources */,
+				200563D51C20FF000062B193 /* FileDownloadOperation.m in Sources */,
 				22C352681BE21C9D00C48F86 /* DocumentViewController.m in Sources */,
 				20D76ACB1C16748300C62AB9 /* AlbumCollectionViewController.m in Sources */,
 				20D76AD01C16749700C62AB9 /* RootLoginViewController.m in Sources */,

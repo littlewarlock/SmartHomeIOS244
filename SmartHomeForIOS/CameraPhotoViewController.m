@@ -48,8 +48,8 @@
 //    self.bigPhoto.backgroundColor = [UIColor whiteColor];
 //    self.smallPhoto.backgroundColor = [UIColor whiteColor];
     
-    big = @[@"01.jpg",@"02.jpg",@"03.jpg",@"04.jpg",@"05.jpg",@"04.jpg",@"02.jpg",@"01.jpg"];
-//    big = self.arrayPhotos;
+//    big = @[@"01.jpg",@"02.jpg",@"03.jpg",@"04.jpg",@"05.jpg",@"04.jpg",@"02.jpg",@"01.jpg"];
+    big = self.arrayPhotos;
     small = [[NSMutableArray alloc]init];
     [small addObject:@""];
     [small addObjectsFromArray:big];
@@ -105,8 +105,8 @@
         if ([big[row] isEqualToString:@""]) {
             cell.bigImage.image = [UIImage new];
         }else{
-            cell.bigImage.image = [UIImage imageNamed:big[row]];
-//            cell.bigImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://172.16.1.216:8080/smarthome/snapshot/common/snapshotcommon_1_20151211104000.jpg"]]];
+//            cell.bigImage.image = [UIImage imageNamed:big[row]];
+            cell.bigImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:big[row]]]];
         }
         return cell;
         
@@ -117,8 +117,8 @@
         if ([small[row] isEqualToString:@""]) {
             cell.smallImage.image = [UIImage new];
         }else{
-            cell.smallImage.image = [UIImage imageNamed:small[row]];
-//            cell.smallImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://172.16.1.216:8080/smarthome/snapshot/common/snapshotcommon_1_20151211104000.jpg"]]];
+//            cell.smallImage.image = [UIImage imageNamed:small[row]];
+            cell.smallImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:small[row]]]];
         }
         return cell;
         
@@ -172,7 +172,7 @@
                 bigcell =  cell;
             }
             //mybigimage
-            [bigcell setFrame:CGRectMake(bigcell.frame.origin.x, bigcell.frame.origin.y, bigcell.frame.size.width + 200, bigcell.frame.size.height + 201)];
+//            [bigcell setFrame:CGRectMake(bigcell.frame.origin.x, bigcell.frame.origin.y, bigcell.frame.size.width + 200, bigcell.frame.size.height + 201)];
             
             self.myBigImage = [[UIImageView alloc]initWithImage:bigcell.bigImage.image];
             [self.view addSubview:self.myBigImage];
@@ -182,14 +182,14 @@
             [UIView animateWithDuration:0.3f delay:0 options:UIViewAnimationCurveEaseInOut| UIViewAnimationOptionAllowUserInteraction
                              animations:^{
                 [self.myBigImage setFrame:CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y + 65, self.view.frame.size.width, self.view.frame.size.height - 65)];
-                self.myBigImage.alpha = 1.0f;
             } completion:^(BOOL finished) {
             }];
             
             //aspect fit
             [self.myBigImage setContentMode:UIViewContentModeScaleAspectFit];
-            UIColor *color = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.5];
+            UIColor *color = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.85];
             [self.myBigImage setBackgroundColor:color];
+            [self.myBigImage setAlpha:1.0f];
             //
             UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapImage)];
             [tapGesture setNumberOfTapsRequired:1];
@@ -239,13 +239,13 @@
 }
 
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.row == 2) {
-        return CGSizeMake(200, 200);
-    }
-    return CGSizeMake(100, 100);
-}
+//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if (indexPath.row == 2) {
+//        return CGSizeMake(200, 200);
+//    }
+//    return CGSizeMake(100, 100);
+//}
 
 - (IBAction)backbarButtonPressed:(UIBarButtonItem *)sender {
     

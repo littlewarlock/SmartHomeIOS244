@@ -19,5 +19,9 @@
 -(void)addProgressBarRow:(TaskInfo *)taskInfo;
 
 -(void)updateProgress:(NSMutableDictionary*) currentProgressDic;
+-(void)setPauseBtnState:(NSMutableDictionary*) btnStateDic;
+- (void)setTaskStatusInfo:(NSMutableDictionary *)taskStatusDic;
+- (void)setPauseBtnStateCaptionAndTaskStatus:(NSMutableDictionary *)taskStatusDic;
+
 + (instancetype)sharedInstance;
 @end

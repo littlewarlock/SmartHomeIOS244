@@ -11,6 +11,7 @@
 #import "UploadFileTools.h"
 #import "NSUUIDTool.h"
 #import "FileUploadByBlockTool.h"
+#import "FileDownloadOperation.h"
 
 @implementation FileHandler
 
@@ -24,34 +25,72 @@
 }
 
 #pragma mark -
-#pragma mark downLoadFiles 下载文件的处理
-- (void)downloadFiles:(NSOperationQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath
-{
+#pragma mark downloadFiles 下载文件的处理
+/* 没有添加断点下载前的，下载处理
+ - (void)downloadFiles:(NSOperationQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath
+ {
+ BOOL  operationIsExist= false;
+ for (NSString *fileName in [selectedItemsDic allKeys]){
+ operationIsExist= false;
+ for (FileDownloadTools *operation in [downloadQueue operations]) {
+ if ([operation.fileName isEqualToString:fileName]) {
+ operationIsExist = true;
+ }
+ }
+ if (!operationIsExist) {
+ FileDownloadTools *operation = [[FileDownloadTools alloc] initWithFileInfo];
+ TaskInfo* task = [[TaskInfo alloc] init];
+ task.taskId = [NSUUIDTool gen_uuid];
+ task.taskName =fileName;
+ task.taskType = @"下载";
+ operation.fileName = fileName;
+ operation.filePath = cpath;
+ operation.progressBarView = [ProgressBarViewController sharedInstance];
+ operation.taskId = task.taskId;
+ [downloadQueue addOperation:operation];
+ [[ProgressBarViewController sharedInstance].taskDic  setObject:task forKey:task.taskId];
+ [[ProgressBarViewController sharedInstance] addProgressBarRow:task];
+ }
+ }
+ }*/
+
+- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath{
     BOOL  operationIsExist= false;
     for (NSString *fileName in [selectedItemsDic allKeys]){
         operationIsExist= false;
-        for (FileDownloadTools *operation in [downloadQueue operations]) {
-            if ([operation.fileName isEqualToString:fileName]) {
+        for (FileDownloadOperation *operation in [downloadQueue operations]) {
+            if ([operation.taskInfo.fileName isEqualToString:fileName]) {
                 operationIsExist = true;
             }
         }
         if (!operationIsExist) {
-            FileDownloadTools *operation = [[FileDownloadTools alloc] initWithFileInfo];
-            TaskInfo* task = [[TaskInfo alloc] init];
-            task.taskId = [NSUUIDTool gen_uuid];
-            task.taskName =fileName;
-            task.taskType = @"下载";
-            operation.fileName = fileName;
-            operation.filePath = cpath;
-            operation.progressBarView = [ProgressBarViewController sharedInstance];
-            operation.taskId = task.taskId;
+            TaskInfo* taskInfo = [[TaskInfo alloc] init];
+            taskInfo.taskId = [NSUUIDTool gen_uuid];
+            taskInfo.taskName =fileName;
+            taskInfo.taskType = @"下载";
+            taskInfo.fileName = fileName;
+            taskInfo.filePath = cpath;
+            taskInfo.totalBytes = [self getFileSize:cpath fileName:fileName];
+            FileDownloadOperation *operation = [[FileDownloadOperation alloc] initWithTaskInfo:taskInfo];
+            operation.taskId = taskInfo.taskId;
+            operation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
+                if (operation.taskInfo.totalBytes<= (operation.taskInfo.transferedBlocks+1) *DOWNLOAD_STREAM_SIZE) {
+                    //更新进度按钮的状态
+                    NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
+                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];
+                    //更新进度条的状态信息
+                    NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"已完成" ,@"taskStatus", nil];
+                    //在主线程刷新UI
+                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setTaskStatusInfo:) withObject:taskStatusDic waitUntilDone:NO];
+                }
+            };
             [downloadQueue addOperation:operation];
-            [[ProgressBarViewController sharedInstance].taskDic  setObject:task forKey:task.taskId];
-            [[ProgressBarViewController sharedInstance] addProgressBarRow:task];
+            [[ProgressBarViewController sharedInstance].taskDic  setObject:taskInfo forKey:taskInfo.taskId];
+            [[ProgressBarViewController sharedInstance] addProgressBarRow:taskInfo];
         }
     }
-    
 }
+
 - (void)uploadFile:(NSString*) fileName localFilePath:(NSString*)localFilePath    serverCpath:(NSString*)serverCpath
 {
     NSString* requestHost = [g_sDataManager requestHost];
@@ -134,9 +173,9 @@
 -(void)shareFile:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath isShare:(NSString*) isShare{
     
     if(selectedItemsDic.count==0 ){
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请先选择文件" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-    [alertView show];
-    return ;
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请先选择文件" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alertView show];
+        return ;
     }
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     __block NSError *error = nil;
@@ -363,7 +402,7 @@
                 [engine enqueueOperation:op];
                 break;
             }
-
+                
             default:
                 break;
         }
@@ -395,11 +434,11 @@
         [uploadUrl appendString:[NSMutableString stringWithFormat:@"%@",serverCpath]];
     }
     BOOL operationIsExist = NO;
-//    for (FileUploadByBlockTool *operation in [uploadQueue operations]) {
-//        if ([operation.fileName isEqualToString:fileName]) {
-//            operationIsExist = YES;
-//        }
-//    }
+    //    for (FileUploadByBlockTool *operation in [uploadQueue operations]) {
+    //        if ([operation.fileName isEqualToString:fileName]) {
+    //            operationIsExist = YES;
+    //        }
+    //    }
     if (!operationIsExist) {
         FileUploadByBlockTool *operation = [[FileUploadByBlockTool alloc] initWithLocalPath:localFilePath ip:[g_sDataManager requestHost]withServer:uploadUrl withName:[g_sDataManager userName] withPass:[g_sDataManager password]];
         TaskInfo* task = [[TaskInfo alloc] init];
@@ -474,7 +513,7 @@
                 NSLog(@"responseJSON。。。。。=======%@",responseJSON);
                 if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"1"])//获取目录成功
                 {
-
+                    
                 }
             }
         }
@@ -560,6 +599,7 @@
     }
     [self.condition unlock];
 }
+
 #pragma mark -
 #pragma mark getAllFilesByPath 返回指定目录下的所有文件
 -(NSDictionary*)getAllFilesByPath:(NSString*)path{
@@ -607,5 +647,33 @@
 -(void)signal:(NSString*)flag{
     self.flag = flag;
     [self.condition broadcast];
+}
+
+-(long long int)getFileSize:(NSString*)filePath fileName:(NSString*)fileName{
+    NSString* requestUrl=[NSString stringWithFormat: @"http://%@/",[g_sDataManager requestHost]];
+    
+    NSString* fileSizeString =[requestUrl stringByAppendingString: REQUEST_FILESIZE_URL];
+    NSURL *fileSizeUrl = [NSURL URLWithString:[fileSizeString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:fileSizeUrl cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
+    [request setHTTPMethod:@"POST"];//设置请求方式为POST，默认为GET
+    NSError * fileSizeError=nil;
+    long long int fileLength = 0;
+    NSString* post=[NSString stringWithFormat:@"uname=%@&upasswd=%@&filePath=%@&fileName=%@",[g_sDataManager userName],[g_sDataManager password],filePath,fileName];
+    NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding];//设置参数
+    [request setHTTPBody:postData];
+    NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&fileSizeError];
+    if (!fileSizeError) {
+        NSError * jsonError=nil;
+        id jsonObject = [NSJSONSerialization JSONObjectWithData:received options:NSJSONReadingAllowFragments error:&jsonError];
+        if ([jsonObject isKindOfClass:[NSDictionary class]]){
+            NSDictionary *dictionary = (NSDictionary *)jsonObject;
+            NSString* result =[NSString stringWithFormat:@"%@",[jsonObject objectForKey:@"result"]];
+            if([result isEqualToString: @"1"]){
+                
+                fileLength = [[dictionary objectForKey:@"size"] intValue];
+            }
+        }
+    }
+    return fileLength;
 }
 @end

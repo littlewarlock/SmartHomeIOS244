@@ -33,7 +33,7 @@
 
 - (void)main {
     @try {
-      //1.获取所有的文件夹,及其子目录下的文件
+        //1.获取所有的文件夹,及其子目录下的文件
         NSMutableArray *allDirsArray= [[NSMutableArray alloc]init];
         NSMutableArray *allFilesArray= [[NSMutableArray alloc]init];
         [allDirsArray addObjectsFromArray:self.sourceDirsArray];
@@ -101,10 +101,10 @@
         NSOperationQueue *uploadQueue = [[NSOperationQueue alloc] init];
         [uploadQueue setMaxConcurrentOperationCount:1];
         ProgressView* progressView =[[ProgressBarViewController sharedInstance].progressBarDic objectForKey:self.taskId];
-        progressView.totalBytes = totalBytes;
+        progressView.taskInfo.totalBytes = totalBytes;
         if(totalBytes==0){ //如果备份的只是所有目录，没有任何文件，总字节数是0，设置为1字节
             totalBytes=1;
-            progressView.transferedBytes=1;
+            progressView.taskInfo.transferedBytes=1;
             [progressView.progressBar setProgress:1 animated:NO];
         }
         for (int i =0; i<allFilesArray.count; i++){

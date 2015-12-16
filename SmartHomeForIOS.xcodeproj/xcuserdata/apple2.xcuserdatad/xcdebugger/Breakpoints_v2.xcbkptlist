@@ -2,4 +2,54 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SmartHomeForIOS/DeviceNetworkInterface.h"
+            timestampString = "471941394.630488"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
+            landmarkName = "+getCameraSnapshotHistoryWithDeviceId:andDay:withBlock:"
+            landmarkType = "4">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DeviceNetworkInterface dic]"
+                  moduleName = "SmartHomeForIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apple2/Desktop/SVN/SmartHomeIOS244/SmartHomeForIOS/DeviceNetworkInterface.h"
+                  timestampString = "471941394.958817"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DeviceNetworkInterface setDic:]"
+                  moduleName = "SmartHomeForIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apple2/Desktop/SVN/SmartHomeIOS244/SmartHomeForIOS/DeviceNetworkInterface.h"
+                  timestampString = "471941394.960053"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

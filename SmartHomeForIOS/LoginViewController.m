@@ -20,6 +20,23 @@
 #define TV_Cell_Height 24
 #define TAG_TV_LIST 101
 #define TAG_TV_SEARCH 102
+
+@interface LoginViewController()
+
+@property (weak, nonatomic) IBOutlet UIView *ipView;
+
+@property (weak, nonatomic) IBOutlet UIView *loginView;
+
+@property (weak, nonatomic) IBOutlet UIView *passwordView;
+
+
+
+
+
+@end
+
+
+
 @implementation LoginViewController{
     AsyncUdpSocket *udpSocket;
     LoginHandler *loginHandler;
@@ -27,14 +44,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bj"]]];
     
-    [self.textFieldIp setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0]];
-    [self.textFieldIp setValue:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
-    [self.userNameField setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0]];
-    [self.userNameField setValue:[UIColor colorWithRed:23.0/255 green:103.0/255 blue:165.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
-    [self.userPasswordField setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0]];
-    [self.userPasswordField setValue:[UIColor colorWithRed:23.0/255 green:103.0/255 blue:165.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
+    //设置登陆信息的边框
+    [self setupBorder];
+
+
+    [self.textFieldIp setValue:[UIColor colorWithRed:255.0/255 green:255.0/255 blue:255.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
+
+    [self.userNameField setValue:[UIColor colorWithRed:255.0/255 green:255.0/255 blue:255.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
+
+    [self.userPasswordField setValue:[UIColor colorWithRed:255.0/255 green:255.0/255 blue:255.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
     
     [self.tvSearch setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0.5]];
     [self.tvList setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0.5]];
@@ -105,6 +124,23 @@
     [self.tvList reloadData];
 }
 
+
+//设置登陆信息的边框
+- (void)setupBorder
+{
+    //ip信息
+    self.ipView.layer.borderWidth = 1;
+    self.ipView.layer.borderColor = [[UIColor whiteColor] CGColor];
+    
+    //用户名信息
+    self.loginView.layer.borderWidth = 1;
+    self.loginView.layer.borderColor = [[UIColor whiteColor] CGColor];
+    
+    //密码
+    self.passwordView.layer.borderWidth = 1;
+    self.passwordView.layer.borderColor = [[UIColor whiteColor] CGColor];
+
+}
 //下拉列表按钮按下
 - (IBAction)listBtn:(UIButton *)sender {
     if (self.arrayIps1.count>0) {

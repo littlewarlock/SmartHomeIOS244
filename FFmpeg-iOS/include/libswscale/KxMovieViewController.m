@@ -683,10 +683,13 @@ _messageLabel.hidden = YES;
         NSLog(@"self.hgcParam==%@",self.hgcParam);
         _moviePosition = 0;
         _parameters = self.hgcParam;
+        //2015 12 22 hgc add
 //        [self initWithContentPath:self.hgcPath parameters:self.hgcParam];
 //        NSError *error = nil;
 //        [_decoder closeFile];
 //        [_decoder openFile:self.hgcPath error:&error];
+
+        //2015 12 22 hgc end
     }
     //hgc added 2015 11 05 end
     

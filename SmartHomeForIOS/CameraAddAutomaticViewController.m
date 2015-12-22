@@ -103,8 +103,11 @@
     NSLog(@"self.deviceInfo.userid=%@",self.deviceInfo.type);
     NSLog(@"self.deviceInfo.userid=%@",self.deviceInfo.version);
     
-    self.textFieldIPadress.text = self.deviceInfo.addition;
-    
+    //2015 12 22 hgc added
+    NSArray *array = [self.deviceInfo.addition componentsSeparatedByString:@":"];
+    self.textFieldIPadress.text = array[0];
+//    self.textFieldIPadress.text = self.deviceInfo.addition;
+    //2015 12 22 hgc ended
     self.labelBrand.text = self.deviceInfo.brand;
     self.labelModel.text = self.deviceInfo.model;
     self.labelVersion.text = self.deviceInfo.version;
@@ -255,7 +258,10 @@
 - (IBAction)buttonTestPressed:(UIButton *)sender {
     NSLog(@"Network Testing......");
 //    NSString *addition = [NSString stringWithFormat:@"%@:%@",self.textFieldIPadress.text,self.textFieldIPadressPort.text];
-    NSString *addition = self.textFieldIPadress.text;
+    //2015 12 22 hgc started
+    NSString *addition = self.deviceInfo.addition;
+//    NSString *addition = self.textFieldIPadress.text;
+    //2015 12 22 hgc ended
     NSLog(@"addition=%@",addition);
     NSString *userid = self.textFieldUserName.text;
     NSString *passwd = self.textFieldUserPassword.text;

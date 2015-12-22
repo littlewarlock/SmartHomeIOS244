@@ -273,6 +273,10 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                 _kxvc.view.frame = CGRectMake(8, 70, self.view.bounds.size.width - 16, 202);
                 [self.movieView setFrame:_kxvc.view.frame];
                 
+                //2015 12 18 hgc
+                NSLog(@"self.kxvc.view.frame===%f",self.kxvc.view.frame.size.width);
+                NSLog(@"self.kxvc.view.frame===%f",[self.kxvc frameView].frame.size.width);
+                //2015 12 18 hgc
                 
                 //            [_kxvc.view setFrame:self.movieView.bounds];
                 [self.view addSubview:_kxvc.view];
@@ -985,7 +989,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
         while (cursor != NULL)
         {
             name=[NSString stringWithFormat:@"%s",cursor->ifa_name];
-            NSLog(@"ifa_name %s == %@\n", cursor->ifa_name,name);
+//            NSLog(@"ifa_name %s == %@\n", cursor->ifa_name,name);
             // names of interfaces: en0 is WiFi ,pdp_ip0 is WWAN
             
             if (cursor->ifa_addr->sa_family == AF_LINK)
@@ -995,8 +999,8 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                     networkStatisc = (const struct if_data *) cursor->ifa_data;
                     WiFiSent+=networkStatisc->ifi_obytes;
                     WiFiReceived+=networkStatisc->ifi_ibytes;
-                    NSLog(@"WiFiSent %d ==%d",WiFiSent,networkStatisc->ifi_obytes);
-                    NSLog(@"WiFiReceived %d ==%d",WiFiReceived,networkStatisc->ifi_ibytes);
+//                    NSLog(@"WiFiSent %d ==%d",WiFiSent,networkStatisc->ifi_obytes);
+//                    NSLog(@"WiFiReceived %d ==%d",WiFiReceived,networkStatisc->ifi_ibytes);
                 }
                 
                 if ([name hasPrefix:@"pdp_ip"])
@@ -1004,8 +1008,8 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                     networkStatisc = (const struct if_data *) cursor->ifa_data;
                     WWANSent+=networkStatisc->ifi_obytes;
                     WWANReceived+=networkStatisc->ifi_ibytes;
-                    NSLog(@"WWANSent %d ==%d",WWANSent,networkStatisc->ifi_obytes);
-                    NSLog(@"WWANReceived %d ==%d",WWANReceived,networkStatisc->ifi_ibytes);
+//                    NSLog(@"WWANSent %d ==%d",WWANSent,networkStatisc->ifi_obytes);
+//                    NSLog(@"WWANReceived %d ==%d",WWANReceived,networkStatisc->ifi_ibytes);
                 }
             }
             
@@ -1014,7 +1018,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
         
         freeifaddrs(addrs);
     }
-    NSLog(@"wifi==%@",[NSArray arrayWithObjects:[NSNumber numberWithInt:WiFiSent], [NSNumber numberWithInt:WiFiReceived],[NSNumber numberWithInt:WWANSent],[NSNumber numberWithInt:WWANReceived], nil]);
+//    NSLog(@"wifi==%@",[NSArray arrayWithObjects:[NSNumber numberWithInt:WiFiSent], [NSNumber numberWithInt:WiFiReceived],[NSNumber numberWithInt:WWANSent],[NSNumber numberWithInt:WWANReceived], nil]);
     
     NSInteger receive = WiFiReceived + WWANReceived;
     NSString *stringReceiveByte = [NSString stringWithFormat:@"%d",receive];

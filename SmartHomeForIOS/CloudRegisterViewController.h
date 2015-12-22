@@ -12,14 +12,11 @@
 @interface CloudRegisterViewController : UIViewController
 
 @property (strong, nonatomic) IBOutlet UITextField *email;
-@property (strong, nonatomic) IBOutlet UITextField *password;
-@property (strong, nonatomic) IBOutlet UITextField *passwordtwo;
 @property (strong, nonatomic) IBOutlet UITextField *cocloudid;
 @property (strong, nonatomic) IBOutlet UIButton *registerButton;
-
+@property (strong, nonatomic) NSString* mac;
 
 - (IBAction)finish:(id)sender;
-
 - (IBAction)registers:(id)sender;
 
 @end

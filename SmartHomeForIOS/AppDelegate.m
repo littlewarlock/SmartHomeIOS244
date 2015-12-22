@@ -17,7 +17,7 @@
 #import "AlarmMessagePopUpViewController.h"
 #import "AlarmMessageListViewController.h"
 #import "DeviceNetworkInterface.h"
-
+#import "FunctionManageTools.h"
 @interface AppDelegate ()
 
 @property (strong,nonatomic)UIView *popUpView;
@@ -37,21 +37,24 @@
     loginView.isPushHomeView = YES;
     [self.window setRootViewController:loginView]; //显示登陆
     [self.window makeKeyAndVisible];
+    
+    [self loadData];
     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"firstStart"]){
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"firstStart"];
         if (![[NSFileManager defaultManager] fileExistsAtPath:kDocument_Folder]) {
             [[NSFileManager defaultManager] createDirectoryAtPath:kDocument_Folder withIntermediateDirectories:YES attributes:nil error:nil];
+            _selectedAppArray = [NSMutableArray arrayWithCapacity:10];
+            [_selectedAppArray addObject:_appArray[0]]; //默认为用户添加前三个 app
+            [_selectedAppArray addObject :_appArray[1]];
+            [_selectedAppArray addObject :_appArray[2]];
+            [_selectedAppArray addObject :_appArray[5]];
+            [FunctionManageTools saveSelectedApp];
         }
     }else{
         NSLog(@"不是第一次启动");
+        _selectedAppArray = [NSMutableArray arrayWithCapacity:10];
+        _selectedAppArray =[FunctionManageTools readSavedApp];
     }
-
-    [self loadData];
-    _selectedAppArray = [NSMutableArray arrayWithCapacity:3];
-    [_selectedAppArray addObject:_appArray[0]]; //默认为用户添加前三个 app
-    [_selectedAppArray addObject :_appArray[1]];
-    [_selectedAppArray addObject :_appArray[2]];
-    [_selectedAppArray addObject :_appArray[5]];
     
     NSString *documentsDirectory = [FileTools getUserDataFilePath];
     NSString *userListPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];

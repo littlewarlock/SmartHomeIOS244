@@ -9,7 +9,7 @@
 #import "AppViewController.h"
 #import "AppNameAndIconCell.h"
 #import "AppInfoViewController.h"
-
+#import "FunctionManageTools.h"
 
 static NSString *CellTableIdentifier = @"CellTableIdentifier";
 @implementation AppViewController
@@ -140,10 +140,10 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
                     }
                 }
             }
-            
+            [FunctionManageTools saveSelectedApp];
         }
-        
     }
+    
 }
 
 @end

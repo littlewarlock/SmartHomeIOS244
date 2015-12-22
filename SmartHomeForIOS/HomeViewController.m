@@ -132,6 +132,80 @@ AppDelegate *appDelegate ;
     UITapGestureRecognizer* singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     [self.view addGestureRecognizer:singleTap];
     singleTap.delegate = self;
+    
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    __block NSError *error = nil;
+    [dic setValue:@"getmode" forKey:@"opt"];
+    NSString* requestHost = [g_sDataManager requestHost];
+    NSString* requestUrl = [NSString stringWithFormat:@"%@/smarthome/app",requestHost];
+
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+    
+    MKNetworkOperation *op = [engine operationWithPath:REQUEST_GLOBAL_URL params:dic httpMethod:@"POST" ssl:NO];
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        NSLog(@"[operation responseData]-->>%@", [operation responseString]);
+        NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+        NSLog(@"[operation responseJSON]-->>%@",responseJSON);
+        
+        if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
+        {
+            if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"0"])//成功
+            {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+                UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
+                UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
+                UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
+                [homeButton setImage:[UIImage imageNamed:@"home-down"] forState:(UIControlStateNormal)];
+                [egressButton setImage:[UIImage imageNamed:@"egress"] forState:(UIControlStateNormal)];
+                [sleepButton setImage:[UIImage imageNamed:@"sleep"] forState:(UIControlStateNormal)];
+                [homeButton setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+                [egressButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                [sleepButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                // 设置底部滑动条
+                CGRect frame = CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+                bottomView.frame = frame;
+
+                [alert show];
+                
+            }else if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"1"])//修改成功
+            {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+                UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
+                UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
+                UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
+                [homeButton setImage:[UIImage imageNamed:@"home"] forState:(UIControlStateNormal)];
+                [egressButton setImage:[UIImage imageNamed:@"egress-down"] forState:(UIControlStateNormal)];
+                [sleepButton setImage:[UIImage imageNamed:@"sleep"] forState:(UIControlStateNormal)];
+                [homeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                [egressButton setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+                [sleepButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                // 设置底部滑动条
+                CGRect frame = CGRectMake(kMainScreenWidth / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+                bottomView.frame = frame;
+                [alert show];
+                
+            }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"2"]){
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+                UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
+                UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
+                UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
+                [homeButton setImage:[UIImage imageNamed:@"home"] forState:(UIControlStateNormal)];
+                [egressButton setImage:[UIImage imageNamed:@"egress"] forState:(UIControlStateNormal)];
+                [sleepButton setImage:[UIImage imageNamed:@"sleep-down"] forState:(UIControlStateNormal)];
+                [homeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                [egressButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                [sleepButton setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+                // 设置底部滑动条
+                CGRect frame = CGRectMake(kMainScreenWidth * 2 / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+                bottomView.frame = frame;
+                [alert show];
+            }
+        }
+    }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+        NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+    }];
+    [engine enqueueOperation:op];
+
 }
 
 //2015 11 25 start hgc
@@ -283,7 +357,6 @@ AppDelegate *appDelegate ;
             break;
         }
         case 7:{
-            //            NSDictionary *requestParam = @{};
             //请求php
             NSString* url = [NSString stringWithFormat:@"%@/smarty_storage/phone",[g_sDataManager requestHost]];
             MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
@@ -291,42 +364,50 @@ AppDelegate *appDelegate ;
             MKNetworkOperation *op = [engine operationWithPath:@"checkshowstatus.php" params:nil httpMethod:@"POST"];
             //操作返回数据
             [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
-                NSString *result = op.responseJSON[@"result"];
-                NSLog(@"op.responseJSON==%@",op.responseJSON);
-                //        NSString* value = op.responseJSON[@"value"];
+//<<<<<<< .mine
+                NSString *result = completedOperation.responseJSON[@"result"];
+                NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
+//=======
+//                NSString *result = completedOperation.responseJSON[@"result"];
+//                NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
+//                //        NSString* value = op.responseJSON[@"value"];
+//>>>>>>> .r440
                 int results = [result intValue];
                 if(results==0){
                     UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备上登录信息取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
                     [alert show];
                 }else if(results==1){
-                    NSString *cologinflg = op.responseJSON[@"cologinflg"];
+                    NSString *cologinflg = completedOperation.responseJSON[@"cologinflg"];
                     int cfg = [cologinflg intValue];
-                    NSString *registerflg = op.responseJSON[@"registerflg"];
+                    NSString *registerflg = completedOperation.responseJSON[@"registerflg"];
                     int rfg = [registerflg intValue];
                     if(cfg==0&&rfg==0){
                         RootLoginViewController *cloudLogin = [[RootLoginViewController alloc]initWithNibName:@"RootLoginViewController" bundle:nil];
+                        NSString *mac = completedOperation.responseJSON[@"mac"];
+                        cloudLogin.mac = mac;
                         [self.navigationController pushViewController:cloudLogin animated:YES];
                     }else if(rfg==1&&cfg==0){
-                        NSString *cids = op.responseJSON[@"cid"];
-                        NSString *emails = op.responseJSON[@"email"];
-                        NSString *efg = op.responseJSON[@"emailflg"];
-                        NSLog(@"efg=%@",efg);
-                        //                        NSString* cids=@"anni";
-                        //                        NSString* emails=@"95132325@qq.com";
+                        NSString *cids = completedOperation.responseJSON[@"cid"];
+                        NSString *emails = completedOperation.responseJSON[@"email"];
+                        NSString *efg = completedOperation.responseJSON[@"emailflg"];
+                        NSString *mac = completedOperation.responseJSON[@"mac"];
                         CloudLoginViewController* clg = [[CloudLoginViewController alloc]initWithNibName:@"CloudLoginViewController" bundle:nil];
                         clg.email = emails;
                         clg.cid = cids;
                         clg.emailflg = efg;
+                        clg.mac = mac;
                         [self.navigationController pushViewController:clg animated:YES];
                     }else if(cfg==1&&rfg==0){
                         UIAlertView* alert = [[UIAlertView alloc]initWithTitle:nil message:@"你在逗我？" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
                         [alert show];
                     }else if(cfg==1&&rfg==1){
-                        NSString *cids = op.responseJSON[@"cid"];
-                        NSString *emails = op.responseJSON[@"email"];
+                        NSString *cids = completedOperation.responseJSON[@"cid"];
+                        NSString *emails = completedOperation.responseJSON[@"email"];
+                        NSString *mac = completedOperation.responseJSON[@"mac"];
                         CloudLoginSuccessViewController* clg = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
                         clg.email = emails;
                         clg.cocloudid = cids;
+                        clg.mac = mac;
                         [self.navigationController pushViewController:clg animated:YES];
                     }else{
                         UIAlertView* alert = [[UIAlertView alloc]initWithTitle:nil message:@"你在逗我？" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -340,15 +421,9 @@ AppDelegate *appDelegate ;
                 NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
             }];
             [engine enqueueOperation:op];
-            //            RootLoginViewController *cloudLogin = [[RootLoginViewController alloc]
-            //                                                         initWithNibName:@"RootLoginViewController" bundle:nil];
-            //            [self.navigationController pushViewController:cloudLogin animated:YES];
-            //            break;
         }
         default:
             break;
-            
-            
     }
     
 }
@@ -364,6 +439,11 @@ AppDelegate *appDelegate ;
 
 
 - (void) homeAction:(UIButton *)sender {
+    if(self.modeChanging){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"模式配置中,请稍后进行变更操作" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+        return ;
+    }
     UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
     UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
     UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -376,9 +456,49 @@ AppDelegate *appDelegate ;
     // 设置底部滑动条
     CGRect frame = CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
+    self.modeChanging = YES;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+    [alert show];
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    __block NSError *error = nil;
+    [dic setValue:@"setmode" forKey:@"opt"];
+    [dic setValue:@"0" forKey:@"mode"];
+    NSString* requestHost = [g_sDataManager requestHost];
+    NSString* requestUrl = [NSString stringWithFormat:@"%@/smarthome/app",requestHost];
+    
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+    
+    MKNetworkOperation *op = [engine operationWithPath:REQUEST_GLOBAL_URL params:dic httpMethod:@"POST" ssl:NO];
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        NSLog(@"[operation responseData]-->>%@", [operation responseString]);
+        NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+        NSLog(@"[operation responseJSON]-->>%@",responseJSON);
+        
+        if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
+        {
+
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+                self.modeChanging = NO;
+                [alert show];
+            
+            
+        }
+    }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+        NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+        //self.modeChanging = NO;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请求超时" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+    }];
+    [engine enqueueOperation:op];
+
 }
 
 - (void) egressAction:(UIButton *)sender {
+    if(self.modeChanging){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"模式配置中,请稍后进行变更操作" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+        return;
+    }
     UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
     UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
     UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -391,9 +511,48 @@ AppDelegate *appDelegate ;
     // 设置底部滑动条
     CGRect frame = CGRectMake(kMainScreenWidth / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
+    self.modeChanging = YES;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+    [alert show];
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    __block NSError *error = nil;
+    [dic setValue:@"setmode" forKey:@"opt"];
+    [dic setValue:@"1" forKey:@"mode"];
+    NSString* requestHost = [g_sDataManager requestHost];
+    NSString* requestUrl = [NSString stringWithFormat:@"%@/smarthome/app",requestHost];
+    
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+    
+    MKNetworkOperation *op = [engine operationWithPath:REQUEST_GLOBAL_URL params:dic httpMethod:@"POST" ssl:NO];
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        NSLog(@"[operation responseData]-->>%@", [operation responseString]);
+        NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+        NSLog(@"[operation responseJSON]-->>%@",responseJSON);
+        
+        if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
+        {
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+            self.modeChanging = NO;
+            [alert show];
+        }
+    }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+        NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+        //self.modeChanging = NO;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请求超时" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+    }];
+    [engine enqueueOperation:op];
+
 }
 
 - (void) sleepAction:(UIButton *)sender {
+    if(self.modeChanging){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"模式配置中,请稍后进行变更操作" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+        return ;
+    }
+    
     UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
     UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
     UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -406,6 +565,39 @@ AppDelegate *appDelegate ;
     // 设置底部滑动条
     CGRect frame = CGRectMake(kMainScreenWidth * 2 / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
+    self.modeChanging = YES;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+    [alert show];
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    __block NSError *error = nil;
+    [dic setValue:@"setmode" forKey:@"opt"];
+    [dic setValue:@"2" forKey:@"mode"];
+    NSString* requestHost = [g_sDataManager requestHost];
+    NSString* requestUrl = [NSString stringWithFormat:@"%@/smarthome/app",requestHost];
+    
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+    
+    MKNetworkOperation *op = [engine operationWithPath:REQUEST_GLOBAL_URL params:dic httpMethod:@"POST" ssl:NO];
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        NSLog(@"[operation responseData]-->>%@", [operation responseString]);
+        NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+        NSLog(@"[operation responseJSON]-->>%@",responseJSON);
+        
+        if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
+        {
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+            self.modeChanging = NO;
+            [alert show];
+        }
+    }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+        NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+        //self.modeChanging = NO;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请求超时" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+    }];
+    [engine enqueueOperation:op];
+
 }
 
 

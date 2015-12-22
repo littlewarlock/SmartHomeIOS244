@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "FileInfo.h"
 #import "ImageFactory.h"
+//#import "KxMovieDecoderVer2.h"
 
 #define _CHECK_BOX_BUTTON_ 5
 
@@ -20,6 +21,7 @@
     BOOL isSync;
     UIImageView *iconImage;
     UILabel *progressLabel;
+//    KxMovieDecoderVer2      *_decoder;
 }
 
 

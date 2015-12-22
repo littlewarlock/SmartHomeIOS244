@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UITextView *textView;
 @property (strong, nonatomic) NSString* texts;
-
+@property (strong, nonatomic) NSString* cid;
+@property (strong, nonatomic) NSString* mac;
 
 @end

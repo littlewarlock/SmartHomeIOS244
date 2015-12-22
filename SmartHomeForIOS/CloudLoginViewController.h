@@ -20,6 +20,8 @@
 @property (strong, nonatomic) IBOutlet UITextView *information;
 @property (strong, nonatomic) NSString* cid;
 @property (strong, nonatomic) NSString* emailflg;
+@property (strong, nonatomic) NSString* logFlag;
+@property (strong, nonatomic) NSString* mac;
 
 - (IBAction)Login:(id)sender;
 - (IBAction)finish:(id)sender;

@@ -51,12 +51,14 @@
             [allFilesArray addObjectsFromArray:filesArray];
         }
         //2.创建目录
-        NSString* requestHost = [g_sDataManager requestHost];
-        NSString* requestUrl = [NSString stringWithFormat:@"%@/%@",requestHost,REQUEST_NEWFOLDER_URL];
-        MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+
+        NSString* requestUrl=[NSString stringWithFormat: @"http://%@/",[g_sDataManager requestHost]];
+        NSString* newFolderString =[requestUrl stringByAppendingString: REQUEST_NEWFOLDER_URL];
+        NSURL *newFolderUrl = [NSURL URLWithString:[newFolderString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:newFolderUrl cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:10];
+        [request setHTTPMethod:@"POST"];//设置请求方式为POST，默认为GET
+        NSError * newFolderError=nil;
         for(int i=0;i<allDirsArray.count;i++){
-            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-            __block NSError *error = nil;
             NSString *folderName = [allDirsArray[i] lastPathComponent];
             NSString *dirPath =  allDirsArray[i];
             NSRange localCurrentDirRange = [dirPath rangeOfString:self.localCurrentDir];//匹配得到的下标
@@ -70,27 +72,22 @@
                     cpath = [self.targetDir stringByAppendingPathComponent:[sourceDir stringByDeletingLastPathComponent]];
                 }
             }
+            NSString* post=[NSString stringWithFormat:@"uname=%@&upasswd=%@&cpath=%@&newName=%@",[g_sDataManager userName],[g_sDataManager password],cpath,folderName];
+            NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding];//设置参数
+            [request setHTTPBody:postData];
             NSLog(@"cpath=====%@",cpath);
-            [dic setValue:cpath forKey:@"cpath"];
-            [dic setValue:[g_sDataManager userName] forKey:@"uname"];
-            [dic setValue:[g_sDataManager password] forKey:@"upasswd"];
-            [dic setValue:folderName forKey:@"newName"];
-            dispatch_semaphore_t semaphore =dispatch_semaphore_create(0);
-            MKNetworkOperation *op = [engine operationWithPath:@"" params:dic httpMethod:@"POST" ssl:NO];
-            [op addCompletionHandler:^(MKNetworkOperation *operation) {
-                NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
-                if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"1"])//操作成功
-                {
-                    dispatch_semaphore_signal(semaphore);
-                }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"0"]){
-                    dispatch_semaphore_signal(semaphore);
+           NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&newFolderError];
+            if (!newFolderError) {
+                NSError * jsonError=nil;
+                id jsonObject = [NSJSONSerialization JSONObjectWithData:received options:NSJSONReadingAllowFragments error:&jsonError];
+                if ([jsonObject isKindOfClass:[NSDictionary class]]){
+                    NSString* result =[NSString stringWithFormat:@"%@",[jsonObject objectForKey:@"result"]];
+                    if([result isEqualToString: @"1"]){
+                    }else{
+                        
+                    }
                 }
-            }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
-                dispatch_semaphore_signal(semaphore);
-                NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
-            }];
-            [engine enqueueOperation:op];
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            }
         }
         //3.获取备份文件的总长度
         long long totalBytes = 0;

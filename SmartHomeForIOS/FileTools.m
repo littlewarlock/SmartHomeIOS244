@@ -634,4 +634,28 @@
 }
 
 
+
++(UIImage*)getVideoDuartionAndThumb:(NSString *)videoURL
+{
+    
+   KxMovieDecoderVer2 *_decoder = [[KxMovieDecoderVer2 alloc] init];
+    
+    [_decoder openFile:videoURL error:nil];
+    NSArray *ar =  [_decoder decodeFrames:1.0f];
+    KxMovieFrameVer2 *frame;
+    
+    for (KxMovieFrameVer2 *frames in ar)
+    {
+        if (frames.type == KxMovieFrameTypeVideo) {
+            frame =  ar.lastObject;
+            break;
+        }
+    }
+    
+    KxVideoFrameRGBVer2 *rgbFrame = (KxVideoFrameRGBVer2 *)frame;
+    UIImage *imageKX = [rgbFrame asImage];
+    
+    return imageKX;
+}
+
 @end

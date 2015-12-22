@@ -109,7 +109,7 @@
     progressView.progressBar.transform = transform;
     progressView.taskNameLabel.text = [taskInfo.taskName lastPathComponent];
     progressView.taskDetailLabel.text = taskInfo.taskType;
-    if ([taskInfo.taskType isEqualToString:@"上传"]) {
+    if ([taskInfo.taskType isEqualToString:@"上传"] || [taskInfo.taskType isEqualToString:@"备份"]) {
         progressView.pauseBtn.hidden = YES;
     }
     progressView.percentLabel.text =@"0%";

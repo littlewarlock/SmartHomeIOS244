@@ -14,6 +14,7 @@
 #import "CameraRecodHistoryCanlender.h"
 #import "CameraSnapshotHistoryViewController.h"
 #import "CameraPhotoViewController.h"
+#import "KxMovieView.h"
 
 @interface CameraRecordHistoryViewController ()
 @property (strong, nonatomic) IBOutlet UICollectionView *collectionView;
@@ -364,7 +365,7 @@ static NSString *footerId = @"footerId";
         NSInteger row = indexPath.row;
         
         [cell.image setImage:[UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:self.doubleArrayUrl[section][row]]]]];
-        [cell.image setHighlightedImage:cell.image.image];
+        [cell.image setHighlightedImage:[UIImage new]];
 //        NSLog(@"sdfsdfsdfsdimag==%@",self.doubleArrayUrl[section][row]);
     }
     // 2015 12 16 hgc end
@@ -446,18 +447,26 @@ static NSString *footerId = @"footerId";
     NSInteger row = indexPath.row;
     NSLog(@"section=====%ld",(long)section);
     NSLog(@"row=====%ld",(long)row);
-    //local
-//        NSString *stream = @"/Users/apple2/Desktop/VLC/H264/3-1video-H264-1";
+    
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
+    
+    //local test start
+    NSString *stream = @"/Users/apple2/Desktop/hgctestmp4-00000-00030.mp4";
+//    KxMovieViewController *test = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
+////    KxMovieView *test1 = [KxMovieView movieViewControllerWithContentPath:stream parameters:parameters];
+//    [self presentViewController:test animated:YES completion:nil];
+    // test end
     //http
     //    NSString *stream = @"http://172.16.9.95:82/smarthome/video/8-1video-H264-1";
     //
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
+    
     
     if (self.kxvc != NULL) {
         [self.kxvc.view removeFromSuperview ];
     }
     self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:_doubleArrayUrl[section][row] parameters:parameters];
+//    self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
 //    kxvc set
 //    [self presentViewController:self.kxvc animated:YES completion:nil];
     [self addChildViewController:self.kxvc];
@@ -566,6 +575,8 @@ static NSString *footerId = @"footerId";
     
     if (self.kxvc != NULL) {
         [self.kxvc.view removeFromSuperview ];
+        //2015 12 22 hgc
+        [self.kxvc testClose];
         self.isKxvcAppear = NO;
     }
     [self.collectionView setNeedsLayout];

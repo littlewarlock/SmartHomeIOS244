@@ -10,11 +10,14 @@
 #import "CloudLoginViewController.h"
 #import "CloudLoginSuccessViewController.h"
 #import "RegisterSuccessViewController.h"
-#import "FileTools.h"
+//#import "FileTools.h"
 #import "DataManager.h"
-#import "QuartzCore/QuartzCore.h"
+//#import "QuartzCore/QuartzCore.h"
 
-@interface CloudRegisterViewController ()
+@interface CloudRegisterViewController (){
+    
+    IBOutlet UIActivityIndicatorView *activityView;
+}
 
 @end
 
@@ -22,9 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor blueColor]};
-//    UITextAttributeFont : [UIFont boldSystemFontOfSize:18]
     self.navigationItem.title = @"co-cloud账户注册";
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     left.frame =CGRectMake(0, 0, 32, 32);
@@ -33,10 +34,10 @@
     UIBarButtonItem* itemLeft=[[UIBarButtonItem alloc]initWithCustomView:left];
     self.navigationItem.leftBarButtonItem=itemLeft;
     
-    self.registerButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
+    activityView.frame = CGRectMake((self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100, (self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100);
+    [activityView setHidden:YES];
+    
     self.email.layer.borderColor = [UIColor blackColor].CGColor;
-    self.password.layer.borderColor = [UIColor blackColor].CGColor;
-    self.passwordtwo.layer.borderColor = [UIColor blackColor].CGColor;
     self.cocloudid.layer.borderColor = [UIColor blackColor].CGColor;
     // 创建复选框 使用UIButton模拟复选框
     UIButton *checkbox = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -50,8 +51,6 @@
     [checkbox addTarget:self action:@selector(checkboxClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:checkbox];
     
-    [self.password setHidden:YES];
-    [self.passwordtwo setHidden:YES];
     // 加载页面的时候先吧确认按钮置为不可用
     if(!checkbox.selected){
         [self.registerButton setEnabled:NO];
@@ -75,11 +74,9 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 // 注册验证
-
 - (IBAction)registers:(id)sender {
     
     NSString *regexs = @"^[a-zA-Z0-9]*$";
@@ -108,13 +105,22 @@
         [alert show];
         return ;
     }
-    
+    //    CloudLoginSuccessViewController* cl = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
+    //    cl.email = self.email.text;
+    //    cl.cocloudid = self.cocloudid.text;
+    //    [self.navigationController pushViewController:cl animated:YES];
+    //    CloudLoginViewController* cl = [[CloudLoginViewController alloc]initWithNibName:@"CloudLoginViewController" bundle:nil];
+    //    cl.email = self.email.text;
+    //    cl.cid = self.cocloudid.text;
+    //    [self.navigationController pushViewController:cl animated:YES];
+    [activityView setHidden:NO];
+    [activityView startAnimating];
     [self registerCheck];
     
 }
 
 -(void)registerCheck{
-    NSDictionary *requestParam = @{@"cid":self.cocloudid.text,@"email":self.email.text};
+    NSDictionary *requestParam = @{@"cid":self.cocloudid.text,@"email":self.email.text,@"mac":self.mac};
     //    //请求php
     NSString* url = [NSString stringWithFormat:@"%@/smarty_storage/phone",[g_sDataManager requestHost]];
     MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
@@ -123,9 +129,11 @@
     //操作返回数据
     [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
         //get data
-//        NSLog(@"op.responseJSON==%@",op.responseJSON);
-        NSString *result = op.responseJSON[@"result"];
+        NSString *result = completedOperation.responseJSON[@"result"];
+        NSLog(@"~~~~~%@",completedOperation.responseJSON);
         int results = [result intValue];
+        [activityView setHidden:YES];
+        [activityView stopAnimating];
         if(results==0){
             UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，注册失败，请重新填写" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
@@ -133,26 +141,33 @@
             UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备MAC地址取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else if(results==3){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器co-cloud-id已存在，请修改" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器该数据已存在，请修改" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else if(results==4){
             UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"设备非法，不允许注册" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else if(results==5){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"中转服务器co-cloud-id注册失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"中转服务器更新DB失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else if(results==6){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，邮件发送失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+        }else if(results==7){
             UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备上登录信息更新失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else if(results==1){
             RegisterSuccessViewController* ss = [[RegisterSuccessViewController alloc]initWithNibName:@"RegisterSuccessViewController" bundle:nil];
             ss.texts = self.email.text;
+            ss.cid = self.cocloudid.text;
+            ss.mac = self.mac;
             [self.navigationController pushViewController:ss animated:YES];
         }else{
             UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+        [activityView setHidden:YES];
+        [activityView stopAnimating];
         NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
     }];
     [engine enqueueOperation:op];

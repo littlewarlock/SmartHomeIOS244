@@ -15,4 +15,5 @@
 
 @property(weak,nonatomic) NSMutableArray * appList;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property BOOL modeChanging;
 @end

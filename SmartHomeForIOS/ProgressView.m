@@ -7,7 +7,7 @@
 //
 
 #import "ProgressView.h"
-
+#import "TaskStatusConstant.h"
 @interface ProgressView ()
 
 @end
@@ -42,16 +42,23 @@
                     break;
                 }
             }
-            if (downloadOperation && !self.taskInfo.isCanceled) {
+            if (downloadOperation && ![self.taskInfo.taskStatus isEqualToString:CANCLED]) {
                 [downloadOperation cancel]; //（暂停）取消当前操作
-                self.pauseBtn.enabled = NO;
+                if(downloadOperation.isExecuting){//如果正在队列中执行，需要等待，队列成功取消的消息
+                    self.pauseBtn.enabled = NO;
+                }else{//没有在队列中执行的话，可直接取消
+                    NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
+                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
+                }
+                self.taskInfo.taskStatus = CANCLED;
             }else{
                 [sender setTitle:@"暂停" forState:UIControlStateNormal];
-                self.taskInfo.isCanceled = NO;
+                self.taskInfo.taskStatus = RUNNING;
                 FileDownloadOperation *downloadOperation = [[FileDownloadOperation alloc] initWithTaskInfo:self.taskInfo];
                 downloadOperation.taskId = self.taskInfo.taskId;
                 downloadOperation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
-                    if (downloadOperation.taskInfo.totalBytes<= (downloadOperation.taskInfo.transferedBlocks+1) *DOWNLOAD_STREAM_SIZE) {
+                    if ([self.taskInfo.taskStatus isEqualToString:FINISHED]) {
+                        NSLog(@"completionBlock======ppppp");
                         NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
                         [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];
                         //更新进度条的状态信息
@@ -62,10 +69,6 @@
                 };
                 [downloadQueue addOperation:downloadOperation];
                 if(downloadOperation.isExecuting){
-                    
-                    
-                    
-                    
                     self.taskDetailLabel.text = @"正在下载";
                 }else{
                     self.taskDetailLabel.text = @"排队等待";

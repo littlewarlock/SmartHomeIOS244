@@ -17,7 +17,7 @@
 @property (nonatomic, strong) NSString *fileSubtype;
 @property (nonatomic, strong) NSString *fileUrl;
 @property (nonatomic, strong) NSString *isShare;
-
+@property (nonatomic, strong) NSString *cpath; //当前路径(云端调视频缩略图)
 
 @property (nonatomic) BOOL isSelect;
 

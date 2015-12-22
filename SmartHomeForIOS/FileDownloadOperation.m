@@ -50,8 +50,8 @@
                     }
                     NSMutableData *fileData =[[NSMutableData alloc] init];
                     fileLength = [[dictionary objectForKey:@"size"] intValue];
-
-                  if (fileLength % DOWNLOAD_STREAM_SIZE != 0)
+                    
+                    if (fileLength % DOWNLOAD_STREAM_SIZE != 0)
                     {
                         streamNum = fileLength / DOWNLOAD_STREAM_SIZE + 1;
                         NSLog(@"DOWNLOAD_STREAM_SIZE===%lli",(fileLength / DOWNLOAD_STREAM_SIZE));
@@ -62,7 +62,7 @@
                     }
                     if([self.taskInfo.cachePath isEqualToString:@""] || (!self.taskInfo.cachePath)  )
                     {
-                       self.taskInfo.cachePath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@", [g_sDataManager userName], self.taskInfo.fileName]];
+                        self.taskInfo.cachePath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@", [g_sDataManager userName], self.taskInfo.fileName]];
                     }else if(streamChunk==0){ //如果是第一次下载，需要拼接完整路径
                         self.taskInfo.cachePath = [self.taskInfo.cachePath stringByAppendingPathComponent:self.taskInfo.fileName];
                     }
@@ -144,16 +144,20 @@
                     }
                     //如果手动取消任务，需要发送信息给主线程，防止取消前的最后一块尚未处理完毕，用户直接点击恢复按钮，导致出现问题
                     if (self.isCancelled) {
+                        self.taskInfo.taskStatus = CANCLED;
                         NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
                         //在主线程刷新UI
                         [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
+                        self.taskInfo.taskStatus = CANCLED;
+                    }else if(streamChunk==streamNum){
+                        self.taskInfo.taskStatus = FINISHED;
                     }
                 }
             }
         }
     }
     @catch (NSException *exception) {
-        
+        NSLog(@"==================");
     }
     
 }

@@ -13,11 +13,18 @@
 @implementation FunctionManageTools
 + (int)saveSelectedApp{
     AppDelegate *appDelegate;
+    appDelegate = [[UIApplication sharedApplication] delegate];
     NSMutableArray * appArray = appDelegate.selectedAppArray;
     NSString *documentsDirectory = [FileTools getUserDataFilePath];
     NSString *selectedApplistPath = [documentsDirectory stringByAppendingPathComponent:@"SelectedAppInfo.plist"];
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:selectedApplistPath];
+    if (!dictionary) {
+        dictionary = [[NSMutableDictionary alloc]init];
+    }
     NSMutableArray *oldAdressArray = [dictionary objectForKey:@"SelectedAppInfo"];
+    if (!oldAdressArray) {
+        oldAdressArray =[[NSMutableArray alloc]init];
+    }
     [dictionary removeObjectForKey:@"SelectedAppInfo"];
 
     [oldAdressArray removeAllObjects];
@@ -33,8 +40,10 @@
 
 
 +(NSMutableArray *) readSavedApp{
+
     NSMutableArray * appArray = [[NSMutableArray alloc]init];
-    NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"SelectedAppInfo" ofType:@"plist"];
+    NSString *documentsDirectory = [FileTools getUserDataFilePath];
+    NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"SelectedAppInfo.plist"];
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
     NSMutableArray *oldAdressArr  =  [dictionary objectForKey:@"SelectedAppInfo"];
     //NSLog(plistPath);

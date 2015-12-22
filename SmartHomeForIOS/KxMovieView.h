@@ -18,11 +18,19 @@ extern NSString * const KxMovieParameterMaxBufferedDuration;    // Float
 extern NSString * const KxMovieParameterDisableDeinterlacing;   // BOOL
 
 @interface KxMovieView : UIViewController<UITableViewDataSource, UITableViewDelegate>
-@property(strong,nonatomic) NSMutableString* filePath;
-@property (strong,nonatomic) NSString       *netOrLocalFlag;//1 本地 0 网络
-
 @property (readonly) BOOL playing;
-
-
-
+@property(strong,nonatomic) NSMutableString* filePath;
++ (id) movieViewControllerWithContentPath: (NSString *) path
+                               parameters: (NSDictionary *) parameters;
++ (id) openH264File: (NSString *) path
+         parameters: (NSDictionary *) parameters;
+- (void) play;
+- (void) pause;
+- (void) toolBarHidden;
+- (void) toolBarHiddens;
+- (void) setAllControlHidden;
+- (void) fullscreenMode: (id)sender;
+- (void)bottomBarAppears;
+- (Boolean) isEndOfFile;
+- (id) movieReplay;
 @end

@@ -18,12 +18,15 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Oml-40-VHC">
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Oml-40-VHC">
                     <rect key="frame" x="8" y="562" width="398" height="97"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="80" id="jk6-2n-b35"/>
+                    </constraints>
                     <collectionViewLayout key="collectionViewLayout" id="aXh-kv-oRb"/>
                 </collectionView>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="lcm-83-ARz">
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" bounces="NO" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="lcm-83-ARz">
                     <rect key="frame" x="8" y="89" width="398" height="407"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <collectionViewLayout key="collectionViewLayout" id="gAD-PG-fgw"/>
@@ -51,11 +54,13 @@
             <constraints>
                 <constraint firstItem="v0A-aI-Ndl" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="65" id="GIP-zF-CZn"/>
                 <constraint firstItem="Oml-40-VHC" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="HsB-uf-M6w"/>
+                <constraint firstAttribute="bottom" secondItem="Oml-40-VHC" secondAttribute="bottom" id="IWK-Ta-DWA"/>
                 <constraint firstAttribute="trailing" secondItem="lcm-83-ARz" secondAttribute="trailing" id="RHB-6I-gRT"/>
                 <constraint firstItem="lcm-83-ARz" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="UHY-0o-hEI"/>
                 <constraint firstAttribute="trailing" secondItem="Oml-40-VHC" secondAttribute="trailing" id="YAx-iP-rA3"/>
                 <constraint firstItem="v0A-aI-Ndl" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Zb7-8M-C6V"/>
                 <constraint firstItem="lcm-83-ARz" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="100" id="ZdB-qr-qcM"/>
+                <constraint firstItem="Oml-40-VHC" firstAttribute="top" secondItem="lcm-83-ARz" secondAttribute="bottom" id="daa-Pz-MTi"/>
                 <constraint firstAttribute="trailing" secondItem="v0A-aI-Ndl" secondAttribute="trailing" id="fgJ-rU-2F8"/>
             </constraints>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>

@@ -12,7 +12,7 @@
 @property (nonatomic, strong) NSString *taskId;//任务id
 @property (nonatomic, strong) NSString *taskType;//任务类别
 @property (nonatomic, strong) NSString *taskName;//任务名称
-@property (nonatomic, assign) BOOL isCanceled; //表示任务是否取消
+
 @property (nonatomic, strong) NSNumber *currentProgress;//当前进度
 @property (assign, nonatomic)long long  totalBytes;
 @property(nonatomic,strong)NSString *fileName;
@@ -23,4 +23,5 @@
 @property (nonatomic, strong) NSString *cachePath;
 @property (nonatomic, assign) long long int  transferedBytes;
 @property (nonatomic, assign) long long int transferedBlocks;
+@property (nonatomic, strong) NSString *taskStatus;
 @end

@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface RootLoginViewController : UIViewController
+@property (strong,nonatomic) NSString* mac;
 
 @end

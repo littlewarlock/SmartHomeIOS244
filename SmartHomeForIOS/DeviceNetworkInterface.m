@@ -114,9 +114,9 @@
         NSArray *deviceList = [[NSArray alloc]init];
         NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
         if (block) {
-            if ([[op.responseJSON objectForKey:@"result"] isEqualToString:@"success"]) {
-                dic = op.responseJSON;
-                deviceList= [op.responseJSON objectForKey:@"devices"];
+            if ([[operation.responseJSON objectForKey:@"result"] isEqualToString:@"success"]) {
+                dic = operation.responseJSON;
+                deviceList= [operation.responseJSON objectForKey:@"devices"];
                 // for test hgc 2015 10 19
                 if ([deviceList isEqual:[NSNull null]] || [deviceList isEqual:@""]) {
                     deviceList = @[];
@@ -317,8 +317,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         
         if (block) {
             block(result,message,nil);
@@ -466,12 +466,12 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSString *recVolume = op.responseJSON[@"globals"][0][@"recVolume"];
-        NSString *recLoop = op.responseJSON[@"globals"][0][@"recLoop"];
-        NSString *alarmVolume = op.responseJSON[@"globals"][0][@"alarmVolume"];
-        NSString *alarmLoop = op.responseJSON[@"globals"][0][@"alarmLoop"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSString *recVolume = operation.responseJSON[@"globals"][0][@"recVolume"];
+        NSString *recLoop = operation.responseJSON[@"globals"][0][@"recLoop"];
+        NSString *alarmVolume = operation.responseJSON[@"globals"][0][@"alarmVolume"];
+        NSString *alarmLoop = operation.responseJSON[@"globals"][0][@"alarmLoop"];
         if (block) {
             block(result,message,recVolume,recLoop,alarmVolume,alarmLoop,nil);
         }
@@ -509,8 +509,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -547,9 +547,9 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *brands = op.responseJSON[@"brands"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *brands = operation.responseJSON[@"brands"];
         if (block) {
             block(result,message,brands,nil);
         }
@@ -584,9 +584,9 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *brands = op.responseJSON[@"brands"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *brands = operation.responseJSON[@"brands"];
         if (block) {
             block(result,message,brands,nil);
         }
@@ -637,8 +637,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -674,8 +674,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -711,9 +711,9 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *devices = op.responseJSON[@"devices"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *devices = operation.responseJSON[@"devices"];
         if (block) {
             block(result,message,devices,nil);
         }
@@ -758,8 +758,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -798,10 +798,10 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *times = op.responseJSON[@"times"];
-        NSArray *videos = op.responseJSON[@"videos"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *times = operation.responseJSON[@"times"];
+        NSArray *videos = operation.responseJSON[@"videos"];
         if (block) {
             block(result,message,times,videos,nil);
         }
@@ -837,9 +837,9 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *calendar = op.responseJSON[@"calendar"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *calendar = operation.responseJSON[@"calendar"];
         if (block) {
             block(result,message,calendar,nil);
         }
@@ -878,12 +878,12 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSString *code = op.responseJSON[@"code"];
-        NSString *sensitivity = op.responseJSON[@"sensitivity"];
-        NSString *wifi = op.responseJSON[@"wifi"];
-        NSString *version = op.responseJSON[@"version"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSString *code = operation.responseJSON[@"code"];
+        NSString *sensitivity = operation.responseJSON[@"sensitivity"];
+        NSString *wifi = operation.responseJSON[@"wifi"];
+        NSString *version = operation.responseJSON[@"version"];
         if (block) {
             block(result,message,code,sensitivity,wifi,version,nil);
         }
@@ -922,24 +922,24 @@
         
         //
         //get data
-        NSLog(@"join===%@",op.responseJSON[@"join"]);
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSLog(@"join===%@",operation.responseJSON[@"join"]);
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         NSLog(@"join===%@",result);
         NSLog(@"join===%@",message);
         //
-        NSArray *join =op.responseJSON[@"join"];
+        NSArray *join =operation.responseJSON[@"join"];
         if (join.count == 0) {
             if (block) {
                 block(result,message,nil,nil,nil,nil,nil,nil,nil);
             }
         }else{
-            NSString *code = op.responseJSON[@"join"][0][@"code"];
-            NSString *sensitivity = op.responseJSON[@"join"][0][@"sensitivity"];
-            NSString *wifi = op.responseJSON[@"join"][0][@"wifi"];
-            NSString *brand = op.responseJSON[@"join"][0][@"brand"];
-            NSString *model = op.responseJSON[@"join"][0][@"model"];
-            NSString *version = op.responseJSON[@"join"][0][@"version"];
+            NSString *code = operation.responseJSON[@"join"][0][@"code"];
+            NSString *sensitivity = operation.responseJSON[@"join"][0][@"sensitivity"];
+            NSString *wifi = operation.responseJSON[@"join"][0][@"wifi"];
+            NSString *brand = operation.responseJSON[@"join"][0][@"brand"];
+            NSString *model = operation.responseJSON[@"join"][0][@"model"];
+            NSString *version = operation.responseJSON[@"join"][0][@"version"];
             if (block) {
                 block(result,message,code,sensitivity,wifi,brand,model,version,nil);
             }
@@ -976,8 +976,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -1012,8 +1012,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -1049,9 +1049,9 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *alarms = op.responseJSON[@"alarms"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *alarms = operation.responseJSON[@"alarms"];
         if (block) {
             block(result,message,alarms,nil);
         }
@@ -1087,8 +1087,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -1124,8 +1124,8 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
         if (block) {
             block(result,message,nil);
         }
@@ -1163,10 +1163,10 @@
             NSLog(@"Data from server %@", [operation responseString]);
         }
         //get data
-        NSString *result = op.responseJSON[@"result"];
-        NSString *message = op.responseJSON[@"message"];
-        NSArray *times = op.responseJSON[@"times"];
-        NSArray *videos = op.responseJSON[@"snapshots"];
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *times = operation.responseJSON[@"times"];
+        NSArray *videos = operation.responseJSON[@"snapshots"];
         if (block) {
             block(result,message,times,videos,nil);
         }

@@ -131,7 +131,7 @@
                                         <constraint firstAttribute="width" constant="0.5" id="Q4m-pn-fzN"/>
                                     </constraints>
                                 </view>
-                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="用户名" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="Izq-82-0ZA" userLabel="user Name Field">
+                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="账号+版本:2015/12/18" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="Izq-82-0ZA" userLabel="user Name Field">
                                     <rect key="frame" x="47" y="13" width="195" height="19"/>
                                     <animations/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

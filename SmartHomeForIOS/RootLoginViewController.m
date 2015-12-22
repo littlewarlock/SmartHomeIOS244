@@ -17,20 +17,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     //添加viewtext
-    UITextView* textView = [[UITextView alloc]initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-40, 120)];
+    UITextView* textView = [[UITextView alloc]initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-40, 240)];
     textView.text=@"使用远程登录，可以通过co-cloud提供的免费域名，远程访问co-cloud服务器。并且在设备报警时，收到报警消息。";
+    textView.font = [UIFont fontWithName:@"Arial" size:16];
     [self.view addSubview:textView];
     //添加注册按钮
-    UIButton* btn = [[UIButton alloc]initWithFrame:CGRectMake(100, 300, 200, 50)];
+    UIButton* btn = [[UIButton alloc]initWithFrame:CGRectMake(90, 300, 195, 50)];
     //添加注册按钮的下划线效果
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"注册co-cloud账户"];
     NSRange strRange = {0,[str length]};
     [str addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:strRange];
     [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:strRange];
     [btn setAttributedTitle:str forState:UIControlStateNormal];
-//    [btn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [self.view addSubview:btn];
     //添加导航条标题 并为标题设置颜色
     [self.navigationItem setTitle:@"co-cloud账户"];
@@ -52,12 +51,12 @@
 
 - (void)Register:(UIButton *)sender {
     CloudRegisterViewController* reg = [[CloudRegisterViewController alloc]initWithNibName:@"CloudRegisterViewController" bundle:nil];
+    reg.mac = self.mac;
     [self.navigationController pushViewController:reg animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

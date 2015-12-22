@@ -187,6 +187,10 @@ static NSMutableDictionary * gHistory;
     [_bottomBar setAlpha:0.5];
 
 //    [_bottomBar ]
+    //2015 12 22
+    [_bottomBar addSubview:_progressSlider];
+    [_bottomBar addSubview:_progressLabel];
+    [_bottomBar addSubview:_leftLabel];
 
 }
 
@@ -195,6 +199,13 @@ static NSMutableDictionary * gHistory;
         return YES;
     }
     return NO;
+}
+
+// 2015 12 22
+- (void)testClose{
+
+    _moviePosition = 0;
+    [_decoder closeFile];
 }
 
 - (id)movieReplay{
@@ -364,9 +375,12 @@ _messageLabel.hidden = YES;
     _progressLabel.textAlignment = NSTextAlignmentRight;
     _progressLabel.textColor = [UIColor blackColor];
     _progressLabel.text = @"";
-    _progressLabel.font = [UIFont systemFontOfSize:12];
+    _progressLabel.font = [UIFont boldSystemFontOfSize:14];
     
+    //2015 12 22 hgc start
+//    _progressSlider = [[UISlider alloc] initWithFrame:CGRectMake(100, 2, width-197, topH)];
     _progressSlider = [[UISlider alloc] initWithFrame:CGRectMake(100, 2, width-197, topH)];
+    //2015 12 22 hgc end
     _progressSlider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _progressSlider.continuous = NO;
     _progressSlider.value = 0;
@@ -380,7 +394,8 @@ _messageLabel.hidden = YES;
     _leftLabel.textAlignment = NSTextAlignmentLeft;
     _leftLabel.textColor = [UIColor blackColor];
     _leftLabel.text = @"";
-    _leftLabel.font = [UIFont systemFontOfSize:12];
+//    _leftLabel.font = [UIFont systemFontOfSize:14];
+    _leftLabel.font = [UIFont boldSystemFontOfSize:14];
     _leftLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     
     _infoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
@@ -652,6 +667,15 @@ _messageLabel.hidden = YES;
     if (_decoder.validAudio)
         [self enableAudio:YES];
 
+    // merged by hgc 2015 12 17 start
+    if((_decoder.duration -_moviePosition)<1.8){
+        self.playing = NO;
+        _moviePosition = 0;
+        [_decoder setPosition:0];
+        [self enableAudio:NO];
+        [self updatePlayButton];
+    }
+    // merged by hgc 2015 12 17 end
     //hgc added 2015 11 05 start
     if (_decoder.isEOF) {
         NSLog(@"_decoder in play");
@@ -861,7 +885,10 @@ _messageLabel.hidden = YES;
     }
     
     UIView *frameView = [self frameView];
-    frameView.contentMode = UIViewContentModeScaleAspectFit;
+    //2015 12 18 hgc add
+//    frameView.contentMode = UIViewContentModeScaleAspectFit;
+    frameView.contentMode = UIViewContentModeScaleToFill;
+    //2015 12 18 hgc ended
     frameView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     
     [self.view insertSubview:frameView atIndex:0];
@@ -1175,6 +1202,11 @@ _messageLabel.hidden = YES;
                         if (strongSelf)
                             good = [strongSelf addFrames:frames];
                     }
+                    // merged by hgc 2015 12 17 start
+                    if((_decoder.duration -_moviePosition)<0.5){
+                        [_decoder closeFile];
+                    }
+                    // merged by hgc 2015 12 17 end
                 }
             }
         }
@@ -1540,6 +1572,18 @@ _messageLabel.hidden = YES;
     [self freeBufferedFrames];
     
     position = MIN(_decoder.duration - 1, MAX(0, position));
+    // merged by hgc 2015 12 17 start
+    if((_decoder.duration - position)<1.8 || position <1.8){
+        self.playing = NO;
+        _moviePosition = 0;
+        _progressSlider.value= 0;
+        [_decoder setPosition:0];
+        [self enableAudio:NO];
+        [self updatePlayButton];
+        [self playDidTouch:nil];
+        return;
+    }
+    // merged by hgc 2015 12 17 end
     
     __weak KxMovieViewController *weakSelf = self;
 

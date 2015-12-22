@@ -26,6 +26,7 @@
         self.fileType = @"";
         self.fileSubtype = @"";
         self.isShare = @"";
+        self.cpath   = @"";
         self.isSelect = false;
     }
     

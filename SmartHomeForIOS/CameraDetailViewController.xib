@@ -181,7 +181,6 @@
                 <constraint firstItem="DVN-6Q-utR" firstAttribute="top" secondItem="PtC-7K-bo8" secondAttribute="bottom" constant="56" id="DIZ-Ug-Rwj"/>
                 <constraint firstItem="rGh-3T-KLB" firstAttribute="top" secondItem="PtC-7K-bo8" secondAttribute="bottom" constant="50" id="E0T-at-UO3"/>
                 <constraint firstAttribute="trailing" secondItem="DVN-6Q-utR" secondAttribute="trailing" constant="18" id="GsJ-cM-qHo"/>
-                <constraint firstItem="cC6-Fs-Co1" firstAttribute="centerX" secondItem="rGh-3T-KLB" secondAttribute="centerX" id="JdS-cs-82k"/>
                 <constraint firstItem="cC6-Fs-Co1" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="MUN-aM-bKR"/>
                 <constraint firstItem="OeX-fh-c1f" firstAttribute="leading" secondItem="yOv-U5-jDz" secondAttribute="trailing" id="Mjs-B1-FLG"/>
                 <constraint firstItem="BST-Mn-2Yk" firstAttribute="centerX" secondItem="9yA-rc-8of" secondAttribute="centerX" id="OBs-Dj-TEc"/>
@@ -189,7 +188,6 @@
                 <constraint firstItem="cDn-Zz-5OK" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="VPI-GU-Ga3"/>
                 <constraint firstItem="cDn-Zz-5OK" firstAttribute="centerX" secondItem="y8v-84-6bv" secondAttribute="centerX" id="Xgk-be-M26"/>
                 <constraint firstAttribute="trailing" secondItem="eot-UW-eqM" secondAttribute="trailing" constant="20" id="Xxh-v2-rlr"/>
-                <constraint firstItem="cC6-Fs-Co1" firstAttribute="centerX" secondItem="OeX-fh-c1f" secondAttribute="centerX" id="YJ6-DH-fNU"/>
                 <constraint firstItem="YHW-yZ-aJb" firstAttribute="top" secondItem="DVN-6Q-utR" secondAttribute="bottom" constant="8" id="YPv-c3-tGW"/>
                 <constraint firstAttribute="trailing" secondItem="PtC-7K-bo8" secondAttribute="trailing" constant="8" id="eEw-iO-079"/>
                 <constraint firstItem="YHW-yZ-aJb" firstAttribute="centerX" secondItem="DVN-6Q-utR" secondAttribute="centerX" id="fGZ-Tf-WXl"/>

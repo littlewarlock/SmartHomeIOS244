@@ -45,14 +45,14 @@
     NSInteger currentModel; //0,表示正常模式 1，表示编辑模式 区分底部不同按钮的处理事件
     
 }
-
+@property KxMovieView *kxvc;
 @end
 
 @implementation CloudFileViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.navigationItem.title = @"个人私有云";
     UIImage* img=[UIImage imageNamed:@"back"];
     leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     leftBtn.frame =CGRectMake(200, 0, 32, 32);
@@ -165,7 +165,8 @@
     BOOL isDocument = [documentArray containsObject:[subType lowercaseString]];
     NSArray *audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
     BOOL isAudio = [audioArray containsObject:[subType lowercaseString]];
-    NSArray *videoArray=  [NSArray arrayWithObjects:@"mp4",@"mkv",@"wmv",@"rmvb",@"avi",@"h264", nil];
+    NSArray *videoArray=  [NSArray arrayWithObjects:@"mp4",@"mov",@"m4v",@"wav",@"flac",@"ape",@"wma",
+                           @"avi",@"wmv",@"rmvb",@"flv",@"f4v",@"swf",@"mkv",@"dat",@"vob",@"mts",@"ogg",@"mpg",@"h264", nil];
     BOOL isVideo = [videoArray containsObject:[subType lowercaseString]];
     
     NSArray *picArray=  [NSArray arrayWithObjects:@"jpg",@"png",@"jpeg", nil];
@@ -394,7 +395,7 @@
                         }
                         if ([[fileInfo.fileSubtype lowercaseString] isEqualToString:@"jpg"] || [[fileInfo.fileSubtype lowercaseString] isEqualToString:@"png"]) {
                             NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
-                            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[g_sDataManager userName],self.cpath,fileInfo.fileName];
+                            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[[g_sDataManager userName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.cpath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[fileInfo.fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                             [pics addObject:picUrl];
                         }
                         fileInfo.isShare = dict[@"isShare"];
@@ -645,7 +646,7 @@
     browser.autoPlayOnAppear = autoPlayOnAppear;
     NSUInteger index= 0;
     NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
-    picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[g_sDataManager userName],self.cpath,self.curCel.fileinfo.fileName];
+    picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[[g_sDataManager userName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.cpath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.curCel.fileinfo.fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     for (int i = 0; i<pics.count; i++) {
         if ([picUrl isEqualToString: pics[i]]) {
             index = i;
@@ -936,7 +937,7 @@
             //根据文件名获取当前图片的索引
             NSUInteger index= 0;
             NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
-            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[g_sDataManager userName],self.cpath,self.curCel.fileinfo.fileName];
+            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[[g_sDataManager userName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.cpath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.curCel.fileinfo.fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
             for (int i = 0; i<pics.count; i++) {
                 if ([picUrl isEqualToString: pics[i]]) {
                     index = i;
@@ -987,17 +988,38 @@
                 //NSString *subVideoPath = [videoPath substringFromIndex:11];
                 
                 NSString *videoUrl = [NSString stringWithFormat:@"%@%@%@",@"http://",requestHost,subVideoPath];
-                KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
+//                KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
+//                
+//                playerView.filePath =videoUrl;
+//                playerView.netOrLocalFlag  =@"0";
+//                [self.navigationController pushViewController:playerView animated:YES ];
                 
-                playerView.filePath =videoUrl;
-                playerView.netOrLocalFlag  =@"0";
-                [self.navigationController pushViewController:playerView animated:YES ];
+                NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+                parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
+                self.kxvc = [KxMovieView movieViewControllerWithContentPath:(NSMutableString*)videoUrl parameters:parameters];
+                [self addChildViewController:self.kxvc];
+                self.kxvc.view.frame = CGRectMake(0, 0, [[UIScreen mainScreen] applicationFrame].size.width, [[UIScreen mainScreen] applicationFrame].size.height);
+                self.kxvc.filePath = (NSMutableString*)videoUrl;
+                [self.kxvc fullscreenMode:nil];
+                [self.kxvc bottomBarAppears];
+                [self.view addSubview:self.kxvc.view];
+                self.navigationController.navigationBarHidden = YES;
                 
             }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
                 NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
             }];
             [engine enqueueOperation:op];
         }
+    }
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    if(self.navigationController.navigationBarHidden){
+        return YES;//隐藏为YES，显示为NO
+    }
+    else{
+        return NO;
     }
 }
 

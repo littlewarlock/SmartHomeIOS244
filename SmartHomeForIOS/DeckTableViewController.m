@@ -15,7 +15,7 @@
 #import "LoginViewController.h"
 #import "HomeViewController.h"
 #import "FileTools.h"
-#import "FunctionManageTools.h"
+
 
 @interface DeckTableViewController () <IIViewDeckControllerDelegate>
 
@@ -83,7 +83,7 @@
             NSLog(@"dasdsa");
             break;
         case 3:{
-            [FunctionManageTools saveSelectedApp];
+            //[FunctionManageTools saveSelectedApp];
             [g_sDataManager setUserName:@""];
             [g_sDataManager setPassword:@""];
             LoginViewController *loginView= [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:nil];

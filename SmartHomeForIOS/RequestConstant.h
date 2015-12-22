@@ -42,6 +42,7 @@
 
 #define REQUEST_VIDEO_URL            [NSString stringWithFormat:@"%@%@", REQUEST_URL, @"/remoteVideo.php"]
 #define REQUEST_PIC_URL            [NSString stringWithFormat:@"%@%@", REQUEST_URL, @"/remoteGetPic.php"]
+#define REQUEST_GLOBAL_URL           [NSString stringWithFormat:@"%@", @"/global.php"]
 
 #define kDocument_Folder [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/SmartHome"]
 #define REQUEST_UPLOADBLOCK_URL           [NSString stringWithFormat:@"%@%@", REQUEST_URL, @"/uploadByBlocking.php"]

@@ -14,6 +14,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *passwordTwo;
 @property (strong, nonatomic) NSString* email;
 @property (strong, nonatomic) NSString* cid;
+@property (strong, nonatomic) NSString* mac;
 
 - (IBAction)update:(id)sender;
 

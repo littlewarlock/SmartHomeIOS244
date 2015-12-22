@@ -70,11 +70,14 @@
             taskInfo.taskType = @"下载";
             taskInfo.fileName = fileName;
             taskInfo.filePath = cpath;
+            taskInfo.transferedBlocks = 0;
             taskInfo.totalBytes = [self getFileSize:cpath fileName:fileName];
             FileDownloadOperation *operation = [[FileDownloadOperation alloc] initWithTaskInfo:taskInfo];
             operation.taskId = taskInfo.taskId;
             operation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
-                if (operation.taskInfo.totalBytes<= (operation.taskInfo.transferedBlocks+1) *DOWNLOAD_STREAM_SIZE) {
+                if ([taskInfo.taskStatus isEqualToString:FINISHED]) {
+                    
+                    NSLog(@"completionBlock======ooooo");
                     //更新进度按钮的状态
                     NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
                     [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];

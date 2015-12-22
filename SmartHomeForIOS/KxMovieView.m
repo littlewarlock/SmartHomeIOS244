@@ -16,12 +16,10 @@
 #import "KxAudioManager.h"
 #import "KxMovieGLView.h"
 #import "KxLogger.h"
-#import <MediaPlayer/MPVolumeView.h>
-#import <AudioToolbox/AudioToolbox.h>
 
-NSString * const KxMoviePlayerParameterMinBufferedDuration = @"KxMoviePlayerParameterMinBufferedDuration";
-NSString * const KxMoviePlayerParameterMaxBufferedDuration = @"KxMoviePlayerParameterMaxBufferedDuration";
-NSString * const KxMoviePlayerParameterDisableDeinterlacing = @"KxMoviePlayerParameterDisableDeinterlacing";
+//NSString * const KxMovieParameterMinBufferedDuration = @"KxMovieParameterMinBufferedDuration";
+//NSString * const KxMovieParameterMaxBufferedDuration = @"KxMovieParameterMaxBufferedDuration";
+//NSString * const KxMovieParameterDisableDeinterlacing = @"KxMovieParameterDisableDeinterlacing";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -79,6 +77,8 @@ static NSMutableDictionary * gHistory;
     UILabel             *_titleLable;
     UIView              *rectView;
     UIView              *barView;
+    UIView              *_topBar;
+    UIView              *_bottomView;
     
     KxMovieDecoderVer2      *_decoder;
     dispatch_queue_t    _dispatchQueue;
@@ -102,17 +102,14 @@ static NSMutableDictionary * gHistory;
     KxMovieGLView       *_glView;
     UIImageView         *_imageView;
     UIView              *_topHUD;
-    UIView              *_topBar;
-
-    //UIToolbar           *_topBar;
-    UIView              *_bottomView;
     
+    //    UIToolbar           *_topBar;
+    UIToolbar           *_bottomBar;
     UISlider            *_progressSlider;
-    
     UIButton            *_playBtn;
     UIButton            *_pauseBtn;
-    //UIBarButtonItem     *_playBtn;
-    //UIBarButtonItem     *_pauseBtn;
+    //    UIBarButtonItem     *_playBtn;
+    //    UIBarButtonItem     *_pauseBtn;
     UIBarButtonItem     *_rewindBtn;
     UIBarButtonItem     *_fforwardBtn;
     UIBarButtonItem     *_spaceItem;
@@ -123,6 +120,7 @@ static NSMutableDictionary * gHistory;
     
     UIButton            *_doneButton;
     UILabel             *_progressLabel;
+    UILabel             *_leftLabel;
     UIButton            *_infoButton;
     UITableView         *_tableView;
     UIActivityIndicatorView *_activityIndicatorView;
@@ -148,6 +146,7 @@ static NSMutableDictionary * gHistory;
     
     NSDictionary        *_parameters;
 }
+
 @property (readwrite) BOOL playing;
 @property (readwrite) BOOL decoding;
 @property (readwrite, strong) KxArtworkFrameVer2 *artworkFrame;
@@ -185,7 +184,6 @@ static NSMutableDictionary * gHistory;
     return _dateFormatter;
 }
 
-
 - (void)toolBarHidden
 {
     [_topBar setHidden:YES];
@@ -215,6 +213,18 @@ static NSMutableDictionary * gHistory;
     [self setAllControlHidden];
 }
 
+-(void)bottomBarAppears
+{
+    [_bottomBar setHidden:NO];
+    [_bottomBar setTintColor:[UIColor whiteColor]];
+    //    [_bottomBar setBarTintColor:[UIColor clearColor]];
+    [_bottomBar setBackgroundColor:[UIColor colorWithRed:95/255.0 green:95/255.0 blue:95/255.0 alpha:0.5]];
+    [_bottomBar setBackgroundColor:[UIColor blackColor]];
+    [_bottomBar setAlpha:0.5];
+    
+    //    [_bottomBar ]
+    
+}
 
 - (Boolean)isEndOfFile{
     if (_decoder.isEOF){
@@ -226,7 +236,6 @@ static NSMutableDictionary * gHistory;
 - (id)movieReplay{
     
     _moviePosition = 0;
-    
     _parameters = self.hgcParam;
     
     NSError *error = nil;
@@ -246,27 +255,49 @@ static NSMutableDictionary * gHistory;
 
 - (BOOL)prefersStatusBarHidden { return YES; }
 
+// 1130
++ (id)openH264File:(NSString *)path parameters:(NSDictionary *)parameters
+{
+    id<KxAudioManager> audioManager = [KxAudioManager audioManager];
+    [audioManager activateAudioSession];
+    return [[KxMovieView alloc] initWithContentPath: path parameters: parameters];
+}
+// 1130
 
++ (id) movieViewControllerWithContentPath: (NSString *) path
+                               parameters: (NSDictionary *) parameters
+{
+    
+    id<KxAudioManager> audioManager = [KxAudioManager audioManager];
+    [audioManager activateAudioSession];
+    return [[KxMovieView alloc] initWithContentPath: path parameters: parameters];
+}
 
-- (void) initWithContentPath: (NSString *) path
+- (id) initWithContentPath: (NSString *) path
                 parameters: (NSDictionary *) parameters
 {
     self.hgcParam = parameters;
     self.hgcPath = path;
+    self.filePath = (NSMutableString *)path;
+    _titleLable.text = [[self.filePath lastPathComponent] stringByDeletingPathExtension];
     NSAssert(path.length > 0, @"empty path");
     
-    
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        
         _moviePosition = 0;
         //        self.wantsFullScreenLayout = YES;
         
         _parameters = parameters;
         
+        __weak KxMovieView *weakSelf = self;
         
         KxMovieDecoderVer2 *decoder = [[KxMovieDecoderVer2 alloc] init];
         
         decoder.interruptCallback = ^BOOL(){
             
-            return self ? [self interruptDecoder] : YES;
+            __strong KxMovieView *strongSelf = weakSelf;
+            return strongSelf ? [strongSelf interruptDecoder] : YES;
         };
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -274,15 +305,17 @@ static NSMutableDictionary * gHistory;
             NSError *error = nil;
             [decoder openFile:path error:&error];
             
-            if (self) {
+            __strong KxMovieView *strongSelf = weakSelf;
+            if (strongSelf) {
                 
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     
-                    [self setMovieDecoder:decoder withError:error];
+                    [strongSelf setMovieDecoder:decoder withError:error];
                 });
             }
         });
-    
+    }
+    return self;
 }
 
 - (void) dealloc
@@ -300,74 +333,41 @@ static NSMutableDictionary * gHistory;
     LoggerStream(1, @"%@ dealloc", self);
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.navigationController.navigationBarHidden = YES;
- 
-    
-//    NSLayoutConstraint *cancleConstrainY = [NSLayoutConstraint constraintWithItem:_progressLabel  attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view. attribute:NSLayoutAttributeTrailing multiplier:1.0f constant:10];
-
-    
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
-    
-    id<KxAudioManager> audioManager = [KxAudioManager audioManager];
-    [audioManager activateAudioSession];
-    [self initWithContentPath: self.filePath parameters: parameters];
-    
-    //[self movieViewControllerWithContentPath:self.filePath parameters:parameters];
-    //    kxvc set
-    //    [self presentViewController:self.kxvc animated:YES completion:nil];
-   // self.view.frame = CGRectMake(8, 68, self.view.bounds.size.width - 16, 202);
-    //[self toolBarHidden];
-    //[self setAllControlHidden];
-    
-
-    
-    
-}
-
-static BOOL checkError(OSStatus error, const char *operation)
-{
-    if (error == noErr)
-        return NO;
-    
-    char str[20] = {0};
-    // see if it appears to be a 4-char-code
-    *(UInt32 *)(str + 1) = CFSwapInt32HostToBig(error);
-    if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
-        str[0] = str[5] = '\'';
-        str[6] = '\0';
-    } else
-        // no, format it as an integer
-        sprintf(str, "%d", (int)error);
-    
-    LoggerStream(0, @"Error: %s (%s)\n", operation, str);
-    
-    //exit(1);
-    
-    return YES;
-}
+//static BOOL checkError(OSStatus error, const char *operation)
+//{
+//    if (error == noErr)
+//        return NO;
+//    
+//    char str[20] = {0};
+//    // see if it appears to be a 4-char-code
+//    *(UInt32 *)(str + 1) = CFSwapInt32HostToBig(error);
+//    if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
+//        str[0] = str[5] = '\'';
+//        str[6] = '\0';
+//    } else
+//        // no, format it as an integer
+//        sprintf(str, "%d", (int)error);
+//    
+//    LoggerStream(0, @"Error: %s (%s)\n", operation, str);
+//    
+//    //exit(1);
+//    return YES;
+//}
 
 
 - (IBAction)returnBeforeWIndowAction:(id)sender {
     
     [self pause];
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     if (_dispatchQueue) {
         // Not needed as of ARC.
         //        dispatch_release(_dispatchQueue);
         _dispatchQueue = NULL;
     }
-    
     self.navigationController.navigationBarHidden = NO;
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.view removeFromSuperview];
+    _decoder = nil;
 }
-
 
 - (void)loadView
 {
@@ -418,7 +418,7 @@ static BOOL checkError(OSStatus error, const char *operation)
     _bottomView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5f];
     
     // top hud
-
+    
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _doneButton.frame = CGRectMake(0, 1, 50, topH);
@@ -450,9 +450,9 @@ static BOOL checkError(OSStatus error, const char *operation)
     _infoButton.showsTouchWhenHighlighted = YES;
     _infoButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     //[_infoButton addTarget:self action:@selector(infoDidTouch:) forControlEvents:UIControlEventTouchUpInside];
-    [_infoButton addTarget:self action:@selector(fullscreenMode:) forControlEvents:UIControlEventTouchUpInside];
+    //                      [_infoButton addTarget:self action:@selector(fullscreenMode:) forControlEvents:UIControlEventTouchUpInside];
     
-
+    
     
     // bottom hud
     
@@ -469,21 +469,21 @@ static BOOL checkError(OSStatus error, const char *operation)
                                                                target:self
                                                                action:@selector(rewindDidTouch:)];
     
-//    _playBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
-//                                                             target:self
-//                                                             action:@selector(playDidTouch:)];
+    //    _playBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
+    //                                                             target:self
+    //                                                             action:@selector(playDidTouch:)];
     
     _playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _playBtn.frame = CGRectMake(_bottomView.frame.origin.x, _bottomView.frame.origin.y+1, 50, topH);
     _playBtn.backgroundColor = [UIColor clearColor];
     //    _doneButton.backgroundColor = [UIColor redColor];
     [_playBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-
+    
     [_playBtn setImage:[UIImage imageNamed:@"videoPlay"] forState:UIControlStateNormal];
     _playBtn.titleLabel.font = [UIFont systemFontOfSize:18];
     _playBtn.showsTouchWhenHighlighted = YES;
     [_playBtn addTarget:self action:@selector(playDidTouch:)
-          forControlEvents:UIControlEventTouchUpInside];
+       forControlEvents:UIControlEventTouchUpInside];
     
     _pauseBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _pauseBtn.frame = CGRectMake(_bottomView.frame.origin.x, _bottomView.frame.origin.y+1, 50, topH);
@@ -493,7 +493,7 @@ static BOOL checkError(OSStatus error, const char *operation)
     _pauseBtn.titleLabel.font = [UIFont systemFontOfSize:18];
     _pauseBtn.showsTouchWhenHighlighted = YES;
     [_pauseBtn addTarget:self action:@selector(playDidTouch:)
-       forControlEvents:UIControlEventTouchUpInside];
+        forControlEvents:UIControlEventTouchUpInside];
     
     _playBtn.hidden  = NO;
     _pauseBtn.hidden = YES;
@@ -506,7 +506,6 @@ static BOOL checkError(OSStatus error, const char *operation)
     _titleLable.text = [[self.filePath lastPathComponent] stringByDeletingPathExtension];
     [_titleLable setTextColor:[UIColor whiteColor]];
     
-    
     rectView = [[UIView alloc] initWithFrame:CGRectMake(0, height*1/4, 60,height*1/2)];
     rectView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5f];
     rectView.layer.cornerRadius = 5.0f;
@@ -518,11 +517,10 @@ static BOOL checkError(OSStatus error, const char *operation)
     [self.view addSubview:_topBar];
     //[self.view addSubview:_topHUD];
     [self.view addSubview:_bottomView];
-    [self.view addSubview:m_volumeView];
     [self.view addSubview:rectView];
+    [self.view addSubview:m_volumeView];
     [self.view addSubview:_titleLable];
     [self.view addSubview:barView];
-    [self.view addSubview:rectView];
     [self.view addSubview:_playBtn];
     [self.view addSubview:_pauseBtn];
     [self.view addSubview:_doneButton];
@@ -530,37 +528,6 @@ static BOOL checkError(OSStatus error, const char *operation)
     [self.view addSubview:_progressSlider];
     [self.view addSubview:_infoButton];
     
-    
-    
-//    _playBtn.width = 50;
-//    
-//    _pauseBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause
-//                                                              target:self
-//                                                              action:@selector(playDidTouch:)];
-//    _pauseBtn.width = 50;
-//    
-//    _fforwardBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward
-//                                                                 target:self
-//                                                                 action:@selector(forwardDidTouch:)];
-    //1130 hgc
-    UISlider *hgcSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, width -150, 0)];
-    [hgcSlider setMaximumValue:100];
-    [hgcSlider setMinimumValue:0];
-    hgcSlider.value = 50;
-    hgcSlider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    hgcSlider.continuous = NO;
-    [hgcSlider setUserInteractionEnabled:YES];
-    [hgcSlider addTarget:self action:@selector(changeSliderTest) forControlEvents:UIControlEventValueChanged];
-    
-    //    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
-    //    [btn setTitle:@"hello" forState:UIControlStateNormal];
-    //    [btn setTintColor:[UIColor blackColor]];
-    
-    _sliderBar = hgcSlider;
-    //    _sliderBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward
-    //                                                                 target:self
-    //                                                                 action:@selector(forwardDidTouch:)];
-    //1130 hgc
     
     [self updateBottomBar];
     
@@ -574,10 +541,6 @@ static BOOL checkError(OSStatus error, const char *operation)
         _progressSlider.hidden = YES;
         _infoButton.hidden = YES;
     }
-}
-
--(void)changeSliderTest{
-    NSLog(@"changeSliderTest");
 }
 
 - (void)didReceiveMemoryWarning
@@ -622,8 +585,6 @@ static BOOL checkError(OSStatus error, const char *operation)
     // LoggerStream(1, @"viewDidAppear");
     
     [super viewDidAppear:animated];
-    
-    
     _fullscreen = YES;
     if (self.presentingViewController)
         [self fullscreenMode:nil];
@@ -670,9 +631,9 @@ static BOOL checkError(OSStatus error, const char *operation)
                         forKey:_decoder.path];
     }
     
-    if (_fullscreen){
+    if (_fullscreen)
         [self fullscreenMode:nil];
-    }
+    
     [[UIApplication sharedApplication] setIdleTimerDisabled:_savedIdleTimer];
     
     [_activityIndicatorView stopAnimating];
@@ -705,7 +666,6 @@ static BOOL checkError(OSStatus error, const char *operation)
             
             [self showHUD: _hiddenHUD];
             
-            
         } else if (sender == _doubleTapGestureRecognizer) {
             
             UIView *frameView = [self frameView];
@@ -721,8 +681,6 @@ static BOOL checkError(OSStatus error, const char *operation)
 
 - (void) handlePan: (UIPanGestureRecognizer *) sender
 {
-    
-    
     if (sender.state == UIGestureRecognizerStateEnded) {
         
         const CGPoint vt = [sender velocityInView:self.view];
@@ -734,7 +692,7 @@ static BOOL checkError(OSStatus error, const char *operation)
             const CGFloat ff = pt.x > 0 ? 1.0 : -1.0;
             [self setMoviePosition: _moviePosition + ff * MIN(sc, 600.0)];
         }
-        LoggerStream(2, @"pan %.2f %.2f %.2f sec", pt.x, vt.x, sc);
+        //LoggerStream(2, @"pan %.2f %.2f %.2f sec", pt.x, vt.x, sc);
     }
 }
 
@@ -747,11 +705,8 @@ static BOOL checkError(OSStatus error, const char *operation)
     
     if (!_decoder.validVideo &&
         !_decoder.validAudio) {
-        [_decoder setPosition:0];
-        NSError *error = nil;
-        [_decoder openFile:self.hgcPath error:&error];
-
-        //return;
+        
+        return;
     }
     
     if (_interrupted)
@@ -777,8 +732,7 @@ static BOOL checkError(OSStatus error, const char *operation)
     
     if (_decoder.validAudio)
         [self enableAudio:YES];
-    
-    //hgc added 2015 11 05 start
+    // merged by hgc 2015 12 17 start
     if((_decoder.duration -_moviePosition)<1.8){
         self.playing = NO;
         _moviePosition = 0;
@@ -786,17 +740,18 @@ static BOOL checkError(OSStatus error, const char *operation)
         [self enableAudio:NO];
         [self updatePlayButton];
     }
+    // merged by hgc 2015 12 17 end
+    //hgc added 2015 11 05 start
     if (_decoder.isEOF) {
         NSLog(@"_decoder in play");
         NSLog(@"self.hgcPath==%@",self.hgcPath);
         NSLog(@"self.hgcParam==%@",self.hgcParam);
         _moviePosition = 0;
-        
         _parameters = self.hgcParam;
-        [self initWithContentPath:self.hgcPath parameters:self.hgcParam];
-        NSError *error = nil;
-        [_decoder closeFile];
-        [_decoder openFile:self.hgcPath error:&error];
+        //        [self initWithContentPath:self.hgcPath parameters:self.hgcParam];
+        //        NSError *error = nil;
+        //        [_decoder closeFile];
+        //        [_decoder openFile:self.hgcPath error:&error];
     }
     //hgc added 2015 11 05 end
     
@@ -830,7 +785,7 @@ static BOOL checkError(OSStatus error, const char *operation)
     });
 }
 
-
+#pragma mark - actions
 
 - (void) infoDidTouch: (id) sender
 {
@@ -843,21 +798,9 @@ static BOOL checkError(OSStatus error, const char *operation)
     if ([self isEndOfFile]) {
         //    [self movieReplay];
         _moviePosition = 0;
-        [_decoder setPosition:0] ;
         _parameters = self.hgcParam;
         NSError *error = nil;
         [_decoder closeFile];
-        
-//        KxMovieDecoder *decoder = [[KxMovieDecoder alloc] init];
-//        
-//        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-//        parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
-//        
-//        id<KxAudioManager> audioManager = [KxAudioManager audioManager];
-//        [audioManager activateAudioSession];
-//        [self initWithContentPath: self.filePath parameters: parameters];
-
-        
         [_decoder openFile:self.hgcPath error:&error];
         //        [self play];
     }
@@ -927,15 +870,15 @@ static BOOL checkError(OSStatus error, const char *operation)
             
             id val;
             
-            val = [_parameters valueForKey: KxMoviePlayerParameterMinBufferedDuration];
+            val = [_parameters valueForKey: KxMovieParameterMinBufferedDuration];
             if ([val isKindOfClass:[NSNumber class]])
                 _minBufferedDuration = [val floatValue];
             
-            val = [_parameters valueForKey: KxMoviePlayerParameterMaxBufferedDuration];
+            val = [_parameters valueForKey: KxMovieParameterMaxBufferedDuration];
             if ([val isKindOfClass:[NSNumber class]])
                 _maxBufferedDuration = [val floatValue];
             
-            val = [_parameters valueForKey: KxMoviePlayerParameterDisableDeinterlacing];
+            val = [_parameters valueForKey: KxMovieParameterDisableDeinterlacing];
             if ([val isKindOfClass:[NSNumber class]])
                 _decoder.disableDeinterlacing = [val boolValue];
             
@@ -951,6 +894,7 @@ static BOOL checkError(OSStatus error, const char *operation)
             
             _progressLabel.hidden   = NO;
             _progressSlider.hidden  = NO;
+            _leftLabel.hidden       = NO;
             _infoButton.hidden      = NO;
             
             if (_activityIndicatorView.isAnimating) {
@@ -1016,20 +960,20 @@ static BOOL checkError(OSStatus error, const char *operation)
     self.view.backgroundColor = [UIColor clearColor];
     
     if (_decoder.duration == MAXFLOAT) {
-//        
-//        _leftLabel.text = @"\u221E"; // infinity
-//        _leftLabel.font = [UIFont systemFontOfSize:14];
-//        
-//        CGRect frame;
-//        
-//        frame = _leftLabel.frame;
-//        frame.origin.x += 40;
-//        frame.size.width -= 40;
-//        _leftLabel.frame = frame;
-//        
-//        frame =_progressSlider.frame;
-//        frame.size.width += 40;
-//        _progressSlider.frame = frame;
+        
+        _leftLabel.text = @"\u221E"; // infinity
+        _leftLabel.font = [UIFont systemFontOfSize:14];
+        
+        CGRect frame;
+        
+        frame = _leftLabel.frame;
+        frame.origin.x += 40;
+        frame.size.width -= 40;
+        _leftLabel.frame = frame;
+        
+        frame =_progressSlider.frame;
+        frame.size.width += 40;
+        _progressSlider.frame = frame;
         
     } else {
         
@@ -1280,7 +1224,8 @@ static BOOL checkError(OSStatus error, const char *operation)
     if (self.decoding)
         return;
     
-    __weak KxMovieDecoderVer2 *weakDecoder = _decoder;
+    __weak KxMovieView *weakSelf = self;
+    __weak KxMovieDecoder *weakDecoder = _decoder;
     
     const CGFloat duration = _decoder.isNetwork ? .0f : 0.1f;
     
@@ -1288,7 +1233,8 @@ static BOOL checkError(OSStatus error, const char *operation)
     dispatch_async(_dispatchQueue, ^{
         
         {
-            if (!self.playing)
+            __strong KxMovieView *strongSelf = weakSelf;
+            if (!strongSelf.playing)
                 return;
         }
         
@@ -1305,21 +1251,23 @@ static BOOL checkError(OSStatus error, const char *operation)
                     
                     NSArray *frames = [decoder decodeFrames:duration];
                     if (frames.count) {
-
-                            
-
-                            good = [self addFrames:frames];
+                        
+                        __strong KxMovieView *strongSelf = weakSelf;
+                        if (strongSelf)
+                            good = [strongSelf addFrames:frames];
                     }
-                    
-                    if((decoder.duration -_moviePosition)<0.5){
+                    // merged by hgc 2015 12 17 start
+                    if((_decoder.duration -_moviePosition)<0.5){
                         [_decoder closeFile];
                     }
+                    // merged by hgc 2015 12 17 end
                 }
             }
         }
         
         {
-            if (self) self.decoding = NO;
+            __strong KxMovieView *strongSelf = weakSelf;
+            if (strongSelf) strongSelf.decoding = NO;
         }
     });
 }
@@ -1327,7 +1275,7 @@ static BOOL checkError(OSStatus error, const char *operation)
 - (void) tick
 {
     if (_buffered && ((_bufferedDuration > _minBufferedDuration) || _decoder.isEOF)) {
-
+        
         _tickCorrectionTime = 0;
         _buffered = NO;
         [_activityIndicatorView stopAnimating];
@@ -1338,6 +1286,7 @@ static BOOL checkError(OSStatus error, const char *operation)
         interval = [self presentFrame];
     
     if (self.playing) {
+        
         const NSUInteger leftFrames =
         (_decoder.validVideo ? _videoFrames.count : 0) +
         (_decoder.validAudio ? _audioFrames.count : 0);
@@ -1346,7 +1295,7 @@ static BOOL checkError(OSStatus error, const char *operation)
         //        NSLog(@"leftFrames1212==%lu",(unsigned long)leftFrames);
         //        NSLog(@"_videoFrames.count = %lu",(unsigned long)_videoFrames.count);
         // 2015 11 10 hgc end
-        if (0 == leftFrames ) {
+        if (0 == leftFrames) {
             
             if (_decoder.isEOF) {
                 
@@ -1354,13 +1303,10 @@ static BOOL checkError(OSStatus error, const char *operation)
                 // hgc start
                 NSLog(@"leftFrames==%lu",(unsigned long)leftFrames);
                 _moviePosition = 0;
-                [_decoder setPosition:0] ;
                 // hgc end
                 [self updateHUD];
                 return;
             }
-            const CGFloat position = _moviePosition -_decoder.startTime;
-            [self setDecoderPosition: position];
             
             if (_minBufferedDuration > 0 && !_buffered) {
                 
@@ -1460,6 +1406,7 @@ static BOOL checkError(OSStatus error, const char *operation)
 #endif
     
     return interval;
+    
 }
 
 - (CGFloat) presentVideoFrame: (KxVideoFrameVer2 *) frame
@@ -1570,8 +1517,6 @@ static BOOL checkError(OSStatus error, const char *operation)
         _playBtn.hidden  = NO;
         _pauseBtn.hidden = YES;
     }
-    
-    
 }
 
 - (void) updatePlayButton
@@ -1588,16 +1533,16 @@ static BOOL checkError(OSStatus error, const char *operation)
     const CGFloat position = _moviePosition -_decoder.startTime;
     
     //hgc 2015 11 26
-        NSLog(@"duration==%f",duration);
-        NSLog(@"_moviePosition===%f",_moviePosition);
-        NSLog(@"_decoder.startTime===%f",_decoder.startTime);
+    //    NSLog(@"duration==%f",duration);
+    //    NSLog(@"_moviePosition===%f",_moviePosition);
+    //    NSLog(@"_decoder.startTime===%f",_decoder.startTime);
     //hgc 2015 11 26
     
     if (_progressSlider.state == UIControlStateNormal)
         _progressSlider.value = position / duration;
     
     _progressLabel.text = [NSString stringWithFormat:@"%@/%@",[self convertTime:position],[self convertTime:duration]];
-
+    
 #ifdef DEBUG
     const NSTimeInterval timeSinceStart = [NSDate timeIntervalSinceReferenceDate] - _debugStartTime;
     NSString *subinfo = _decoder.validSubtitles ? [NSString stringWithFormat: @" %d",_subtitles.count] : @"";
@@ -1627,7 +1572,6 @@ static BOOL checkError(OSStatus error, const char *operation)
                           audioStatus,
                           _buffered ? [NSString stringWithFormat:@"buffering %.1f%%", _bufferedDuration / _minBufferedDuration * 100] : @""];
 #endif
-    
 }
 
 - (void) showHUD: (BOOL) show
@@ -1663,6 +1607,7 @@ static BOOL checkError(OSStatus error, const char *operation)
 
 - (void) fullscreenMode: (id) sender
 {
+    //_fullscreen = on;
     CGFloat topH = 50;
     CGFloat botH = 50;
     CGFloat SCREEN_HEIGHT =  [UIScreen mainScreen].bounds.size.height;
@@ -1677,10 +1622,10 @@ static BOOL checkError(OSStatus error, const char *operation)
         _progressSlider.frame = CGRectMake(0, SCREEN_WIDTH-botH-topH/4, SCREEN_HEIGHT, topH/2);
         _playBtn.frame = CGRectMake(20, SCREEN_WIDTH-50+1, botH, topH);
         _pauseBtn.frame = CGRectMake(20, SCREEN_WIDTH-50+1, botH, topH);
-        _progressLabel.frame = CGRectMake( SCREEN_HEIGHT -250, SCREEN_WIDTH-botH, 150, topH);
+        _progressLabel.frame = CGRectMake( SCREEN_HEIGHT -200, SCREEN_WIDTH-botH, 150, topH);
         rectView.frame = CGRectMake(0, SCREEN_WIDTH*1/4, 80,SCREEN_WIDTH*1/2);
-        m_volumeView.frame= CGRectMake(SCREEN_WIDTH*1/8, SCREEN_WIDTH*5/16, 5, SCREEN_WIDTH*3/8);
-    
+        m_volumeView.frame= CGRectMake(SCREEN_WIDTH*1/8, SCREEN_WIDTH*5/16, 20, SCREEN_WIDTH*3/8);
+        
     }else{
         [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeLeft];
         self.view.transform = CGAffineTransformMakeRotation(M_PI*2);
@@ -1690,22 +1635,11 @@ static BOOL checkError(OSStatus error, const char *operation)
         _progressSlider.frame =CGRectMake(0, SCREEN_HEIGHT-50-topH/4, SCREEN_WIDTH, topH/2);
         _playBtn.frame =CGRectMake( 20, SCREEN_HEIGHT-botH+1, botH, topH);
         _pauseBtn.frame =CGRectMake(20, SCREEN_HEIGHT-botH+1, botH, topH);
-        _progressLabel.frame = CGRectMake(0+SCREEN_WIDTH-250, SCREEN_HEIGHT-botH+1, 150, topH);
+        _progressLabel.frame = CGRectMake(0+SCREEN_WIDTH-200, SCREEN_HEIGHT-botH+1, 150, topH);
         rectView.frame =CGRectMake(0, SCREEN_HEIGHT*1/4, 60,SCREEN_HEIGHT*1/2);
-        m_volumeView.frame= CGRectMake(SCREEN_WIDTH*1/8, SCREEN_WIDTH*5/16, 5, SCREEN_WIDTH*3/8);
+        m_volumeView.frame= CGRectMake(SCREEN_WIDTH*1/8, SCREEN_WIDTH*5/16, 20, SCREEN_WIDTH*3/8);
         
     }
-    
-    
-//    if (_moviePosition&&self.playing){
-//        [self updatePosition:_moviePosition playMode:YES];
-//    }else{
-//        if(_moviePosition){
-//            [self updatePosition:_moviePosition playMode:YES];
-//        }else{
-//            [self updatePosition:0 playMode:NO];
-//        }
-//    }
     _fullscreen = !_fullscreen;
     
 }
@@ -1729,11 +1663,9 @@ static BOOL checkError(OSStatus error, const char *operation)
                playMode: (BOOL) playMode
 {
     [self freeBufferedFrames];
-    if(!self.playing){
-        [self enableAudio:NO];
-        [self updatePlayButton];
-    }
+    
     position = MIN(_decoder.duration - 1, MAX(0, position));
+    // merged by hgc 2015 12 17 start
     if((_decoder.duration - position)<1.8 || position <1.8){
         self.playing = NO;
         _moviePosition = 0;
@@ -1741,39 +1673,49 @@ static BOOL checkError(OSStatus error, const char *operation)
         [_decoder setPosition:0];
         [self enableAudio:NO];
         [self updatePlayButton];
+        [self playDidTouch:nil];
         return;
     }
+    // merged by hgc 2015 12 17 end
+    __weak KxMovieView *weakSelf = self;
     
     dispatch_async(_dispatchQueue, ^{
         
         if (playMode) {
-            if(_decoder.isEOF) return;
-            [self setDecoderPosition: position];
+            
+            {
+                __strong KxMovieView *strongSelf = weakSelf;
+                if (!strongSelf) return;
+                [strongSelf setDecoderPosition: position];
+            }
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (!_decoder.isEOF) {
-                    [self setMoviePositionFromDecoder];
-                    [self play];
+                __strong KxMovieView *strongSelf = weakSelf;
+                if (strongSelf) {
+                    [strongSelf setMoviePositionFromDecoder];
+                    [strongSelf play];
                 }
             });
             
         } else {
             
             {
-                if (_decoder.isEOF) return;
-                [self setDecoderPosition: position];
-                [self decodeFrames];
+                __strong KxMovieView *strongSelf = weakSelf;
+                if (!strongSelf) return;
+                [strongSelf setDecoderPosition: position];
+                [strongSelf decodeFrames];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (!_decoder.isEOF) {
+                __strong KxMovieView *strongSelf = weakSelf;
+                if (strongSelf) {
                     
-                    [self enableUpdateHUD];
-                    [self setMoviePositionFromDecoder];
-                    [self presentFrame];
-                    [self updateHUD];
+                    [strongSelf enableUpdateHUD];
+                    [strongSelf setMoviePositionFromDecoder];
+                    [strongSelf presentFrame];
+                    [strongSelf updateHUD];
                 }
             });
         }
@@ -2096,7 +2038,47 @@ static BOOL checkError(OSStatus error, const char *operation)
     }
 }
 
-
+-(UIImage*)getVideoDuartionAndThumb:(NSString *)videoURL
+{
+    
+    //decoder = [[KxMovieDecoder alloc] init];
+    
+    [_decoder openFile:videoURL error:nil];
+    NSArray *ar =  [_decoder decodeFrames:1.0f];
+    KxMovieFrameVer2 *frame;
+    
+    for (KxMovieFrameVer2 *frames in ar)
+    {
+        if (frames.type == KxMovieFrameTypeVideo) {
+            frame =  ar.lastObject;
+            break;
+        }
+    }
+    
+    KxVideoFrameRGBVer2 *rgbFrame = (KxVideoFrameRGBVer2 *)frame;
+    UIImage *imageKX = [rgbFrame asImage];
+//    float videoDuartion = _decoder.duration;
+//    [_decoder closeFile];
+//    
+//    
+//    NSData *imageData = UIImageJPEGRepresentation(imageKX, 0.2f);
+//    NSString *dic = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES) objectAtIndex:0];
+//    
+//    //创建视频文件夹
+//    NSString *str = [dic stringByAppendingPathComponent:@"thumbs"];
+//    str = [str stringByAppendingString:[NSString stringWithFormat:@"/%@.jpg",[[videoURL lastPathComponent] stringByDeletingPathExtension]]];
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    BOOL existed = [fileManager fileExistsAtPath:str];
+//    if (!existed)
+//    {
+//        [imageData writeToFile:str atomically:NO];
+//    }
+//    
+//    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:str,@"image",[NSNumber numberWithFloat:videoDuartion],@"duration",nil];
+//    [dictArray addObject:dict];
+    
+    return imageKX;
+}
 
 @end
 

@@ -43,8 +43,8 @@
     self.bigPhoto.delegate = self;
     self.smallPhoto.delegate = self;
     //
-    self.bigPhoto.bounds = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 400);
-    self.smallPhoto.bounds = CGRectMake(0, 480, [[UIScreen mainScreen] bounds].size.width, 80);
+//    self.bigPhoto.bounds = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 400);
+//    self.smallPhoto.bounds = CGRectMake(0, 480, [[UIScreen mainScreen] bounds].size.width, 80);
 //    self.bigPhoto.backgroundColor = [UIColor whiteColor];
 //    self.smallPhoto.backgroundColor = [UIColor whiteColor];
     

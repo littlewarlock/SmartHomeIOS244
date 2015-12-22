@@ -53,14 +53,14 @@
     NSArray *videoArray;
     NSArray *picArray;
 }
-
+@property KxMovieView *kxvc;
 @end
 
 @implementation LocalFileViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    self.navigationItem.title = @"本地文档";
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     left.frame =CGRectMake(200, 0, 32, 32);
     [left setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
@@ -92,7 +92,8 @@
     localFileHandler.tableDataDic = self.tableDataDic;
     
     audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
-    videoArray=  [NSArray arrayWithObjects:@"mp4",@"mkv",@"wmv",@"rmvb",@"avi",@"h264", nil];
+    videoArray=  [NSArray arrayWithObjects:@"mp4",@"mov",@"m4v",@"wav",@"flac",@"ape",@"wma",
+                  @"avi",@"wmv",@"rmvb",@"flv",@"f4v",@"swf",@"mkv",@"dat",@"vob",@"mts",@"ogg",@"mpg",@"h264", nil];
     picArray=  [NSArray arrayWithObjects:@"jpg",@"jpeg",@"png", nil];
     pics = [[NSMutableArray alloc] init];
     audiosUrl = [[NSMutableArray alloc] init];
@@ -349,6 +350,9 @@
             [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
         }
     }else{
+        if ([fileinfo.fileType isEqualToString:@"folder"] && [self.cpath isEqualToString:kDocument_Folder] && (indexPath.row==0) ) {
+            return;
+        }
         FDTableViewCell * cell=(FDTableViewCell*)[self tableView:self.fileListTableView cellForRowAtIndexPath:indexPath];
         self.curCel =cell;
         if(cell && !([[selectedTableDataDic allKeys] containsObject:cell.fileinfo.fileUrl])){
@@ -361,7 +365,6 @@
             }
         }
     }
-    
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -433,10 +436,33 @@
         if(tappedCellPath)
         {
             self.curCel = (FDTableViewCell* )[self.fileListTableView cellForRowAtIndexPath:tappedCellPath];
-            KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
-            playerView.filePath =(NSMutableString*)self.curCel.fileinfo.fileUrl;
-            [self.navigationController pushViewController:playerView animated:YES ];
+//            KxMovieView *playerView= [[KxMovieView alloc] initWithNibName:@"KxMovieView" bundle:nil];
+//            playerView.filePath =(NSMutableString*)self.curCel.fileinfo.fileUrl;
+//            [self.navigationController pushViewController:playerView animated:YES ];
+            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+            parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
+            if (self.kxvc != NULL) {
+                [self.kxvc.view removeFromSuperview ];
+            }
+            self.kxvc = [KxMovieView movieViewControllerWithContentPath:(NSMutableString*)self.curCel.fileinfo.fileUrl parameters:parameters];
+            [self addChildViewController:self.kxvc];
+            self.kxvc.view.frame = CGRectMake(0, 0, [[UIScreen mainScreen] applicationFrame].size.width, [[UIScreen mainScreen] applicationFrame].size.height);
+            self.kxvc.filePath = (NSMutableString*)self.curCel.fileinfo.fileUrl;
+            [self.kxvc fullscreenMode:nil];
+            [self.kxvc bottomBarAppears];
+            [self.view addSubview:self.kxvc.view];
+            self.navigationController.navigationBarHidden = YES;
         }
+    }
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    if(self.navigationController.navigationBarHidden){
+        return YES;//隐藏为YES，显示为NO
+    }
+    else{
+        return NO;
     }
 }
 

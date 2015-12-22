@@ -32,4 +32,10 @@ extern NSString * const KxMovieParameterDisableDeinterlacing;   // BOOL
 - (void)bottomBarAppears;
 - (Boolean) isEndOfFile;
 - (id) movieReplay;
+
+//hgc
+- (UIView *) frameView;
+- (void) dealloc;
+- (void)testClose;
+
 @end

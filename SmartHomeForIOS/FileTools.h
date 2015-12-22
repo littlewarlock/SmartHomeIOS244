@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FileInfo.h"
 #import "PhotoTools.h"
+#import "KxMovieDecoderVer2.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface FileTools : NSObject
@@ -39,5 +40,5 @@
 
 //将相册移动到指定目录下
 - (void) moveAssets:(NSDictionary *)paramsDic;
-
++(UIImage*)getVideoDuartionAndThumb:(NSString *)videoURL;
 @end

@@ -12,6 +12,7 @@
 #import "RequestConstant.h"
 #import "ProgressBarViewController.h"
 #import "TaskInfo.h"
+#import "TaskStatusConstant.h"
 @interface FileDownloadOperation : NSOperation
 
 

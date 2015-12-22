@@ -44,11 +44,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
     //设置登陆信息的边框
     [self setupBorder];
-
-
     [self.textFieldIp setValue:[UIColor colorWithRed:255.0/255 green:255.0/255 blue:255.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
 
     [self.userNameField setValue:[UIColor colorWithRed:255.0/255 green:255.0/255 blue:255.0/255 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
@@ -497,9 +494,10 @@
 }
 //登录按钮按下
 - (IBAction)loginAction:(UIButton *)sender {
-    
-    if([[self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""] ||
-       [[self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""]
+//    if([[self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""] ||
+//       [[self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""]
+    if([self.userNameField.text  isEqualToString: @""] ||
+       [self.userPasswordField.text  isEqualToString: @""]
        ){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"用户名或密码不能为空!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
         [alertView show];
@@ -529,9 +527,10 @@
     [header setValue:@"text/xml; charset=utf-8" forKey:@"Content-Type"];
     MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:[requestHost stringByAppendingString:@"/smarty_storage/phone"] customHeaderFields:nil];
     MKNetworkOperation *op = [engine operationWithPath:@"login.php" params:dic httpMethod:@"POST" ssl:NO];
-    self.userNameField.text = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    self.userPasswordField.text = [self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
+//    self.userNameField.text = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+//    self.userPasswordField.text = [self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+    self.userNameField.text = self.userNameField.text ;
+    self.userPasswordField.text = self.userPasswordField.text;
     [op addCompletionHandler:^(MKNetworkOperation *operation) {
         NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
         
@@ -685,15 +684,15 @@
 
 -(void) setLoginIp:(NSString*)searchedOrSavedAdressStr {
     
-    if([searchedOrSavedAdressStr containsString:@"/"] && ![self isIP:searchedOrSavedAdressStr]){//非ip也非id 转成ip
-        NSRange range  = [searchedOrSavedAdressStr rangeOfString:@"/"];
+    if([searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//非ip也非id 转成ip
+        NSRange range  = [searchedOrSavedAdressStr rangeOfString:@"="];
         //NSString *subIP = [searchedOrSavedAdressStr  substringFromIndex:range.location+1];
         self.textFieldIp.text = [searchedOrSavedAdressStr  substringToIndex:range.location];
         self.postLoginIp =[searchedOrSavedAdressStr  substringToIndex:range.location];
-    }else if(![searchedOrSavedAdressStr containsString:@"/"] && [self isIP:searchedOrSavedAdressStr]){//ip 登录
+    }else if(![searchedOrSavedAdressStr containsString:@"="] && [self isIP:searchedOrSavedAdressStr]){//ip 登录
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;
-    }else if(![searchedOrSavedAdressStr containsString:@"/"] && ![self isIP:searchedOrSavedAdressStr]){//id mac 登录 转成ip
+    }else if(![searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//id mac 登录 转成ip
         //self.ifConvertIdToIp = YES;
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;

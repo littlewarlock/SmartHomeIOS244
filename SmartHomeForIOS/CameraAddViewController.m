@@ -27,7 +27,10 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     
     self.navigationItem.title = @"摄像头";
 //    [self startActivityIndicatorView];
-    [self webViewDidStartLoad];
+    
+    //2015 12 24 hgc
+//    [self webViewDidStartLoad];
+    //2015 12 24 hgc
     
 // hgc 2015 11 04 start
     [self.view setBackgroundColor:[UIColor colorWithRed:240/255.0 green:240/255.0 blue:240/255.0 alpha:1]];
@@ -78,7 +81,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     [self startRefresh:self];
     
     //getData
-    [self loadData:self];
+//    [self loadData:self];
 
     self.tableView.rowHeight = 112;
     UINib *nib = [UINib nibWithNibName:@"CameraAddViewCell" bundle:nil];
@@ -92,6 +95,15 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     
 //    [self.navigationController.toolbar setHidden:NO];
     
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    //2015 12 24 hgc
+    [self webViewDidStartLoad];
+    //getData
+    [self loadData:self];
+    //2015 12 24 hgc
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -160,14 +172,17 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 
 -(void)refreshData
 {
-    [self performSelector:@selector(handelData) withObject:nil afterDelay:2];
+//    [self performSelector:@selector(handelData) withObject:nil afterDelay:2];
+    [self loadData:self];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"正在刷新..."];
+//    [self.refreshControl endRefreshing];
 }
 
 - (void) handelData
 {
-    [self loadData:self];
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"正在刷新..."];
-    [self.refreshControl endRefreshing];
+//    [self loadData:self];
+//    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"正在刷新..."];
+//    [self.refreshControl endRefreshing];
 //    [self.tableView reloadData];
 }
 
@@ -190,6 +205,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
              NSLog(@"cameraDiscovery error");
         }
 //        [self endActivityIndicatorView];
+        [self.refreshControl endRefreshing];
         [self webViewDidFinishLoad];
     }];
 }

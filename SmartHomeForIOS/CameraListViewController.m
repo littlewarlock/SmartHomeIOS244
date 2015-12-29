@@ -121,6 +121,21 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
             self.devices = deviceList;
             NSLog(@"self.devices===%@",self.devices);
             
+            //2015 12 24 hgc
+            if (self.devices.count >= 4 ) {
+                NSLog(@"self.devices.count");
+                [self.navigationController.toolbar setUserInteractionEnabled:NO];
+                [self.navigationController setToolbarHidden:YES animated:YES];
+            }else{
+                [self.navigationController.toolbar setUserInteractionEnabled:YES];
+                if (self.navigationController.toolbarHidden) {
+                    [UIView animateWithDuration:2.0f animations:^{
+                        [self.navigationController setToolbarHidden:NO animated:YES];
+                    }];
+                }
+            }
+            //2015 12 24 hgc
+            
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
             [sender endRefreshing];
         }
@@ -164,17 +179,26 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 }
 //for 刷新数据时加载动画 add by hgc 2015 10 19 end
 
+- (void)viewWillAppear:(BOOL)animated{
+
+    [super viewWillAppear:animated];
+    
+//    [self.control beginRefreshing];
+    [self loadData:self.control];
+    
+}
+
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-// 11 09
-    [UIView animateWithDuration:2.0f animations:^{
-        [self.navigationController setToolbarHidden:NO animated:YES];
-    }];
     
-// 11 09
-    [self.control beginRefreshing];
-    [self loadData:self.control];
+// 2015 12 24 start
+//    [UIView animateWithDuration:2.0f animations:^{
+//        [self.navigationController setToolbarHidden:NO animated:YES];
+//    }];
+// 2015 12 24 end
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -603,7 +627,8 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     UITableViewRowAction *moreRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:alarmTitle[alarming.integerValue] handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
         
         NSLog(@"点击了报警");
-        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
+//        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
         // 1. 更新数据
         [DeviceNetworkInterface cameraAlarmingwithDeviceId:devid withAlarmParam:alarmSet withBlock:^(NSString *result, NSString *message, NSError *error) {
             if (!error) {

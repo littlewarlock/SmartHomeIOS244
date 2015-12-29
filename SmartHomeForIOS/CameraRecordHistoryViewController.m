@@ -269,10 +269,10 @@ static NSString *footerId = @"footerId";
             [self.collectionView reloadData];
             
             //warning 2015 10 23
-            if (self.testArray.count == 0 ) {
-                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"历史记录" message:@"您所选择的日期没有历史记录" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                [alert show];
-            }
+//            if (self.testArray.count == 0 ) {
+//                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"历史记录" message:@"您所选择的日期没有历史记录" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+//                [alert show];
+//            }
         }
         else{
             NSLog(@"cameraControlStopwithDeviceId error");
@@ -321,10 +321,10 @@ static NSString *footerId = @"footerId";
             [self.collectionView reloadData];
             
             //warning 2015 10 23
-            if (self.testArray.count == 0 ) {
-                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"历史记录" message:@"您所选择的日期没有历史记录" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                [alert show];
-            }
+//            if (self.testArray.count == 0 ) {
+//                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"历史记录" message:@"您所选择的日期没有历史记录" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+//                [alert show];
+//            }
         }
         else{
             NSLog(@"cameraControlStopwithDeviceId error");
@@ -452,18 +452,21 @@ static NSString *footerId = @"footerId";
     parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
     
     //local test start
-    NSString *stream = @"/Users/apple2/Desktop/hgctestmp4-00000-00030.mp4";
+    NSString *stream = @"/Users/apple2/Desktop/makeup/advertise.mp4";
 //    KxMovieViewController *test = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
 ////    KxMovieView *test1 = [KxMovieView movieViewControllerWithContentPath:stream parameters:parameters];
 //    [self presentViewController:test animated:YES completion:nil];
     // test end
     //http
-    //    NSString *stream = @"http://172.16.9.95:82/smarthome/video/8-1video-H264-1";
+//        NSString *stream = @"http://172.16.9.95:82/smarthome/video/8-1video-H264-1";
     //
     
     
     if (self.kxvc != NULL) {
         [self.kxvc.view removeFromSuperview ];
+        // 2015 12 23 hgc start
+        [self.kxvc removeFromParentViewController];
+        // 2015 12 23 hgc ended
     }
     self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:_doubleArrayUrl[section][row] parameters:parameters];
 //    self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
@@ -576,6 +579,10 @@ static NSString *footerId = @"footerId";
     if (self.kxvc != NULL) {
         [self.kxvc.view removeFromSuperview ];
         //2015 12 22 hgc
+        // 2015 12 23 hgc start
+        [self.kxvc removeFromParentViewController];
+        // 2015 12 23 hgc ended
+        
         [self.kxvc testClose];
         self.isKxvcAppear = NO;
     }

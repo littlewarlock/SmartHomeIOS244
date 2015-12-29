@@ -149,11 +149,11 @@ static NSString *AlarmMessageDetailCellIdentifier = @"AlarmMessageDetailCellIden
     self.isFullScreen = NO;
     //kxvc
     //local
-//    NSString *stream = @"/Users/apple2/Desktop/VLC/H264/3-1video-H264-1";
+    NSString *stream = @"/Users/apple2/Desktop/makeup/advertise.mp4";
     //http
 //        NSString *stream = @"http://172.16.9.95:82/smarthome/video/8-1video-H264-1";
     //right
-    NSString *stream = self.rowData[@"videoUrl"];
+//    NSString *stream = self.rowData[@"videoUrl"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
@@ -280,6 +280,7 @@ static NSString *AlarmMessageDetailCellIdentifier = @"AlarmMessageDetailCellIden
     }
     if (self.kxvc != NULL) {
         [self.kxvc.view removeFromSuperview ];
+        [self.kxvc removeFromParentViewController];
     }
     
 }
@@ -316,6 +317,12 @@ static NSString *AlarmMessageDetailCellIdentifier = @"AlarmMessageDetailCellIden
 //        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 //    }
     
+    
+    //
+    if (self.kxvc != NULL) {
+        [self.kxvc.view removeFromSuperview ];
+        [self.kxvc removeFromParentViewController];
+    }
     
     //goto detail
     CameraDetailViewController *vc = [[CameraDetailViewController alloc]initWithNibName:@"CameraDetailViewController" bundle:nil];

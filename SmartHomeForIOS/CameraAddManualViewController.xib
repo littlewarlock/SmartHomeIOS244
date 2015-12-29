@@ -231,7 +231,7 @@
                         <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MMz-aT-V5Y" customClass="UIControl">
                             <rect key="frame" x="8" y="257" width="304" height="130"/>
                             <subviews>
-                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ntd-f1-yUb">
+                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="ntd-f1-yUb">
                                     <rect key="frame" x="134" y="30" width="170" height="29"/>
                                     <segments>
                                         <segment title="不录像"/>
@@ -239,7 +239,7 @@
                                         <segment title="触发录像"/>
                                     </segments>
                                 </segmentedControl>
-                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Szb-WT-LG0">
+                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="Szb-WT-LG0">
                                     <rect key="frame" x="134" y="66" width="170" height="29"/>
                                     <segments>
                                         <segment title="不录像"/>
@@ -247,7 +247,7 @@
                                         <segment title="触发录像"/>
                                     </segments>
                                 </segmentedControl>
-                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="2dm-MW-tyW">
+                                <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="right" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="2dm-MW-tyW">
                                     <rect key="frame" x="134" y="102" width="170" height="29"/>
                                     <segments>
                                         <segment title="不录像"/>

@@ -108,9 +108,13 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                                  action:@selector(recordHistory:)];
     self.navigationItem.rightBarButtonItem = rightBTN;
     
-    [self.navigationItem.rightBarButtonItem setBackgroundImage:[UIImage imageNamed:@"history-bj"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor whiteColor]];
-
+//    [self.navigationItem.rightBarButtonItem setBackgroundImage:[UIImage imageNamed:@"history-bj"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+//    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor whiteColor]];
+    
+    //2015 12 24 add
+    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+    //2015 12 24 end
+    
     //摄像头设置页 navigatison Left按钮
 // 2015 11 04 hgc 左侧按钮使用系统自带样式 start
 //    UIBarButtonItem *leftBTN = [[UIBarButtonItem alloc]

@@ -104,9 +104,6 @@ static NSMutableDictionary * gHistory;
     UIBarButtonItem     *_fforwardBtn;
     UIBarButtonItem     *_spaceItem;
     UIBarButtonItem     *_fixedSpaceItem;
-    //hgc
-    UISlider     *_sliderBar;
-    //hgc
     
     UIButton            *_doneButton;
     UILabel             *_progressLabel;
@@ -143,7 +140,6 @@ static NSMutableDictionary * gHistory;
 //hgc add start
 @property (strong,nonatomic)NSString *hgcPath;
 @property (strong,nonatomic)NSDictionary *hgcParam;
-@property Boolean hgcIsH264LocalFile;
 //hgc add end
 
 @end
@@ -218,7 +214,6 @@ static NSMutableDictionary * gHistory;
     [_decoder openFile:self.hgcPath error:&error];
     
     return self;
-//    return [self initWithContentPath:self.hgcPath parameters:self.hgcParam];
 }
 
 
@@ -438,25 +433,6 @@ _messageLabel.hidden = YES;
     _fforwardBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward
                                                                  target:self
                                                                  action:@selector(forwardDidTouch:)];
-    //1130 hgc
-    UISlider *hgcSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, width -150, 0)];
-    [hgcSlider setMaximumValue:100];
-    [hgcSlider setMinimumValue:0];
-    hgcSlider.value = 50;
-    hgcSlider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    hgcSlider.continuous = NO;
-    [hgcSlider setUserInteractionEnabled:YES];
-    [hgcSlider addTarget:self action:@selector(changeSliderTest) forControlEvents:UIControlEventValueChanged];
-    
-//    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
-//    [btn setTitle:@"hello" forState:UIControlStateNormal];
-//    [btn setTintColor:[UIColor blackColor]];
-    
-    _sliderBar = hgcSlider;
-//    _sliderBar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward
-//                                                                 target:self
-//                                                                 action:@selector(forwardDidTouch:)];
-    //1130 hgc
     
     [self updateBottomBar];
 
@@ -668,13 +644,13 @@ _messageLabel.hidden = YES;
         [self enableAudio:YES];
 
     // merged by hgc 2015 12 17 start
-    if((_decoder.duration -_moviePosition)<1.8){
-        self.playing = NO;
-        _moviePosition = 0;
-        [_decoder setPosition:0];
-        [self enableAudio:NO];
-        [self updatePlayButton];
-    }
+//    if((_decoder.duration -_moviePosition)<1.8){
+//        self.playing = NO;
+//        _moviePosition = 0;
+//        [_decoder setPosition:0];
+//        [self enableAudio:NO];
+//        [self updatePlayButton];
+//    }
     // merged by hgc 2015 12 17 end
     //hgc added 2015 11 05 start
     if (_decoder.isEOF) {
@@ -683,13 +659,6 @@ _messageLabel.hidden = YES;
         NSLog(@"self.hgcParam==%@",self.hgcParam);
         _moviePosition = 0;
         _parameters = self.hgcParam;
-        //2015 12 22 hgc add
-//        [self initWithContentPath:self.hgcPath parameters:self.hgcParam];
-//        NSError *error = nil;
-//        [_decoder closeFile];
-//        [_decoder openFile:self.hgcPath error:&error];
-
-        //2015 12 22 hgc end
     }
     //hgc added 2015 11 05 end
     
@@ -742,15 +711,14 @@ _messageLabel.hidden = YES;
 {
 //2015 11 06 hgc add
     if ([self isEndOfFile]) {
-//    [self movieReplay];
-        _moviePosition = 0;
+        _moviePosition = 0.0f;
+        [_decoder setPosition:0.0f];
         _parameters = self.hgcParam;
         NSError *error = nil;
         [_decoder closeFile];
         [_decoder openFile:self.hgcPath error:&error];
-//        [self play];
     }
-//    else{
+
 //2015 11 06 hgc add
     if (self.playing){
         [self pause];
@@ -759,7 +727,7 @@ _messageLabel.hidden = YES;
     {
         [self play];
     }
-//        }
+
 }
 
 - (void) forwardDidTouch: (id) sender
@@ -992,6 +960,7 @@ _messageLabel.hidden = YES;
     @autoreleasepool {
         
         while (numFrames > 0) {
+//            NSLog(@"numFrames===%u",(unsigned int)numFrames);
             
             if (!_currentAudioFrame) {
                 
@@ -1018,7 +987,12 @@ _messageLabel.hidden = YES;
                                 _debugAudioStatus = 1;
                                 _debugAudioStatusTS = [NSDate date];
 #endif
+                                
+                                //2015 12 29 hgc start
+                                [self playDidTouch:(nil)];
+                                //2015 12 29 hgc end
                                 break; // silence and exit
+
                             }
                             
                             [_audioFrames removeObjectAtIndex:0];
@@ -1206,9 +1180,9 @@ _messageLabel.hidden = YES;
                             good = [strongSelf addFrames:frames];
                     }
                     // merged by hgc 2015 12 17 start
-                    if((_decoder.duration -_moviePosition)<0.5){
-                        [_decoder closeFile];
-                    }
+//                    if((_decoder.duration -_moviePosition)<0.5){
+//                        [_decoder closeFile];
+//                    }
                     // merged by hgc 2015 12 17 end
                 }
             }
@@ -1240,18 +1214,14 @@ _messageLabel.hidden = YES;
         (_decoder.validVideo ? _videoFrames.count : 0) +
         (_decoder.validAudio ? _audioFrames.count : 0);
         
-// 2015 11 10 hgc start
-//        NSLog(@"leftFrames1212==%lu",(unsigned long)leftFrames);
-//        NSLog(@"_videoFrames.count = %lu",(unsigned long)_videoFrames.count);
-// 2015 11 10 hgc end
         if (0 == leftFrames) {
             
             if (_decoder.isEOF) {
                 
                 [self pause];
                 // hgc start
-                NSLog(@"leftFrames==%lu",(unsigned long)leftFrames);
-                _moviePosition = 0;
+//                NSLog(@"leftFrames==%lu",(unsigned long)leftFrames);
+//                _moviePosition = 0;
                 // hgc end
                 [self updateHUD];
                 return;
@@ -1478,12 +1448,6 @@ _messageLabel.hidden = YES;
     const CGFloat duration = _decoder.duration;
     const CGFloat position = _moviePosition -_decoder.startTime;
     
-    //hgc 2015 11 26
-//    NSLog(@"duration==%f",duration);
-//    NSLog(@"_moviePosition===%f",_moviePosition);
-//    NSLog(@"_decoder.startTime===%f",_decoder.startTime);
-    //hgc 2015 11 26
-    
     if (_progressSlider.state == UIControlStateNormal)
         _progressSlider.value = position / duration;
     _progressLabel.text = formatTimeInterval(position, NO);
@@ -1576,16 +1540,16 @@ _messageLabel.hidden = YES;
     
     position = MIN(_decoder.duration - 1, MAX(0, position));
     // merged by hgc 2015 12 17 start
-    if((_decoder.duration - position)<1.8 || position <1.8){
-        self.playing = NO;
-        _moviePosition = 0;
-        _progressSlider.value= 0;
-        [_decoder setPosition:0];
-        [self enableAudio:NO];
-        [self updatePlayButton];
-        [self playDidTouch:nil];
-        return;
-    }
+//    if((_decoder.duration - position)<1.8 || position <1.8){
+//        self.playing = NO;
+//        _moviePosition = 0;
+//        _progressSlider.value= 0;
+//        [_decoder setPosition:0];
+//        [self enableAudio:NO];
+//        [self updatePlayButton];
+//        [self playDidTouch:nil];
+//        return;
+//    }
     // merged by hgc 2015 12 17 end
     
     __weak KxMovieViewController *weakSelf = self;

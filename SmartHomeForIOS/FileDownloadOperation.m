@@ -7,6 +7,7 @@
 //
 
 #import "FileDownloadOperation.h"
+#import "FileTools.h"
 
 @implementation FileDownloadOperation
 
@@ -60,12 +61,13 @@
                     {
                         streamNum = fileLength / DOWNLOAD_STREAM_SIZE;
                     }
+                    /*
                     if([self.taskInfo.cachePath isEqualToString:@""] || (!self.taskInfo.cachePath)  )
                     {
                         self.taskInfo.cachePath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@", [g_sDataManager userName], self.taskInfo.fileName]];
                     }else if(streamChunk==0){ //如果是第一次下载，需要拼接完整路径
                         self.taskInfo.cachePath = [self.taskInfo.cachePath stringByAppendingPathComponent:self.taskInfo.fileName];
-                    }
+                    }*/
                     NSString* requestUrl=[NSString stringWithFormat: @"http://%@/",[g_sDataManager requestHost]];
                     NSString* downloadUrl =[requestUrl stringByAppendingString: REQUEST_DOWNBLOCK_URL];
                     NSURL *url = [NSURL URLWithString:[downloadUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -84,27 +86,51 @@
                             NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&downloadError];
                             if (!downloadError) {
                                 NSLog(@"streamNum = %lli", streamChunk);
+                                NSFileManager *fm =[NSFileManager defaultManager];
                                 [fileData appendData:received];
-                                if ([[NSFileManager defaultManager] fileExistsAtPath:self.taskInfo.cachePath]) {
-                                    file = [NSFileHandle fileHandleForWritingAtPath:self.taskInfo.cachePath];
-                                    if (file) {
-                                        [file seekToEndOfFile];
-                                        [file writeData:fileData];
-                                        [file closeFile];
-                                        file = nil;
-                                        received = nil;
-                                    }
-                                    else {
-                                        //清除数据
-                                        if (fileData != nil) {
-                                            fileData = nil;
+                                @synchronized(fm)
+                                {//加锁
+                                    if ([fm fileExistsAtPath:self.taskInfo.cachePath] && streamChunk!=0) {
+                                        long long fileSize = [FileTools getFileSize:self.taskInfo.cachePath];
+                                        int currentBlockNum = (int) (fileSize / DOWNLOAD_STREAM_SIZE);//当前文件已经下载的块数
+                                        if (fileSize % DOWNLOAD_STREAM_SIZE != 0)
+                                            currentBlockNum++;
+                                        if (currentBlockNum>=streamChunk+1) {//如果当前块已经存在，则舍弃
+                                            streamChunk++;
+                                            continue;
                                         }
+
+                                        file = [NSFileHandle fileHandleForWritingAtPath:self.taskInfo.cachePath];
+                                        if (file) {
+                                            [file seekToEndOfFile];
+                                            [file writeData:fileData];
+                                            [file closeFile];
+                                            file = nil;
+                                            received = nil;
+                                        }
+                                        else {
+                                            //清除数据
+                                            if (fileData != nil) {
+                                                fileData = nil;
+                                            }
+                                            return;
+                                        }
+                                    }
+                                    else if(streamChunk!=0 && ![fm fileExistsAtPath:self.taskInfo.cachePath]){//如果任务失败，则停止下载
+                                        self.taskInfo.cachePath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", [g_sDataManager userName]]];
+                                        self.taskInfo.transferedBlocks =0;
+                                        self.taskInfo.transferedBytes = 0;
+                                        self.taskInfo.currentProgress = 0;
+                                        self.taskInfo.taskStatus = FAILURE;
+                                        NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"下载失败" ,@"taskStatus",@"enable",@"btnState",@"重新下载",@"caption", nil];
+                                        [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
                                         return;
                                     }
-                                }
-                                else {
-                                    [fileData writeToFile:self.taskInfo.cachePath options:NSAtomicWrite error:nil];
-                                }
+                                    else {
+                                  //      [FileTools deleteFileByUrl:self.taskInfo.cachePath];
+                                        [fileData writeToFile:self.taskInfo.cachePath options:NSAtomicWrite error:nil];
+                                    }
+                                }//释放锁
                                 if (fileData) {
                                     fileData = nil;
                                 }
@@ -143,7 +169,7 @@
                         }
                     }
                     //如果手动取消任务，需要发送信息给主线程，防止取消前的最后一块尚未处理完毕，用户直接点击恢复按钮，导致出现问题
-                    if (self.isCancelled) {
+                    if (self.isCancelled && [self.taskInfo.taskStatus isEqualToString:CANCLED]) {
                         self.taskInfo.taskStatus = CANCLED;
                         NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
                         //在主线程刷新UI
@@ -159,7 +185,6 @@
     @catch (NSException *exception) {
         NSLog(@"==================");
     }
-    
 }
 
 @end

@@ -10,13 +10,13 @@
 #import "CloudLoginViewController.h"
 #import "CloudLoginSuccessViewController.h"
 #import "RegisterSuccessViewController.h"
-//#import "FileTools.h"
 #import "DataManager.h"
-//#import "QuartzCore/QuartzCore.h"
 
 @interface CloudRegisterViewController (){
     
-    IBOutlet UIActivityIndicatorView *activityView;
+    IBOutlet UIView *promotView;
+    
+    __weak IBOutlet UIActivityIndicatorView *move;
 }
 
 @end
@@ -25,7 +25,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor blueColor]};
     self.navigationItem.title = @"co-cloud账户注册";
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     left.frame =CGRectMake(0, 0, 32, 32);
@@ -33,39 +32,25 @@
     [left addTarget: self action: @selector(returnAction:) forControlEvents: UIControlEventTouchUpInside];
     UIBarButtonItem* itemLeft=[[UIBarButtonItem alloc]initWithCustomView:left];
     self.navigationItem.leftBarButtonItem=itemLeft;
-    
-    activityView.frame = CGRectMake((self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100, (self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100);
-    [activityView setHidden:YES];
-    
-    self.email.layer.borderColor = [UIColor blackColor].CGColor;
-    self.cocloudid.layer.borderColor = [UIColor blackColor].CGColor;
-    // 创建复选框 使用UIButton模拟复选框
-    UIButton *checkbox = [UIButton buttonWithType:UIButtonTypeCustom];
-    
-    CGRect checkboxRect = CGRectMake(40,170,25,20);
-    [checkbox setFrame:checkboxRect];
-    
-    [checkbox setImage:[UIImage imageNamed:@"checkbox-down"] forState:UIControlStateNormal];
-    [checkbox setImage:[UIImage imageNamed:@"checkall"] forState:UIControlStateSelected];
-    
-    [checkbox addTarget:self action:@selector(checkboxClick:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:checkbox];
-    
-    // 加载页面的时候先吧确认按钮置为不可用
-    if(!checkbox.selected){
-        [self.registerButton setEnabled:NO];
-    }
+    [promotView setHidden:YES];
+    [self.registerButton setEnabled:NO];
+    [self.email becomeFirstResponder];
+    promotView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    promotView.layer.borderWidth = 1;
 }
 
-// 当点击复选框的时候复选框的选择与未选择状态切换 同时切换下面的确认按钮的状态
--(void)checkboxClick:(UIButton *)btn
-{
-    btn.selected = !btn.selected;
-    if(!self.registerButton.enabled){
+- (IBAction)change:(UIButton*)sender{
+    sender.selected = !sender.selected;
+    if(sender.selected){
         [self.registerButton setEnabled:YES];
     }else{
         [self.registerButton setEnabled:NO];
     }
+}
+
+- (IBAction)touch:(id)sender {
+    [self.email resignFirstResponder];
+    [self.cocloudid resignFirstResponder];
 }
 
 - (void)returnAction:(UIBarButtonItem *)sender {
@@ -79,42 +64,49 @@
 // 注册验证
 - (IBAction)registers:(id)sender {
     
+    [self.email resignFirstResponder];
+    [self.cocloudid resignFirstResponder];
     NSString *regexs = @"^[a-zA-Z0-9]*$";
     NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     
     NSPredicate *predicates = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexs];
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
     
-    if([self.email.text isEqualToString:@""]||[self.cocloudid.text isEqualToString:@""]){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"请将信息填写完整" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+    if([self.email.text isEqualToString:@""]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"电子邮件不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
+        [self.email becomeFirstResponder];
+        return ;
+    }
+    if([self.cocloudid.text isEqualToString:@""]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"云id不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.cocloudid becomeFirstResponder];
         return ;
     }
     if([emailTest evaluateWithObject:self.email.text] == NO){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"请输入一个正确的邮箱地址" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"电子邮件不合法" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
+        [self.email becomeFirstResponder];
         return ;
     }
     if ([predicates evaluateWithObject:self.cocloudid.text] == NO) {
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"云id应该由字母和数字组成" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"Co-cloud-id应为数字或字母大小写" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
+        [self.cocloudid becomeFirstResponder];
         return ;
     }
     if([self.cocloudid.text length]<6){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"云id长度请大于6" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"Co-cloud-id长度应大于6位" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
+        [self.cocloudid becomeFirstResponder];
         return ;
     }
-    //    CloudLoginSuccessViewController* cl = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
-    //    cl.email = self.email.text;
-    //    cl.cocloudid = self.cocloudid.text;
-    //    [self.navigationController pushViewController:cl animated:YES];
-    //    CloudLoginViewController* cl = [[CloudLoginViewController alloc]initWithNibName:@"CloudLoginViewController" bundle:nil];
-    //    cl.email = self.email.text;
-    //    cl.cid = self.cocloudid.text;
-    //    [self.navigationController pushViewController:cl animated:YES];
-    [activityView setHidden:NO];
-    [activityView startAnimating];
+    [self.registerButton setEnabled:NO];
+    [promotView setHidden:NO];
+    [move startAnimating];
+    [self.email resignFirstResponder];
+    [self.cocloudid resignFirstResponder];
     [self registerCheck];
     
 }
@@ -130,45 +122,55 @@
     [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
         //get data
         NSString *result = completedOperation.responseJSON[@"result"];
-        NSLog(@"~~~~~%@",completedOperation.responseJSON);
-        int results = [result intValue];
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
-        if(results==0){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，注册失败，请重新填写" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        NSString *results = [NSString stringWithFormat:@"%@",result];
+        [self.registerButton setEnabled:YES];
+        [move stopAnimating];
+        [promotView setHidden:YES];
+        if([@"0" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"注册失败，请重新输入。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==2){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备MAC地址取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.email becomeFirstResponder];
+        }else if([@"2" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备MAC地址取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==3){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器该数据已存在，请修改" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.email becomeFirstResponder];
+        }else if([@"3" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器该数据已存在，请修改" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==4){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"设备非法，不允许注册" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.cocloudid becomeFirstResponder];
+        }else if([@"4" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备非法" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==5){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"中转服务器更新DB失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"5" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器更新DB失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.email becomeFirstResponder];
             [alert show];
-        }else if(results==6){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，邮件发送失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"6" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"邮件发送失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.email becomeFirstResponder];
             [alert show];
-        }else if(results==7){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备上登录信息更新失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"7" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备上登录信息更新失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.email becomeFirstResponder];
             [alert show];
-        }else if(results==1){
+        }else if([@"1" isEqualToString:results]){
             RegisterSuccessViewController* ss = [[RegisterSuccessViewController alloc]initWithNibName:@"RegisterSuccessViewController" bundle:nil];
             ss.texts = self.email.text;
             ss.cid = self.cocloudid.text;
             ss.mac = self.mac;
             [self.navigationController pushViewController:ss animated:YES];
         }else{
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
+        [self.registerButton setEnabled:YES];
+        [move stopAnimating];
+        [promotView setHidden:YES];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"注册失败，请重新输入。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
         NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+        [self.email becomeFirstResponder];
     }];
     [engine enqueueOperation:op];
 }

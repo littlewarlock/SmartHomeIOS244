@@ -38,7 +38,7 @@
     [menuItemArray addObject:@"修改密码"];
     [menuItemArray addObject:@"路由管理器"];
     [menuItemArray addObject:@"注销"];
-    [menuItemArray addObject:@"更多功能"];
+    [menuItemArray addObject:@"AP管理"];
     
     [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
     

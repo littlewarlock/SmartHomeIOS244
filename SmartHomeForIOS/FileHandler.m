@@ -12,6 +12,7 @@
 #import "NSUUIDTool.h"
 #import "FileUploadByBlockTool.h"
 #import "FileDownloadOperation.h"
+#import "FileInfo.h"
 
 @implementation FileHandler
 
@@ -54,43 +55,35 @@
  }
  }*/
 
-- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath{
-    BOOL  operationIsExist= false;
+- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath cachePath:(NSString*)cachePath{
     for (NSString *fileName in [selectedItemsDic allKeys]){
-        operationIsExist= false;
-        for (FileDownloadOperation *operation in [downloadQueue operations]) {
-            if ([operation.taskInfo.fileName isEqualToString:fileName]) {
-                operationIsExist = true;
+        TaskInfo* taskInfo = [[TaskInfo alloc] init];
+        taskInfo.taskId = [NSUUIDTool gen_uuid];
+        taskInfo.taskName =fileName;
+        taskInfo.taskType = @"下载";
+        taskInfo.fileName = fileName;
+        taskInfo.filePath = cpath;
+        taskInfo.cachePath = [NSString stringWithFormat:@"%@/%@",cachePath,fileName];
+        taskInfo.transferedBlocks = 0;
+        taskInfo.totalBytes = [self getFileSize:cpath fileName:fileName];
+        FileDownloadOperation *operation = [[FileDownloadOperation alloc] initWithTaskInfo:taskInfo];
+        operation.taskId = taskInfo.taskId;
+        operation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
+            if ([taskInfo.taskStatus isEqualToString:FINISHED]) {
+                
+                NSLog(@"completionBlock======ooooo");
+                //更新进度按钮的状态
+                NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
+                [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];
+                //更新进度条的状态信息
+                NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"已完成" ,@"taskStatus", nil];
+                //在主线程刷新UI
+                [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setTaskStatusInfo:) withObject:taskStatusDic waitUntilDone:NO];
             }
-        }
-        if (!operationIsExist) {
-            TaskInfo* taskInfo = [[TaskInfo alloc] init];
-            taskInfo.taskId = [NSUUIDTool gen_uuid];
-            taskInfo.taskName =fileName;
-            taskInfo.taskType = @"下载";
-            taskInfo.fileName = fileName;
-            taskInfo.filePath = cpath;
-            taskInfo.transferedBlocks = 0;
-            taskInfo.totalBytes = [self getFileSize:cpath fileName:fileName];
-            FileDownloadOperation *operation = [[FileDownloadOperation alloc] initWithTaskInfo:taskInfo];
-            operation.taskId = taskInfo.taskId;
-            operation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
-                if ([taskInfo.taskStatus isEqualToString:FINISHED]) {
-                    
-                    NSLog(@"completionBlock======ooooo");
-                    //更新进度按钮的状态
-                    NSMutableDictionary * btnStateDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"disable" ,@"btnState", nil];
-                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnState:) withObject:btnStateDic waitUntilDone:NO];
-                    //更新进度条的状态信息
-                    NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:taskInfo.taskId,@"taskId",@"已完成" ,@"taskStatus", nil];
-                    //在主线程刷新UI
-                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setTaskStatusInfo:) withObject:taskStatusDic waitUntilDone:NO];
-                }
-            };
-            [downloadQueue addOperation:operation];
-            [[ProgressBarViewController sharedInstance].taskDic  setObject:taskInfo forKey:taskInfo.taskId];
-            [[ProgressBarViewController sharedInstance] addProgressBarRow:taskInfo];
-        }
+        };
+        [downloadQueue addOperation:operation];
+        [[ProgressBarViewController sharedInstance].taskDic  setObject:taskInfo forKey:taskInfo.taskId];
+        [[ProgressBarViewController sharedInstance] addProgressBarRow:taskInfo];
     }
 }
 
@@ -157,8 +150,8 @@
         {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"删除成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
             [alertView show];
-            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                [self.fileHandlerDelegate requestSuccessCallBack];//调用委托方法
+            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                [self.fileHandlerDelegate requestSuccessCallback];//调用委托方法
             }
             
         }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"0"]){
@@ -207,8 +200,8 @@
         {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"共享文件成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
             [alertView show];
-            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                [self.fileHandlerDelegate requestSuccessCallBack];//调用委托方法
+            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                [self.fileHandlerDelegate requestSuccessCallback];//调用委托方法
             }
             
         }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"0"]){
@@ -219,6 +212,65 @@
         NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
     }];
     [engine enqueueOperation:op];
+}
+#pragma mark -
+#pragma mark shareFile 共享文件的处理
+-(void)shareFiles:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath isShare:(NSString*) isShare{
+    
+    @try {
+        if(selectedItemsDic.count==0 ){
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"请先选择文件夹" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+            [alertView show];
+            return ;
+        }
+        
+        NSString* requestUrl=[NSString stringWithFormat: @"http://%@/%@",[g_sDataManager requestHost],REQUEST_SHARE_URL];
+        
+        BOOL isAllSuccess =YES;
+        for (NSString *fileName  in [selectedItemsDic allKeys]){
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+            [request setTimeoutInterval:10];
+            [request setURL:[NSURL URLWithString:requestUrl]];
+            [request setHTTPMethod:@"POST"];//设置请求方式为POST，默认为GET
+            NSError * error=nil;
+            NSString* post=[NSString stringWithFormat:@"uname=%@&fileName=%@&isShare=%@",[g_sDataManager userName],fileName, [((FileInfo *)[selectedItemsDic objectForKey:fileName]).isShare isEqualToString:@"0"] ?@"1" :@"0"];
+            NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding];//设置参数
+            [request setHTTPBody:postData];
+            NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+            if (!error){
+                NSError * jsonError=nil;
+                id jsonObject = [NSJSONSerialization JSONObjectWithData:received options:NSJSONReadingAllowFragments error:&jsonError];
+                if ([jsonObject isKindOfClass:[NSDictionary class]]){
+                    NSString* result =[NSString stringWithFormat:@"%@",[jsonObject objectForKey:@"result"]];
+                    if([result isEqualToString: @"1"]){
+                        
+                    }
+                    else if([result isEqualToString: @"0"]){
+                        //此文件已被共享
+                    }
+                    else{
+                        isAllSuccess = NO;
+                    }
+                }else{
+                    isAllSuccess = NO;
+                }
+            }else{
+                isAllSuccess = NO;
+            }
+        }
+        if(isAllSuccess){
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"共享文件成功!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+            [alertView show];
+        }else{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"网络错误,共享未全部完成!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+            [alertView show];
+        }
+
+    }
+    @catch (NSException *exception) {
+        
+    }
+
 }
 -(void)renameFile:(NSString*)fileName alertViewDelegate:(nullable id)alertViewDelegate{
     NSString *fileNameNoExt = [fileName stringByDeletingPathExtension];
@@ -298,8 +350,8 @@
                     {
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"新建文件夹成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                         [alert show];
-                        if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                            [self.fileHandlerDelegate requestSuccessCallBack];//调用委托方法
+                        if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                            [self.fileHandlerDelegate requestSuccessCallback];//调用委托方法
                         }
                         
                     }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"0"]){
@@ -386,8 +438,8 @@
                     {
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"重命名成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                         [alert show];
-                        if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                            [self.fileHandlerDelegate requestSuccessCallBack];//调用委托方法
+                        if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                            [self.fileHandlerDelegate requestSuccessCallback];//调用委托方法
                         }
                         
                     }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"0"]){
@@ -521,7 +573,7 @@
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"复制成功" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil] ;
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"复制成功" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] ;
             [alert show];
         });
     }
@@ -593,10 +645,10 @@
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"移动成功" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil] ;
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"移动成功" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] ;
             [alert show];
-            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                [self.fileHandlerDelegate requestSuccessCallBack];//调用委托方法
+            if ([self.fileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                [self.fileHandlerDelegate requestSuccessCallback];//调用委托方法
             }
         });
     }
@@ -679,4 +731,5 @@
     }
     return fileLength;
 }
+
 @end

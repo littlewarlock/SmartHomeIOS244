@@ -16,7 +16,7 @@
 @property(strong,nonatomic)NSString *deviceName;
 @property(strong,nonatomic)MPMoviePlayerController *MPC;
 @property(strong,nonatomic)NSString *realTimeUrl;
-@property(strong,nonatomic)KxMovieViewController *kxvc;
+
 //hgc 2015 10 26
 @property(strong,nonatomic)NSString *onlining;
 

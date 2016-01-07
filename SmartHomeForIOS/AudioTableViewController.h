@@ -11,4 +11,5 @@
 @interface AudioTableViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,FileDialogDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *audioTableView;
+@property  BOOL isOpenFromAppList; // 从首页进入为no 从app列表进入为yes
 @end

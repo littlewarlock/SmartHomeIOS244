@@ -60,14 +60,24 @@
                             <action selector="buttonAlarmPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="XLW-Xl-U0X"/>
                         </connections>
                     </button>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="at_home" translatesAutoresizingMaskIntoConstraints="NO" id="Usp-7H-JVM">
+                        <rect key="frame" x="34" y="37" width="37" height="37"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="37" id="4SD-54-KKf"/>
+                            <constraint firstAttribute="height" constant="37" id="kQT-Sv-4ny"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="snc-ke-ad8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="14" id="0vd-fr-Tl7"/>
+                    <constraint firstItem="Usp-7H-JVM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="14" id="6Ss-kM-pUD"/>
                     <constraint firstItem="1Cq-71-MXc" firstAttribute="leading" secondItem="8NX-ll-W3x" secondAttribute="trailing" constant="21" id="DyK-Hq-cyT"/>
                     <constraint firstAttribute="bottomMargin" secondItem="N2g-IB-3Q6" secondAttribute="bottom" constant="4" id="J9A-Hh-jnB"/>
+                    <constraint firstItem="Usp-7H-JVM" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="14" id="L3k-i1-Zn0"/>
                     <constraint firstItem="11G-Ne-U71" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="LCg-Yp-tMR"/>
                     <constraint firstAttribute="trailingMargin" secondItem="N2g-IB-3Q6" secondAttribute="trailing" id="Udf-HF-SHg"/>
                     <constraint firstItem="8NX-ll-W3x" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="32" id="c35-hm-pJe"/>
+                    <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="5Bt-j7-NdR" secondAttribute="trailing" constant="14" id="e3j-35-0gL"/>
                     <constraint firstItem="5Bt-j7-NdR" firstAttribute="leading" secondItem="1Cq-71-MXc" secondAttribute="trailing" constant="21" id="eGA-Ph-qq2"/>
                     <constraint firstAttribute="bottomMargin" secondItem="11G-Ne-U71" secondAttribute="bottom" constant="4" id="fP0-8Q-B4a"/>
                     <constraint firstItem="11G-Ne-U71" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="fSv-Ld-aZR"/>
@@ -79,6 +89,7 @@
             <connections>
                 <outlet property="button" destination="1Cq-71-MXc" id="hem-al-cDf"/>
                 <outlet property="buttonAlarm" destination="5Bt-j7-NdR" id="nEM-GG-sZO"/>
+                <outlet property="imageModeRec" destination="Usp-7H-JVM" id="pcK-lR-a2w"/>
                 <outlet property="imageRec" destination="snc-ke-ad8" id="Xmr-Qh-2eG"/>
                 <outlet property="imagetest" destination="11G-Ne-U71" id="nFm-nd-RNK"/>
                 <outlet property="label" destination="8NX-ll-W3x" id="nPg-wc-Br5"/>
@@ -88,6 +99,7 @@
     </objects>
     <resources>
         <image name="alarm-open" width="29" height="27"/>
+        <image name="at_home" width="37" height="37"/>
         <image name="list-setting" width="27" height="28"/>
         <image name="rec" width="48" height="23"/>
     </resources>

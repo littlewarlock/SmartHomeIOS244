@@ -329,7 +329,7 @@ static NSMutableDictionary * gHistory;
         //        dispatch_release(_dispatchQueue);
         _dispatchQueue = NULL;
     }
-    
+    [_decoder closeFile];
     LoggerStream(1, @"%@ dealloc", self);
 }
 
@@ -357,16 +357,22 @@ static NSMutableDictionary * gHistory;
 
 - (IBAction)returnBeforeWIndowAction:(id)sender {
     
-    [self pause];
+    //[self pause];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if (_dispatchQueue) {
-        // Not needed as of ARC.
-        //        dispatch_release(_dispatchQueue);
-        _dispatchQueue = NULL;
-    }
+//    if (_dispatchQueue) {
+//        // Not needed as of ARC.
+//        //        dispatch_release(_dispatchQueue);
+//        _dispatchQueue = NULL;
+//    }
     self.navigationController.navigationBarHidden = NO;
     [self.view removeFromSuperview];
-    _decoder = nil;
+    [self removeFromParentViewController];
+    
+//    
+//    _moviePosition = 0;
+//    [_decoder closeFile];
+    //[_decoder closeFile];
+    //_decoder = nil;
 }
 
 - (void)loadView
@@ -404,7 +410,7 @@ static NSMutableDictionary * gHistory;
     
     _topHUD    = [[UIView alloc] initWithFrame:CGRectMake(0,0,0,0)];
     _topBar    = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, topH)];
-    _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, height-botH, width, botH)];
+    _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, height-botH-2, width, botH)];
     
     _topHUD.frame = CGRectMake(0,0,width,_topBar.frame.size.height);
     
@@ -421,7 +427,7 @@ static NSMutableDictionary * gHistory;
     
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _doneButton.frame = CGRectMake(0, 1, 50, topH);
+    _doneButton.frame = CGRectMake(0, 1, 100, topH);
     _doneButton.backgroundColor = [UIColor clearColor];
     [_doneButton setImage:[UIImage imageNamed:@"left-icon-alarm"] forState:UIControlStateNormal];
     _doneButton.titleLabel.font = [UIFont systemFontOfSize:18];
@@ -441,6 +447,8 @@ static NSMutableDictionary * gHistory;
     _progressSlider.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _progressSlider.continuous = NO;
     _progressSlider.value = 0;
+    [_progressSlider setMinimumTrackTintColor:[UIColor colorWithRed:16/255.0 green:142/255.0 blue:220/255.0 alpha:1]];
+    [_progressSlider setMaximumTrackTintColor:[UIColor colorWithRed:107/255.0 green:107/255.0 blue:107/255.0 alpha:1]];
     //    [_progressSlider setThumbImage:[UIImage imageNamed:@"kxmovie.bundle/sliderthumb"]
     //                          forState:UIControlStateNormal];
     
@@ -498,11 +506,11 @@ static NSMutableDictionary * gHistory;
     _playBtn.hidden  = NO;
     _pauseBtn.hidden = YES;
     
-    barView = [[UIView alloc] initWithFrame:CGRectMake(60, 5, 2,40)];
+    barView = [[UIView alloc] initWithFrame:CGRectMake(110, 5, 1,40)];
     barView.backgroundColor = [UIColor whiteColor];
     rectView.layer.cornerRadius = 5.0f;
     
-    _titleLable = [[UILabel alloc] initWithFrame:CGRectMake(70, 1, 200, 50)];
+    _titleLable = [[UILabel alloc] initWithFrame:CGRectMake(120, 1, 200, 50)];
     _titleLable.text = [[self.filePath lastPathComponent] stringByDeletingPathExtension];
     [_titleLable setTextColor:[UIColor whiteColor]];
     
@@ -510,7 +518,11 @@ static NSMutableDictionary * gHistory;
     rectView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5f];
     rectView.layer.cornerRadius = 5.0f;
     
-    m_volumeView = [[MPVolumeView alloc]initWithFrame:CGRectMake(-height*1/7, height*1/2, height*3/8, 5)];
+    m_volumeView = [[MPVolumeView alloc]initWithFrame:CGRectMake(-height*1/7, height*1/2, height*3/8, 20)];
+    /*
+    [m_volumeView setMinimumVolumeSliderImage:[[UIImage imageNamed:@"LeftTrackImage"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 4, 0, 0)]forState:UIControlStateNormal];
+    [m_volumeView setMaximumVolumeSliderImage:[[UIImage imageNamed:@"RightTrackImage"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 4)]forState:UIControlStateNormal];
+*/
     m_volumeView.transform = CGAffineTransformMakeRotation(-90* M_PI/180);
     
     
@@ -733,13 +745,14 @@ static NSMutableDictionary * gHistory;
     if (_decoder.validAudio)
         [self enableAudio:YES];
     // merged by hgc 2015 12 17 start
-    if((_decoder.duration -_moviePosition)<1.8){
-        self.playing = NO;
-        _moviePosition = 0;
-        [_decoder setPosition:0];
-        [self enableAudio:NO];
-        [self updatePlayButton];
-    }
+    NSLog(@"duration==%f",_decoder.duration);
+//    if((_decoder.duration -_moviePosition)<1.8){
+//        self.playing = NO;
+//        _moviePosition = 0;
+//        [_decoder setPosition:0];
+//        [self enableAudio:NO];
+//        [self updatePlayButton];
+//    }
     // merged by hgc 2015 12 17 end
     //hgc added 2015 11 05 start
     if (_decoder.isEOF) {
@@ -796,15 +809,13 @@ static NSMutableDictionary * gHistory;
 {
     //2015 11 06 hgc add
     if ([self isEndOfFile]) {
-        //    [self movieReplay];
-        _moviePosition = 0;
+        _moviePosition = 0.0f;
+        [_decoder setPosition:0.0f];
         _parameters = self.hgcParam;
         NSError *error = nil;
         [_decoder closeFile];
         [_decoder openFile:self.hgcPath error:&error];
-        //        [self play];
     }
-    //    else{
     //2015 11 06 hgc add
     if (self.playing){
         [self pause];
@@ -1058,31 +1069,32 @@ static NSMutableDictionary * gHistory;
                         LoggerAudio(2, @"Audio frame position: %f", frame.position);
 #endif
                         if (_decoder.validVideo) {
-                            
-                            const CGFloat delta = _moviePosition - frame.position;
-                            
-                            if (delta < -0.1) {
-                                
-                                memset(outData, 0, numFrames * numChannels * sizeof(float));
-#ifdef DEBUG
-                                LoggerStream(0, @"desync audio (outrun) wait %.4f %.4f", _moviePosition, frame.position);
-                                _debugAudioStatus = 1;
-                                _debugAudioStatusTS = [NSDate date];
-#endif
-                                break; // silence and exit
-                            }
+                            //delete by lcw 20151230
+//                            const CGFloat delta = _moviePosition - frame.position;
+                           
+//                            if (delta < -0.1) {
+//                                
+//                                memset(outData, 0, numFrames * numChannels * sizeof(float));
+//#ifdef DEBUG
+//                                LoggerStream(0, @"desync audio (outrun) wait %.4f %.4f", _moviePosition, frame.position);
+//                                _debugAudioStatus = 1;
+//                                _debugAudioStatusTS = [NSDate date];
+//#endif
+//                                
+//                                break; // silence and exit
+//                            }
                             
                             [_audioFrames removeObjectAtIndex:0];
-                            
-                            if (delta > 0.1 && count > 1) {
-                                
-#ifdef DEBUG
-                                LoggerStream(0, @"desync audio (lags) skip %.4f %.4f", _moviePosition, frame.position);
-                                _debugAudioStatus = 2;
-                                _debugAudioStatusTS = [NSDate date];
-#endif
-                                continue;
-                            }
+                             //delete by lcw 20151230
+//                            if (delta > 0.1 && count > 1) {
+//                                
+//#ifdef DEBUG
+//                                LoggerStream(0, @"desync audio (lags) skip %.4f %.4f", _moviePosition, frame.position);
+//                                _debugAudioStatus = 2;
+//                                _debugAudioStatusTS = [NSDate date];
+//#endif
+//                                continue;
+//                            }
                             
                         } else {
                             
@@ -1230,6 +1242,13 @@ static NSMutableDictionary * gHistory;
     const CGFloat duration = _decoder.isNetwork ? .0f : 0.1f;
     
     self.decoding = YES;
+//    if((_decoder.duration -_moviePosition)<0.18){
+//
+//        _playBtn.hidden =NO;
+//        _pauseBtn.hidden = YES;
+//        
+//    }
+    
     dispatch_async(_dispatchQueue, ^{
         
         {
@@ -1256,11 +1275,7 @@ static NSMutableDictionary * gHistory;
                         if (strongSelf)
                             good = [strongSelf addFrames:frames];
                     }
-                    // merged by hgc 2015 12 17 start
-                    if((_decoder.duration -_moviePosition)<0.5){
-                        [_decoder closeFile];
-                    }
-                    // merged by hgc 2015 12 17 end
+
                 }
             }
         }
@@ -1300,10 +1315,10 @@ static NSMutableDictionary * gHistory;
             if (_decoder.isEOF) {
                 
                 [self pause];
-                // hgc start
-                NSLog(@"leftFrames==%lu",(unsigned long)leftFrames);
-                _moviePosition = 0;
-                // hgc end
+//                // hgc start
+//                NSLog(@"leftFrames==%lu",(unsigned long)leftFrames);
+//                _moviePosition = 0;
+//                // hgc end
                 [self updateHUD];
                 return;
             }
@@ -1318,7 +1333,25 @@ static NSMutableDictionary * gHistory;
         if (!leftFrames ||
             !(_bufferedDuration > _minBufferedDuration)) {
             
-            [self asyncDecodeFrames];
+//            BOOL conditionMkv = [[_decoder.info[@"format"]lowercaseString] isEqualToString:@"mkv"] ;
+            
+            
+            
+//            if((_decoder.duration -_moviePosition)<2.0){
+//                _moviePosition = 0;
+//                _progressSlider.value= 0;
+//                [_decoder setPosition:0];
+//                
+//                self.playing =NO;
+//                _playBtn.hidden =NO;
+//                _pauseBtn.hidden = YES;
+//                [self updatePosition:0 playMode:NO];
+//                [self pause];
+//                //[_decoder closeFile];
+//                
+//            }else{
+                [self asyncDecodeFrames];
+//            }
         }
         
         const NSTimeInterval correction = [self tickCorrection];
@@ -1530,12 +1563,17 @@ static NSMutableDictionary * gHistory;
         return;
     
     const CGFloat duration = _decoder.duration;
-    const CGFloat position = _moviePosition -_decoder.startTime;
+    
+    CGFloat startPosition =_decoder.startTime;
+    if(startPosition<0){
+        startPosition = 0;
+    }
+    const CGFloat position = _moviePosition -startPosition;
     
     //hgc 2015 11 26
-    //    NSLog(@"duration==%f",duration);
-    //    NSLog(@"_moviePosition===%f",_moviePosition);
-    //    NSLog(@"_decoder.startTime===%f",_decoder.startTime);
+//        NSLog(@"duration==%f",duration);
+//        NSLog(@"_moviePosition===%f",_moviePosition);
+//        NSLog(@"_decoder.startTime===%f",_decoder.startTime);
     //hgc 2015 11 26
     
     if (_progressSlider.state == UIControlStateNormal)
@@ -1618,7 +1656,7 @@ static NSMutableDictionary * gHistory;
         [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeRight];
         self.view.transform = CGAffineTransformMakeRotation(M_PI/2);
         self.view.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        _titleLable.frame = CGRectMake(70, 1, SCREEN_HEIGHT-150, topH);
+        _titleLable.frame = CGRectMake(120, 1, SCREEN_HEIGHT-150, topH);
         _progressSlider.frame = CGRectMake(0, SCREEN_WIDTH-botH-topH/4, SCREEN_HEIGHT, topH/2);
         _playBtn.frame = CGRectMake(20, SCREEN_WIDTH-50+1, botH, topH);
         _pauseBtn.frame = CGRectMake(20, SCREEN_WIDTH-50+1, botH, topH);
@@ -1631,7 +1669,7 @@ static NSMutableDictionary * gHistory;
         self.view.transform = CGAffineTransformMakeRotation(M_PI*2);
         self.view.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         _bottomView.frame= CGRectMake(0, SCREEN_HEIGHT-botH, SCREEN_WIDTH, botH);
-        _titleLable.frame = CGRectMake(70, 1, SCREEN_WIDTH-150, topH);
+        _titleLable.frame = CGRectMake(120, 1, SCREEN_WIDTH-150, topH);
         _progressSlider.frame =CGRectMake(0, SCREEN_HEIGHT-50-topH/4, SCREEN_WIDTH, topH/2);
         _playBtn.frame =CGRectMake( 20, SCREEN_HEIGHT-botH+1, botH, topH);
         _pauseBtn.frame =CGRectMake(20, SCREEN_HEIGHT-botH+1, botH, topH);
@@ -1666,16 +1704,17 @@ static NSMutableDictionary * gHistory;
     
     position = MIN(_decoder.duration - 1, MAX(0, position));
     // merged by hgc 2015 12 17 start
-    if((_decoder.duration - position)<1.8 || position <1.8){
-        self.playing = NO;
-        _moviePosition = 0;
-        _progressSlider.value= 0;
-        [_decoder setPosition:0];
-        [self enableAudio:NO];
-        [self updatePlayButton];
-        [self playDidTouch:nil];
-        return;
-    }
+//    if((_decoder.duration - position)<1.8 || position <1.8){
+//        self.playing = NO;
+//        _moviePosition = 0;
+//        _progressSlider.value= 0;
+//        [_decoder setPosition:0];
+//        [self enableAudio:NO];
+//        [self updatePlayButton];
+//        [self playDidTouch:nil];
+//        return;
+//    }
+    
     // merged by hgc 2015 12 17 end
     __weak KxMovieView *weakSelf = self;
     
@@ -2079,6 +2118,7 @@ static NSMutableDictionary * gHistory;
     
     return imageKX;
 }
+
 
 @end
 

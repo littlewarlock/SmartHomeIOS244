@@ -28,17 +28,17 @@
 - (void)uploadFileWithHttp:(NSOperationQueue *)uploadQueue fileName:(NSString*) fileName localFilePath:(NSString*)localFilePath    serverCpath:(NSString*)serverCpath;
 
 #pragma mark -
-#pragma mark downLoadFiles 下载文件的处理
+#pragma mark downloadFiles 下载文件的处理
 //- (void)downloadFiles:(NSOperationQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
 
-- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
+- (void)downloadFiles:(NSOperationDownloadQueue *)downloadQueue selectedItemsDic: (NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath cachePath:(NSString*)cachePath;
 #pragma mark -
 #pragma mark deleteFiles 删除文件的处理(可多个)
 -(void)deleteFiles:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath;
 #pragma mark -
 #pragma mark shareFile 共享文件的处理
 -(void)shareFile:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath isShare:(NSString*)isShare;
-
+-(void)shareFiles:(NSMutableDictionary*) selectedItemsDic cpath:(NSString*)cpath isShare:(NSString*)isShare;
 -(void)renameFile:(NSString*)fileName alertViewDelegate:(nullable id)alertViewDelegate;
 
 -(void)createFolder:(nullable id)alertViewDelegate;
@@ -58,4 +58,5 @@
 -(void)signal:(NSString*)opType;
 
 -(long long int)getFileSize:(NSString*)filePath fileName:(NSString*)fileName;
+
 @end

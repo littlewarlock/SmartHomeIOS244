@@ -30,7 +30,7 @@
 + (NSString*)getUserDataFilePath;
 +(void) saveIPInPlist:(NSString *) textFieldIp;
 +(void) removeUserFromPliset;
-+ (void) saveUserInPlist: (NSString *) userName passWord:(NSString *)passWord;
++ (void) saveUserInPlist: (NSString *) userName passWord:(NSString *)passWord isAutoLogin:(BOOL *)isAutoLogin;
 +(long long)getFileSize:(NSString*)fileNamePath;
 
 //获取path目录下的所有文件
@@ -41,4 +41,10 @@
 //将相册移动到指定目录下
 - (void) moveAssets:(NSDictionary *)paramsDic;
 +(UIImage*)getVideoDuartionAndThumb:(NSString *)videoURL;
+
++(NSString *)convertFileSize:(NSString *) byte;
+
+#pragma mark -
+#pragma mark getDuplicateFileNames 返回指定目录下的所有重名文件名称
++(NSMutableArray*)getDuplicateFileNames:(NSString*)path fileNames:(NSArray*)fileNamesArray;
 @end

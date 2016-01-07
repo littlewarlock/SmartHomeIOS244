@@ -969,6 +969,7 @@ _messageLabel.hidden = YES;
                     NSUInteger count = _audioFrames.count;
                     
                     if (count > 0) {
+//                        NSLog(@"count==%lu",(unsigned long)count);
                         
                         KxAudioFrame *frame = _audioFrames[0];
 
@@ -989,7 +990,7 @@ _messageLabel.hidden = YES;
 #endif
                                 
                                 //2015 12 29 hgc start
-                                [self playDidTouch:(nil)];
+//                                [self playDidTouch:(nil)];
                                 //2015 12 29 hgc end
                                 break; // silence and exit
 

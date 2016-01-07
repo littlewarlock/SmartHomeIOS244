@@ -146,9 +146,10 @@
 #pragma mark -
 #pragma mark downLoadAction 下载
 - (void)downloadAction:(id *)sender {
+    /*
     [fileHandler downloadFiles:downloadQueue selectedItemsDic:  selectedItemsDic cpath:self.cpath];
     [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
-    [selectedItemsDic removeAllObjects];
+    [selectedItemsDic removeAllObjects];*/
 }
 
 #pragma mark -
@@ -200,29 +201,32 @@
 
             __block NSUInteger index =[tableDataDic count];
             //获取文件
-            [responseJSONResult enumerateObjectsUsingBlock:^(NSDictionary *dict, NSUInteger idx, BOOL *stop) {
-                
-                if (responseJSONResult && responseJSONResult.count>0) {
-                    FileInfo *fileInfo = [[FileInfo alloc] init];
-                    fileInfo.fileName = dict[@"file_name"];
-                    fileInfo.fileSize = dict[@"file_size"];
-                    fileInfo.fileId  = dict[@"file_id"];
-                    fileInfo.fileChangeTime = dict[@"file_chtime"];
-                    fileInfo.fileSubtype =[fileInfo.fileName pathExtension];
-                    if (!fileInfo.fileSubtype || [fileInfo.fileSubtype isEqualToString:@""]) {
-                        fileInfo.fileSubtype=@"";
-                    }
-//                        if ([fileInfo.fileSubtype isEqualToString:@"jpg"] || [fileInfo.fileSubtype isEqualToString:@"png"]) {
-//                            NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
-//                            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[g_sDataManager userName],self.cpath,fileInfo.fileName];
-//                            [pics addObject:picUrl];
-//                        }
-                    [tableDataDic setObject:fileInfo forKey:[NSString stringWithFormat:@"%zi", index]];
-                    index++;
-                }
-            }];
             
-            [self.fileListTableView reloadData];
+            if(![responseJSONResult isEqual:[NSNull null]]){
+                [responseJSONResult enumerateObjectsUsingBlock:^(NSDictionary *dict, NSUInteger idx, BOOL *stop) {
+                    
+                    if (responseJSONResult && responseJSONResult.count>0) {
+                        FileInfo *fileInfo = [[FileInfo alloc] init];
+                        fileInfo.fileName = dict[@"file_name"];
+                        //fileInfo.fileSize = dict[@"file_size"];
+                        fileInfo.fileId  = dict[@"file_id"];
+                        fileInfo.fileChangeTime = dict[@"file_chtime"];
+                        fileInfo.fileSubtype =[fileInfo.fileName pathExtension];
+                        if (!fileInfo.fileSubtype || [fileInfo.fileSubtype isEqualToString:@""]) {
+                            fileInfo.fileSubtype=@"";
+                        }
+    //                        if ([fileInfo.fileSubtype isEqualToString:@"jpg"] || [fileInfo.fileSubtype isEqualToString:@"png"]) {
+    //                            NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
+    //                            picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[g_sDataManager userName],self.cpath,fileInfo.fileName];
+    //                            [pics addObject:picUrl];
+    //                        }
+                        [tableDataDic setObject:fileInfo forKey:[NSString stringWithFormat:@"%zi", index]];
+                        index++;
+                    }
+                }];
+                
+                [self.fileListTableView reloadData];
+            }
         }
         if (isShowLoading) {
             if (loadingView)

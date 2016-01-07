@@ -17,7 +17,7 @@
 + (void)getDeviceList:(id)sender;
 + (void)getDeviceList:(id)sender withBlock:(void (^)(NSArray *deviceList,NSError *error))block;
 + (void)cameraDiscovery:(id)sender withBlock:(void (^)(NSArray *deviceList,NSError *error))block;
-+ (void)realTimeCameraStreamWithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *result, NSString *message, NSString *stream, NSString *ptz, NSString *monitoring, NSError *error))block;
++ (void)realTimeCameraStreamWithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *result, NSString *message, NSString *stream, NSString *ptz, NSString *monitoring, NSString *recording, NSString *mode, NSError *error))block;
 + (void)realTimeCameraSnapshotWithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *result, NSString *message, NSString *image,NSError *error))block;
 +(void)cameraControlWithDirection:(NSString *)direction withDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *result, NSString *message,NSError *error))block;
 + (void)cameraControlStopwithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *result, NSString *message, NSError *error))block;
@@ -57,6 +57,8 @@
 + (void)setAlarmMsgReadedWithMsgIds:(NSArray *)msgIds withBlock:(void (^)(NSString *result, NSString *message, NSError *error))block;
 //取得摄像头截图历史录像记录
 + (void)getCameraSnapshotHistoryWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *result, NSString *message, NSArray *times,NSArray *videos, NSError *error))block;
+//取得摄像头mode历史录像记录
++ (void)getCameraModeRecordHistoryWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *result, NSString *message, NSArray *times,NSArray *videos, NSError *error))block;
 
 
 

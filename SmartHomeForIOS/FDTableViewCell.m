@@ -27,6 +27,9 @@
         self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:file.fileName];
         
         self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
+        if([file.isShare isEqualToString:@"1"]){
+            self.imageView.image =  [UIImage imageNamed:@"share-icon"];
+        }
         self.textLabel.text = file.fileName;
         [self.textLabel setTextColor:[UIColor colorWithRed:82.0/255 green:82.0/255 blue:82.0/255 alpha:1] ];
         [self setDetailText];

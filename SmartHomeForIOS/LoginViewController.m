@@ -13,6 +13,7 @@
 #import "DeckTableViewController.h"
 #import "Reachability.h"
 #import "LoginHandler.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 #define WIDTH_LOADINGVIEW_BLACKVIEW   200
 #define HEIGHT_LOADINGVIEW_BLACKVIEW  120
@@ -20,21 +21,6 @@
 #define TV_Cell_Height 24
 #define TAG_TV_LIST 101
 #define TAG_TV_SEARCH 102
-
-@interface LoginViewController()
-
-@property (weak, nonatomic) IBOutlet UIView *ipView;
-
-@property (weak, nonatomic) IBOutlet UIView *loginView;
-
-@property (weak, nonatomic) IBOutlet UIView *passwordView;
-
-
-
-
-
-@end
-
 
 
 @implementation LoginViewController{
@@ -56,9 +42,6 @@
     [self.tvList setBackgroundColor:[UIColor colorWithRed:94.0/255 green:94.0/255 blue:94.0/255 alpha:0.5]];
     [self.tvSearch setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];//设置表尾不显示，就不显示多余的横线
     [self.tvList setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];//设置表尾不显示，就不显示多余的横线
-    
-    //    [self.tvSearch setBackgroundColor:[UIColor clearColor]];
-    //    [self.tvList setBackgroundColor:[UIColor clearColor]];
     //设置本地文档按钮是否可见
     if(self.isShowLocalFileBtn)
     {
@@ -103,15 +86,17 @@
     
     NSString *userListPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
     dictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:userListPath];
-    NSMutableArray *savedUserInfoArray = [dictionary objectForKey:@"UserInfo"];
-    
-    [savedUserInfoArray enumerateObjectsUsingBlock:^(NSDictionary *desDictionary, NSUInteger idx, BOOL *stop) {
-        self.userNameField.text=desDictionary[@"userName"];
-        self.userPasswordField.text =desDictionary[@"userPassword"];
-        self.checkBox.selected =YES;
-    }];
     self.checkBox.selected =NO;
     self.isConnetNetServer =NO;
+    NSMutableArray *savedUserInfoArray = [dictionary objectForKey:@"UserInfo"];
+    [savedUserInfoArray enumerateObjectsUsingBlock:^(NSDictionary *desDictionary, NSUInteger idx, BOOL *stop) {
+        self.checkBox.selected =[desDictionary[@"isAutoLogin"] isEqualToString:@"YES"];
+        if(self.checkBox.selected){
+            self.userNameField.text=desDictionary[@"userName"];
+            self.userPasswordField.text =desDictionary[@"userPassword"];
+        }
+    }];
+
     
     loginHandler = [[LoginHandler alloc] init];
     loginHandler.loginHandlerDelegate = self;
@@ -406,7 +391,9 @@
                     reuseIdentifier:cellId];
         }
         cell.layer.borderWidth = 0;
-        cell.textLabel.text = self.arrayIps2[indexPath.row];
+        NSRange range  = [self.arrayIps2[indexPath.row] rangeOfString:@"="];
+        //NSString *subIP = [searchedOrSavedAdressStr  substringFromIndex:range.location+1];
+        cell.textLabel.text = [self.arrayIps2[indexPath.row]  substringToIndex:range.location];
         cell.textLabel.font = [UIFont systemFontOfSize: 20.0];
         cell.backgroundColor = [UIColor clearColor];
         return cell;
@@ -543,15 +530,17 @@
                 self.loadingView = nil;
             }
             [FileTools saveIPInPlist :self.textFieldIp.text];
-            if(self.checkBox.selected){
-                [FileTools saveUserInPlist:self.userNameField.text passWord:self.userPasswordField.text];
-            }else{
-                [FileTools removeUserFromPliset];
-            }
+            //if(self.checkBox.selected){
+            [FileTools saveUserInPlist:self.userNameField.text passWord:self.userPasswordField.text isAutoLogin:self.checkBox.selected];
+//            }else{
+//                [FileTools removeUserFromPliset];
+//            }
             
             [g_sDataManager setUserName:self.userNameField.text ];
             [g_sDataManager setPassword:self.userPasswordField.text];
             [g_sDataManager setRequestHost:requestHost];
+            [g_sDataManager setLogoutFlag:@"0"];
+            
             if (![[NSFileManager defaultManager] fileExistsAtPath:kDocument_Folder]) {
                 [[NSFileManager defaultManager] createDirectoryAtPath:kDocument_Folder withIntermediateDirectories:YES attributes:nil error:nil];
             }
@@ -574,6 +563,43 @@
                 
                 deckController.delegateMode = IIViewDeckDelegateOnly;
                 // self.window.rootViewController = deckController;
+                if ( [self  isIP:self.textFieldIp.text ]) {
+                    //请求php
+                    NSString* url = [NSString stringWithFormat:@"%@/smarty_storage/phone",[g_sDataManager requestHost]];
+                    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
+                    [engine useCache];
+                    MKNetworkOperation *op = [engine operationWithPath:@"checkshowstatus.php" params:nil httpMethod:@"POST"];
+                    //操作返回数据
+                    [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
+                        NSString *result = completedOperation.responseJSON[@"result"];
+                        NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
+                        if([@"0" isEqualToString:result]){
+                            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"设备获取登录信息失败,无法获取id!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                            [alert show];
+                        }else if([@"1" isEqualToString:result]){
+                            NSString *cId = completedOperation.responseJSON[@"cid"];
+                            [g_sDataManager setCId: cId];
+                            if(![cId isEqualToString:@""]){
+                                AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+                                [currentInstallation addUniqueObject:[g_sDataManager cId] forKey:@"channels"];
+                                [currentInstallation saveInBackground];
+                            }
+                        }
+                    } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+                        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                        [alert show];
+                        NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+                    }];
+                    [engine enqueueOperation:op];
+                }else{
+                    [g_sDataManager setCId: self.textFieldIp.text];
+                    if(![self.textFieldIp.text isEqualToString:@""]){
+                        AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+                        [currentInstallation addUniqueObject:[g_sDataManager cId] forKey:@"channels"];
+                        [currentInstallation saveInBackground];
+                    }
+                }
+                
                 [self presentViewController:deckController animated:NO completion:nil];
             }else{
                 [self.navigationController popViewControllerAnimated:NO];
@@ -583,7 +609,7 @@
             }
             NSDictionary *sessionId =  [responseJSON objectForKey:@"session_id"];
             NSString *userId = [NSString stringWithFormat:@"%@",[sessionId objectForKey:@"userId"]];
-            NSString *userType = [NSString stringWithFormat:@"%@",[sessionId objectForKey:@"userType"]];
+            NSString *userType = [NSString stringWithFormat:@"%@",[sessionId objectForKey:@" "]];
             [g_sDataManager setUserId:userId ];
             [g_sDataManager setUserType:userType ];
             
@@ -626,7 +652,7 @@
 
 
 - (IBAction)textFieldDoneEditing:(id)sender {
-    [self setSavedPasswordInTextField];
+    //[self setSavedPasswordInTextField];
     [sender resignFirstResponder];
 }
 

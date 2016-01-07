@@ -11,6 +11,8 @@
 		200563D21C20FEA70062B193 /* KxMovieDecoderVer2.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D11C20FEA70062B193 /* KxMovieDecoderVer2.m */; };
 		200563D51C20FF000062B193 /* FileDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D41C20FF000062B193 /* FileDownloadOperation.m */; };
 		200563D81C20FF0B0062B193 /* NSOperationDownloadQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */; };
+		202173DD1C3CE8760025679E /* CustomIOSAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 202173DC1C3CE8760025679E /* CustomIOSAlertView.m */; };
+		202173E01C3CE8800025679E /* TableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 202173DF1C3CE8800025679E /* TableViewDelegate.m */; };
 		20463ECB1BCB5B9100B3B8B7 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC41BCB5B9100B3B8B7 /* libavcodec.a */; };
 		20463ECC1BCB5B9100B3B8B7 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC51BCB5B9100B3B8B7 /* libavdevice.a */; };
 		20463ECD1BCB5B9100B3B8B7 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20463EC61BCB5B9100B3B8B7 /* libavfilter.a */; };
@@ -94,6 +96,10 @@
 		20AE983D1BCE710C0041AB50 /* UserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AE983B1BCE710C0041AB50 /* UserInfo.m */; };
 		20AE98401BCE711D0041AB50 /* FileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AE983F1BCE711D0041AB50 /* FileInfo.m */; };
 		20AE98431BCE712A0041AB50 /* AppInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AE98411BCE712A0041AB50 /* AppInfo.m */; };
+		20BF60DB1C3BA3AB00EFB569 /* camera_history_photo_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 20BF60D71C3BA3AB00EFB569 /* camera_history_photo_down.png */; };
+		20BF60DC1C3BA3AB00EFB569 /* camera_history_photo_prohibt.png in Resources */ = {isa = PBXBuildFile; fileRef = 20BF60D81C3BA3AB00EFB569 /* camera_history_photo_prohibt.png */; };
+		20BF60DD1C3BA3AB00EFB569 /* camera_history_video_down.png in Resources */ = {isa = PBXBuildFile; fileRef = 20BF60D91C3BA3AB00EFB569 /* camera_history_video_down.png */; };
+		20BF60DE1C3BA3AB00EFB569 /* camera_history_video_prohibt.png in Resources */ = {isa = PBXBuildFile; fileRef = 20BF60DA1C3BA3AB00EFB569 /* camera_history_video_prohibt.png */; };
 		20D76ACB1C16748300C62AB9 /* AlbumCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D76AC91C16748300C62AB9 /* AlbumCollectionViewController.m */; };
 		20D76AD01C16749700C62AB9 /* RootLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D76ACE1C16749700C62AB9 /* RootLoginViewController.m */; };
 		20D76AD11C16749700C62AB9 /* RootLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20D76ACF1C16749700C62AB9 /* RootLoginViewController.xib */; };
@@ -541,6 +547,10 @@
 		200563D41C20FF000062B193 /* FileDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileDownloadOperation.m; sourceTree = "<group>"; };
 		200563D61C20FF0B0062B193 /* NSOperationDownloadQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSOperationDownloadQueue.h; sourceTree = "<group>"; };
 		200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOperationDownloadQueue.m; sourceTree = "<group>"; };
+		202173DB1C3CE8760025679E /* CustomIOSAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomIOSAlertView.h; sourceTree = "<group>"; };
+		202173DC1C3CE8760025679E /* CustomIOSAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomIOSAlertView.m; sourceTree = "<group>"; };
+		202173DE1C3CE8800025679E /* TableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewDelegate.h; sourceTree = "<group>"; };
+		202173DF1C3CE8800025679E /* TableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewDelegate.m; sourceTree = "<group>"; };
 		20463EC41BCB5B9100B3B8B7 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
 		20463EC51BCB5B9100B3B8B7 /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavdevice.a; sourceTree = "<group>"; };
 		20463EC61BCB5B9100B3B8B7 /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
@@ -676,6 +686,10 @@
 		20AE983F1BCE711D0041AB50 /* FileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileInfo.m; sourceTree = "<group>"; };
 		20AE98411BCE712A0041AB50 /* AppInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInfo.m; sourceTree = "<group>"; };
 		20AE98421BCE712A0041AB50 /* AppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfo.h; sourceTree = "<group>"; };
+		20BF60D71C3BA3AB00EFB569 /* camera_history_photo_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_history_photo_down.png; sourceTree = "<group>"; };
+		20BF60D81C3BA3AB00EFB569 /* camera_history_photo_prohibt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_history_photo_prohibt.png; sourceTree = "<group>"; };
+		20BF60D91C3BA3AB00EFB569 /* camera_history_video_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_history_video_down.png; sourceTree = "<group>"; };
+		20BF60DA1C3BA3AB00EFB569 /* camera_history_video_prohibt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera_history_video_prohibt.png; sourceTree = "<group>"; };
 		20D76AC81C16748300C62AB9 /* AlbumCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlbumCollectionViewController.h; sourceTree = "<group>"; };
 		20D76AC91C16748300C62AB9 /* AlbumCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlbumCollectionViewController.m; sourceTree = "<group>"; };
 		20D76ACA1C16748300C62AB9 /* AlbumCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AlbumCollectionViewController.xib; sourceTree = "<group>"; };
@@ -2117,6 +2131,10 @@
 		480AE38E1BB4FAD4006C1ACD /* Device */ = {
 			isa = PBXGroup;
 			children = (
+				20BF60D71C3BA3AB00EFB569 /* camera_history_photo_down.png */,
+				20BF60D81C3BA3AB00EFB569 /* camera_history_photo_prohibt.png */,
+				20BF60D91C3BA3AB00EFB569 /* camera_history_video_down.png */,
+				20BF60DA1C3BA3AB00EFB569 /* camera_history_video_prohibt.png */,
 				221AC76D1BE07091005643CC /* iconfont-luzhiguanli.png */,
 				221AC76E1BE07091005643CC /* iconfont-setting-3.png */,
 				221AC76F1BE07091005643CC /* snapshot.cgi.jpg */,
@@ -2502,6 +2520,10 @@
 		483F537D1B96CDE90011E153 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				202173DE1C3CE8800025679E /* TableViewDelegate.h */,
+				202173DF1C3CE8800025679E /* TableViewDelegate.m */,
+				202173DB1C3CE8760025679E /* CustomIOSAlertView.h */,
+				202173DC1C3CE8760025679E /* CustomIOSAlertView.m */,
 				200563D61C20FF0B0062B193 /* NSOperationDownloadQueue.h */,
 				200563D71C20FF0B0062B193 /* NSOperationDownloadQueue.m */,
 				200563D31C20FF000062B193 /* FileDownloadOperation.h */,
@@ -3089,6 +3111,7 @@
 				22C3527D1BE21CBB00C48F86 /* VideoTableViewController.xib in Resources */,
 				22775E791BEA170900470D28 /* CameraListSetAllViewController.xib in Resources */,
 				22A4E7A41BEB63F700184279 /* local-icon@2x.png in Resources */,
+				20BF60DD1C3BA3AB00EFB569 /* camera_history_video_down.png in Resources */,
 				48D8A9591B9EBA8D00DC0D97 /* cab.png in Resources */,
 				48D8A98F1B9EBA8D00DC0D97 /* log_x.png in Resources */,
 				48D8A9581B9EBA8D00DC0D97 /* cab_x.png in Resources */,
@@ -3119,6 +3142,7 @@
 				22C352C61BE21D3500C48F86 /* AppNameAndIconCell.xib in Resources */,
 				4831AB8F1B870B660060D2D3 /* LaunchScreen.xib in Resources */,
 				4831AB8C1B870B660060D2D3 /* Images.xcassets in Resources */,
+				20BF60DC1C3BA3AB00EFB569 /* camera_history_photo_prohibt.png in Resources */,
 				221AC7781BE07091005643CC /* iconfont-setting-3.png in Resources */,
 				48D8A9BF1B9EBA8D00DC0D97 /* status_done_big.png in Resources */,
 				22775E751BEA170900470D28 /* CameraListViewController.xib in Resources */,
@@ -3212,6 +3236,7 @@
 				48D8A9911B9EBA8D00DC0D97 /* login_logo.png in Resources */,
 				221AC7771BE07091005643CC /* iconfont-luzhiguanli.png in Resources */,
 				22DFAD711BEA073500697900 /* move@2x.png in Resources */,
+				20BF60DB1C3BA3AB00EFB569 /* camera_history_photo_down.png in Resources */,
 				204CB0A61C0D9B1800191E1D /* CloudRegisterViewController.xib in Resources */,
 				20D76AD61C1674AB00C62AB9 /* UpdatePasswordViewController.xib in Resources */,
 				20DEA0301C1A656C0037F1C6 /* SmallCollectionViewCell.xib in Resources */,
@@ -3260,6 +3285,7 @@
 				20699D4A1BFAFAEA002BA63E /* AlarmMessageListCell.xib in Resources */,
 				48D8A9B01B9EBA8D00DC0D97 /* pptx.png in Resources */,
 				48D8A95C1B9EBA8D00DC0D97 /* check-1.png in Resources */,
+				20BF60DE1C3BA3AB00EFB569 /* camera_history_video_prohibt.png in Resources */,
 				48D8A9621B9EBA8D00DC0D97 /* dat.png in Resources */,
 				48D8A9CB1B9EBA8D00DC0D97 /* tiff_x.png in Resources */,
 				48D8A9C41B9EBA8D00DC0D97 /* status_update_small.png in Resources */,
@@ -3481,6 +3507,7 @@
 				4831AB841B870B660060D2D3 /* AppDelegate.m in Sources */,
 				20DEA0321C1A656C0037F1C6 /* SmallLayout.m in Sources */,
 				22775E8A1BEA170900470D28 /* CameraRecordHistoryViewCell.m in Sources */,
+				202173E01C3CE8800025679E /* TableViewDelegate.m in Sources */,
 				48F4A2E51BACF4EA007F13D9 /* UIImage+MultiFormat.m in Sources */,
 				20AE983D1BCE710C0041AB50 /* UserInfo.m in Sources */,
 				2095E2271BFD6B80008507E8 /* NSStream+SKPSMTPExtensions.m in Sources */,
@@ -3534,6 +3561,7 @@
 				20548E141C08012700E19F66 /* MJRefreshAutoGifFooter.m in Sources */,
 				48F4A2E61BACF4EA007F13D9 /* UIImageView+HighlightedWebCache.m in Sources */,
 				2002B11B1BF1E5AF008743B5 /* FunctionManageTools.m in Sources */,
+				202173DD1C3CE8760025679E /* CustomIOSAlertView.m in Sources */,
 				226498D31BDA098B00E080A2 /* JTCalendarMonthView.m in Sources */,
 				22775E8E1BEA170900470D28 /* CameraRecodHistoryCanlender.m in Sources */,
 				20DEA02F1C1A656C0037F1C6 /* SmallCollectionViewCell.m in Sources */,
@@ -3702,7 +3730,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: 广琛 胡 (RMS354D7W9)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: 广琛 胡 (RMS354D7W9)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3745,7 +3773,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: 广琛 胡 (RMS354D7W9)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: 广琛 胡 (RMS354D7W9)";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (

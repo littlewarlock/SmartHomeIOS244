@@ -27,5 +27,6 @@
 - (IBAction)finish:(id)sender;
 - (IBAction)check:(id)sender;
 - (IBAction)registerAgain:(id)sender;
+- (IBAction)touch:(id)sender;
 
 @end

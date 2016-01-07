@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9046" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AlbumCollectionViewController">
@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" indicatorStyle="white" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Zxh-az-SmR">
-                    <rect key="frame" x="0.0" y="-8" width="320" height="568"/>
+                    <rect key="frame" x="0.0" y="-8" width="320" height="534"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="wMI-S4-23h">
                         <size key="itemSize" width="50" height="50"/>
                         <size key="headerReferenceSize" width="50" height="50"/>
@@ -35,7 +35,7 @@
                 <constraint firstItem="Zxh-az-SmR" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="3rX-zf-tfp"/>
                 <constraint firstItem="Zxh-az-SmR" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="AZ4-2i-G26"/>
                 <constraint firstAttribute="trailing" secondItem="Zxh-az-SmR" secondAttribute="trailing" id="aE8-b2-3w8"/>
-                <constraint firstAttribute="bottom" secondItem="Zxh-az-SmR" secondAttribute="bottom" constant="8" id="obA-AA-BJV"/>
+                <constraint firstAttribute="bottom" secondItem="Zxh-az-SmR" secondAttribute="bottom" constant="44" id="obA-AA-BJV"/>
             </constraints>
             <point key="canvasLocation" x="-33" y="-175"/>
         </view>

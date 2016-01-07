@@ -14,8 +14,13 @@
 
 
 @interface CloudLoginViewController (){
-    
-    IBOutlet UIActivityIndicatorView *activityView;
+    IBOutlet UIView *promotView;
+    IBOutlet UILabel *promotText;
+    NSTimer* timer;
+    IBOutlet UIButton *reset;
+    IBOutlet UILabel *information2;
+    IBOutlet UILabel *information3;
+    __weak IBOutlet UIActivityIndicatorView *move;
 }
 
 @end
@@ -24,7 +29,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor blueColor]};
     [self.navigationItem setTitle:@"co-cloud账户"];
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     left.frame =CGRectMake(0, 0, 32, 32);
@@ -34,23 +38,25 @@
     self.navigationItem.leftBarButtonItem=itemLeft;
     self.emailText.text = self.email;
     [self.prompt setHidden:YES];
-    int a = [self.emailflg intValue];
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"重新注册"];
-    NSRange strRange = {0,[str length]};
-    [str addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:strRange];
-    [self.toRegister setAttributedTitle:str forState:UIControlStateNormal];
+    [information2 setHidden:YES];
+    [information3 setHidden:YES];
     [self.toRegister setHidden:YES];
-    self.information.text = [NSString stringWithFormat:@"密码已经发送到邮箱:%@.请查收并登录。或重新注册",@"xxx@yy.com"];
-    
-    activityView.frame = CGRectMake((self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100, (self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100);
-    [activityView setHidesWhenStopped:YES];
-    if(a==0){
+    self.information.text = [NSString stringWithFormat:@"%@。",self.email];
+    [promotView setHidden:YES];
+    if([@"0" isEqualToString:self.emailflg]){
         [self.information setHidden:NO];
         [self.toRegister setHidden:NO];
+        [information2 setHidden:NO];
+        [information3 setHidden:NO];
     }else{
         [self.information setHidden:YES];
         [self.toRegister setHidden:YES];
+        [information2 setHidden:YES];
+        [information3 setHidden:YES];
     }
+    [self.passwordText becomeFirstResponder];
+    promotView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    promotView.layer.borderWidth = 1;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -58,24 +64,23 @@
 }
 
 - (IBAction)Login:(id)sender {
+    [self.passwordText resignFirstResponder];
     if([self.passwordText.text isEqualToString:@""]){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"请输入密码" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"请输入密码" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
+        [self.passwordText becomeFirstResponder];
         return ;
-    }else if([@"1" isEqualToString:self.logFlag]){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，您已注销，不能登录" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+    }else if([@"1" isEqualToString:g_sDataManager.logoutFlag]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"外网环境注销后不能再次建立连接。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
         self.passwordText.text=nil;
     }else{
-        //        NSLog(self.passwordText.text);
-        [activityView setHidden:NO];
-        [activityView startAnimating];
+        [self.passwordText resignFirstResponder];
+        promotText.text = @"登录中";
+        [promotView setHidden:NO];
+        [move startAnimating];
+        [self.LoginButton setEnabled:NO];
         [self loginCheck];
-        //        CloudLoginSuccessViewController* clc = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
-        //        clc.email = self.email;
-        //        clc.cocloudid = self.cid;
-        //        clc.mac = self.mac;
-        //        [self.navigationController pushViewController:clc animated:YES];
     }
 }
 
@@ -90,64 +95,76 @@
     [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
         //get data
         NSString *result = completedOperation.responseJSON[@"result"];
-        NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
-        int results = [result intValue];
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
-        if(results==0){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        NSString *results = [NSString stringWithFormat:@"%@",result];
+        [promotView setHidden:YES];
+        [move stopAnimating];
+        [self.LoginButton setEnabled:YES];
+        if([@"0" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.passwordText becomeFirstResponder];
+            self.passwordText.text=nil;
+        }else if([@"2" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备MAC取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.passwordText becomeFirstResponder];
+            self.passwordText.text=nil;
+        }else if([@"3" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码校验错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.passwordText becomeFirstResponder];
+            self.passwordText.text=nil;
+        }else if([@"4" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备非法，不允许登录" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
-        }else if(results==2){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"设备MAC取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"5" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器通信端口设置失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
+            [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
-        }else if(results==3){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，密码校验错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"6" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器未找到指定的数据" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
+            [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
-        }else if(results==4){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备非法，不允许登录" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"7" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器更新DB失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
+            [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
-        }else if(results==5){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器通信端口设置失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"8" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备登录状态更新失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
+            [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
-        }else if(results==6){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器未找到指定的数据" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-            [alert show];
-            self.passwordText.text=nil;
-        }else if(results==7){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，中转服务器更新DB失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-            [alert show];
-            self.passwordText.text=nil;
-        }else if(results==8){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备登录状态更新失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-            [alert show];
-            self.passwordText.text=nil;
-        }else if(results==1){
+        }else if([@"1" isEqualToString:results]){
             CloudLoginSuccessViewController* clog = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
             clog.cocloudid = self.cid;
             clog.email = self.email;
             clog.mac = self.mac;
             [self.navigationController pushViewController:clog animated:YES];
         }else{
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
+            [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
-        }
-    }errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
-        NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
-    }];
+        }}errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+            [self.LoginButton setEnabled:YES];
+            [promotView setHidden:YES];
+            [move stopAnimating];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.passwordText becomeFirstResponder];
+            self.passwordText.text=nil;
+            NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+        }];
     [engine enqueueOperation:op];
 }
 
-- (void)UpdatePassword{
-    [activityView setHidden:NO];
-    [activityView startAnimating];
+- (void)resetPassword{
+    promotText.text = @"重置中";
+    [promotView setHidden:NO];
     NSDictionary *requestParam = @{@"email":self.emailText.text,@"cid":self.cid,@"mac":self.mac};
     //请求php
     NSString* url = @"123.57.223.91";
@@ -158,44 +175,63 @@
     //操作返回数据
     [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
         //get data
-        NSLog(@"%@",completedOperation.responseJSON);
         NSString *result = completedOperation.responseJSON[@"result"];
-        int results = [result intValue];
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
-        if(results==0){
+        NSString *results = [NSString stringWithFormat:@"%@",result];
+        NSLog(@"%@",completedOperation.responseJSON);
+        [promotView setHidden:YES];
+        if([@"0" isEqualToString:results]){
+            [move stopAnimating];
             [self.prompt setHidden:NO];
-        }else if(results==102){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未找到指定数据" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.passwordText becomeFirstResponder];
+        }else if([@"102" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器该数据已存在。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
-        }else if(results==201){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"重设密码失败，请联系管理员。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.passwordText becomeFirstResponder];
+        }else if([@"203" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"重设密码失败，请联系管理员。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
-        }else if(results==301){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"非法设备" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.passwordText becomeFirstResponder];
+        }else if([@"301" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备非法" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
-        }else if(results==501){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"更新DB出错" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.passwordText becomeFirstResponder];
+        }else if([@"501" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器更新DB失败。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
-        }else if(results==601){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"发送邮件失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [self.passwordText becomeFirstResponder];
+        }else if([@"601" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"邮件发送失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
+            [self.passwordText becomeFirstResponder];
         }else{
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
             self.passwordText.text=nil;
+            [self.passwordText becomeFirstResponder];
         }
+        timer = [NSTimer scheduledTimerWithTimeInterval:15 target:self selector:@selector(tickDown) userInfo:nil repeats:YES];
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
+        [move stopAnimating];
+        [promotView setHidden:YES];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"重设密码失败，请联系管理员。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        self.passwordText.text=nil;
+        [self.passwordText becomeFirstResponder];
+        timer = [NSTimer scheduledTimerWithTimeInterval:50 target:self selector:@selector(tickDown) userInfo:nil repeats:YES];
         NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
     }];
     [engine enqueueOperation:op];
+}
+
+-(void)tickDown{
+    [reset setEnabled:YES];
+    [self.prompt setHidden:YES];
+    [timer invalidate];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -203,7 +239,7 @@
 }
 
 - (void)returnAction:(UIBarButtonItem *)sender {
-    [self.navigationController popViewControllerAnimated:YES ];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (IBAction)finish:(id)sender {
@@ -211,13 +247,20 @@
 }
 
 - (IBAction)check:(id)sender {
-    [self UpdatePassword];
+    [move startAnimating];
+    [self.prompt setHidden:YES];
+    [reset setEnabled:NO];
+    [self resetPassword];
 }
 
 - (IBAction)registerAgain:(id)sender {
     CloudRegisterViewController* crs = [[CloudRegisterViewController alloc]initWithNibName:@"CloudRegisterViewController" bundle:nil];
     crs.mac = self.mac;
     [self.navigationController pushViewController:crs animated:YES];
+}
+
+- (IBAction)touch:(id)sender {
+    [self.passwordText resignFirstResponder];
 }
 
 @end

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TaskInfo : NSObject
+@interface TaskInfo : NSObject<NSCoding>
 @property (nonatomic, strong) NSString *taskId;//任务id
 @property (nonatomic, strong) NSString *taskType;//任务类别
 @property (nonatomic, strong) NSString *taskName;//任务名称

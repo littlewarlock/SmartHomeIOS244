@@ -25,6 +25,7 @@ typedef enum _RequestType {
     BOOL net;
     NSString *mUserName;
     NSString *mPassword;
+    NSString *mCId;
 }
 
 @property (nonatomic) BOOL net;
@@ -32,7 +33,9 @@ typedef enum _RequestType {
 @property (nonatomic, retain) NSString *password;
 @property (nonatomic, retain) NSString *requestHost;
 @property (nonatomic, retain) NSString *userId;
+@property (nonatomic, retain) NSString *cId;
 @property (nonatomic, retain) NSString *userType;
+@property (nonatomic, retain) NSString *logoutFlag;
 +(DataManager*)sharedInstance;
 
 - (NSInteger)checkNetWork;

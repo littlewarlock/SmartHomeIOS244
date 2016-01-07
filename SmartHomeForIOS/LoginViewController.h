@@ -32,9 +32,9 @@
 @property (strong, nonatomic) IBOutlet UITableView *tvSearch;
 - (IBAction)listBtn:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITextField *userNameField;
-
-
-
+@property (weak, nonatomic) IBOutlet UIView *ipView;
+@property (weak, nonatomic) IBOutlet UIView *loginView;
+@property (weak, nonatomic) IBOutlet UIView *passwordView;
 - (IBAction)searchBtn:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITextField *userPasswordField;
 

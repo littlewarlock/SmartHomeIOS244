@@ -26,6 +26,11 @@
 @property (strong,nonatomic) NSString *onlining;
 // 2015 11 11 add
 
+// 2015 12 30
+@property (strong, nonatomic) IBOutlet UIImageView *imageModeRec;
+
+// 2015 12 30
+
 @property (strong, nonatomic) NSString *deviceID;
 
 @property (assign,nonatomic) id<AppInfoDelegate> delegate;

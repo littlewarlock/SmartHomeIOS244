@@ -17,7 +17,7 @@
     CGFloat SCREEN_HEIGHT =  [UIScreen mainScreen].bounds.size.height;
     CGFloat SCREEN_WIDTH  =  [UIScreen mainScreen].bounds.size.width;
     
-    
+    self.navigationController.navigationBarHidden = YES;
     rootImageView= [[UIImageView alloc] initWithFrame: self.view.bounds];
     rootImageView.frame = CGRectMake(self.view.bounds.origin.x,self.view.bounds.origin.y,SCREEN_WIDTH,SCREEN_HEIGHT*5/8);
     if([self.picURL objectAtIndex:self.songIndex]!=nil ){
@@ -80,7 +80,7 @@
     [self.view addSubview:button];
     
     button= [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame=CGRectMake(10, SCREEN_HEIGHT*7/8, 40, 40);
+    button.frame=CGRectMake(10, SCREEN_HEIGHT*11/16, 40, 40);
     //[button setTitle:@"音量" forState:UIControlStateNormal];
     [button setImage:[UIImage imageNamed:@"labalan"] forState:UIControlStateNormal];
     [button addTarget:self action:@selector(showVolume) forControlEvents:UIControlEventTouchUpInside];
@@ -112,15 +112,20 @@
     [processSlider addTarget:self action:@selector(processTimerStop) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview: processSlider];
     
-    volumeSlider= [[UISlider alloc] initWithFrame:CGRectMake(-85, SCREEN_HEIGHT*4/8, SCREEN_HEIGHT*4/8, 5)];
-    volumeSlider.maximumValue=1;
-    volumeSlider.minimumValue=0;
-    volumeSlider.value= 0.5;
-    volumeSlider.hidden=YES;
-    [volumeSlider addTarget:self action:@selector(volumeSet:) forControlEvents:UIControlEventValueChanged];
-    volumeSlider.transform= CGAffineTransformMakeRotation(-90* M_PI/180);
-    [self.view addSubview:volumeSlider];
+
+    volumeView = [[MPVolumeView alloc]initWithFrame:CGRectMake(-82, SCREEN_HEIGHT*3/8, SCREEN_HEIGHT*3/8, 20)];
     
+    //volumeSlider= [[UISlider alloc] initWithFrame:CGRectMake(-85, SCREEN_HEIGHT*4/8, SCREEN_HEIGHT*4/8, 5)];
+    //volumeSlider.maximumValue=1;
+    //volumeSlider.minimumValue=0;
+    //volumeSlider.value= 0.5;
+    //volumeSlider.hidden=YES;
+    volumeView.hidden=YES;
+    //[volumeSlider addTarget:self action:@selector(volumeSet:) forControlEvents:UIControlEventValueChanged];
+    volumeView.transform= CGAffineTransformMakeRotation(-90* M_PI/180);
+    //volumeSlider.transform= CGAffineTransformMakeRotation(-90* M_PI/180);
+    //[self.view addSubview:volumeSlider];
+    [self.view addSubview:volumeView];
     processTimer=[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(process) userInfo:nil repeats:YES];
     volume = 0.5;
     if([self.netOrLocalFlag isEqualToString:@"2"]){
@@ -282,7 +287,15 @@
 
 - (void)backAction:(id)sender {
     [audioPlayer stop];
-    [self dismissViewControllerAnimated:NO completion:nil];
+    self.navigationController.navigationBarHidden = NO;
+    if (self.isOpenFromAppList){
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self dismissViewControllerAnimated:NO completion:nil];
+    }
+    
+    
+    
 }
 //封装系统加载函数
 
@@ -327,13 +340,14 @@
 }
 -(void)showVolume
 {
-    
-    volumeSlider.hidden=NO;
+    volumeView.hidden=NO;
+    //volumeSlider.hidden=NO;
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(hideVolume) userInfo:nil repeats:NO];
 }
 -(void)hideVolume
 {
-    volumeSlider.hidden=YES;
+    volumeView.hidden=YES;
+    //volumeSlider.hidden=YES;
 }
 //歌曲进度
 -(void)process

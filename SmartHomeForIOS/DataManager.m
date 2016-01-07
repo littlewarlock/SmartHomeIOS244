@@ -39,6 +39,7 @@ static DataManager *sharedInstance = nil;
 @synthesize userName = mUserName;
 @synthesize password = mPassword;
 @synthesize userId = mUserId;
+@synthesize cId = mCId;
 @synthesize userType = mUserType;
 -(id)init
 {
@@ -49,6 +50,7 @@ static DataManager *sharedInstance = nil;
         mUserName = @"";
         mPassword = @"";
         mUserId =@"";
+        mCId =@"";
         mUserType =@"";
     }
     return self;

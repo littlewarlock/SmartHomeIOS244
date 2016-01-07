@@ -10,4 +10,7 @@
 
 @interface NSOperationDownloadQueue : NSOperationQueue
 + (instancetype)sharedInstance;
+-(void) freezeOperations;
+-(void) checkAndRestoreFrozenOperations;
+-(NSString*) cacheDirectoryName;
 @end

@@ -51,27 +51,7 @@
         {
             dirList.fileName = [filePath lastPathComponent];
             dirList.fileUrl = fileUrl;
-            
-            
-            if([[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fG",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue]<(1024*1024*1024)
-                    && [[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fM",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024*1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fK",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024)] ;
-                
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (0)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fB",[[dic objectForKey:@"NSFileSize"] floatValue]] ;
-                
-            }
-            //dirList.fileChangeTime = [dic objectForKey:NSFileModificationDate];
-            
+            dirList.fileSize =[FileTools convertFileSize:[dic objectForKey:@"NSFileSize"]];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSString *destDateString = [dateFormatter stringFromDate:[dic objectForKey:NSFileModificationDate]];
@@ -88,27 +68,7 @@
         }else{
             dirList.fileName = [filePath lastPathComponent];
             dirList.fileUrl = fileUrl;
-            
-            
-            if([[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fG",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue]<(1024*1024*1024)
-                    && [[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fM",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024*1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fK",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024)] ;
-                
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (0)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fB",[[dic objectForKey:@"NSFileSize"] floatValue]] ;
-                
-            }
-            //dirList.fileChangeTime = [dic objectForKey:NSFileModificationDate];
-            
+            dirList.fileSize =[FileTools convertFileSize:[dic objectForKey:@"NSFileSize"]];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
             NSString *destDateString = [dateFormatter stringFromDate:[dic objectForKey:NSFileModificationDate]];
@@ -168,24 +128,7 @@
                     
                     //    dirList.fileSize = [dic objectForKey:@"NSFileSize"] ;
                     NSDictionary *dic = [fm attributesOfItemAtPath:[documentsPath stringByAppendingPathComponent:filePath] error:nil];
-                    //dirList.fileChangeTime = [dic objectForKey:NSFileModificationDate];
-                    if([[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024*1024)){
-                        dirList.fileSize = [NSString stringWithFormat:@"%.1fG",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024*1024)] ;
-                    }
-                    else if([[dic objectForKey:@"NSFileSize"] intValue]<(1024*1024*1024)
-                            && [[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024)){
-                        dirList.fileSize = [NSString stringWithFormat:@"%.1fM",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024)] ;
-                    }
-                    else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024*1024) &&
-                            [[dic objectForKey:@"NSFileSize"] intValue] >= (1024)){
-                        dirList.fileSize = [NSString stringWithFormat:@"%.1fK",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024)] ;
-                        
-                    }
-                    else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024) &&
-                            [[dic objectForKey:@"NSFileSize"] intValue] >= (0)){
-                        dirList.fileSize = [NSString stringWithFormat:@"%.1fB",[[dic objectForKey:@"NSFileSize"] floatValue]] ;
-                        
-                    }
+                    dirList.fileSize =[FileTools convertFileSize:[dic objectForKey:@"NSFileSize"]];
                     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
                     NSString *destDateString = [dateFormatter stringFromDate:[dic objectForKey:NSFileModificationDate]];
@@ -248,23 +191,7 @@
         {
             dirList.fileName = [filePath lastPathComponent];
             dirList.fileUrl = fileUrl;
-            if([[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fG",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue]<(1024*1024*1024)
-                    && [[dic objectForKey:@"NSFileSize"] intValue]>=(1024*1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fM",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024*1024)] ;
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024*1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (1024)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fK",[[dic objectForKey:@"NSFileSize"] floatValue]/(1024)] ;
-                
-            }
-            else if([[dic objectForKey:@"NSFileSize"] intValue] <(1024) &&
-                    [[dic objectForKey:@"NSFileSize"] intValue] >= (0)){
-                dirList.fileSize = [NSString stringWithFormat:@"%.1fB",[[dic objectForKey:@"NSFileSize"] floatValue]] ;
-                
-            }
+            dirList.fileSize =[FileTools convertFileSize:[dic objectForKey:@"NSFileSize"]];
             dirList.fileChangeTime = [dic objectForKey:@"fileChangeTime"];
             dirList.fileType = @"folder"; //文件夹
             dirList.fileSubtype = @"folder";
@@ -504,10 +431,10 @@
     
 }
 
-+ (void) saveUserInPlist: (NSString *) userName passWord:(NSString *)passWord{
++ (void) saveUserInPlist: (NSString *) userName passWord:(NSString *)passWord isAutoLogin:(BOOL *)isAutoLogin{
     NSString *documentsDirectory = [FileTools getUserDataFilePath];
-    NSString *ipListPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:ipListPath];
+    NSString *userListPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:userListPath];
     NSMutableArray *oldAdressArr  =  [dictionary objectForKey:@"UserInfo"];
     [dictionary removeObjectForKey:@"UserInfo"];
     if (!dictionary) {
@@ -534,9 +461,9 @@
         userKey =[NSString stringWithFormat: @"%zi",oldAdressArr.count] ;
     }
     [oldAdressArr removeAllObjects];
-    [oldAdressArr insertObject:[NSDictionary dictionaryWithObjectsAndKeys:userKey,@"userKey",userName,@"userName",passWord,@"userPassword", nil] atIndex:0];
+    [oldAdressArr insertObject:[NSDictionary dictionaryWithObjectsAndKeys:userKey,@"userKey",userName,@"userName",passWord,@"userPassword",[NSString stringWithFormat:@"%@",isAutoLogin?@"YES":@"NO"],@"isAutoLogin", nil] atIndex:0];
     [dictionary setObject:oldAdressArr forKey:@"UserInfo"];
-    [dictionary writeToFile:ipListPath atomically:YES];
+    [dictionary writeToFile:userListPath atomically:YES];
 }
 
 +(long long)getFileSize:(NSString*)fileNamePath{
@@ -593,6 +520,28 @@
         isFolder = NO;
     }
     return subDirArray;
+}
+
++(NSString *)convertFileSize:(NSString *) byte{
+    
+    NSString *returnStr;
+    if([byte intValue]>=(1024*1024*1024)){
+        returnStr = [NSString stringWithFormat:@"%.1fG",[byte floatValue]/(1024*1024*1024)] ;
+    }
+    else if([byte intValue]<(1024*1024*1024)
+            && [byte intValue]>=(1024*1024)){
+        returnStr = [NSString stringWithFormat:@"%.1fM",[byte floatValue]/(1024*1024)] ;
+    }
+    else if([byte intValue] <(1024*1024) &&
+            [byte intValue] >= (1024)){
+        returnStr = [NSString stringWithFormat:@"%.1fK",[byte floatValue]/(1024)] ;
+    }
+    else if([byte intValue] <(1024) &&
+            [byte intValue] >= (0)){
+        returnStr = [NSString stringWithFormat:@"%.1fB",[byte floatValue]] ;
+    }
+
+    return returnStr;
 }
 
 - (void) moveAssets:(NSDictionary *)paramsDic
@@ -654,8 +603,25 @@
     
     KxVideoFrameRGBVer2 *rgbFrame = (KxVideoFrameRGBVer2 *)frame;
     UIImage *imageKX = [rgbFrame asImage];
+    [_decoder closeFile];
+    _decoder = nil;
     
     return imageKX;
+}
+
+#pragma mark getDuplicateFileNames 返回指定目录下的所有重名文件名称
++(NSMutableArray*)getDuplicateFileNames:(NSString*)path fileNames:(NSArray*)fileNamesArray{
+   NSArray *existFileNamesArray = [self getAllFilesUrl:path];
+    NSMutableArray *duplicateFileNamesArray = [[NSMutableArray alloc] init];
+    for (int i=0; i<fileNamesArray.count; i++) {
+        for (int j=0; j<existFileNamesArray.count; j++){
+            NSString * fileName = [existFileNamesArray[j] lastPathComponent];
+            if ([(NSString*)fileNamesArray[i] isEqualToString:fileName]) {
+             [duplicateFileNamesArray addObject:fileNamesArray[i]];
+            }
+        }
+    }
+    return duplicateFileNamesArray;
 }
 
 @end

@@ -18,12 +18,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //添加viewtext
-    UITextView* textView = [[UITextView alloc]initWithFrame:CGRectMake(20, 100, self.view.frame.size.width-40, 240)];
-    textView.text=@"使用远程登录，可以通过co-cloud提供的免费域名，远程访问co-cloud服务器。并且在设备报警时，收到报警消息。";
+    UITextView* textView = [[UITextView alloc]initWithFrame:CGRectMake(20, 100, [UIScreen mainScreen].bounds.size.width-40, 240)];
+    textView.text=@"使用远程登录，可以通过申请co-cloud ID，远程访问co-cloud服务器，并且在设备报警时，收到报警消息。";
     textView.font = [UIFont fontWithName:@"Arial" size:16];
+    [textView setEditable:NO];
     [self.view addSubview:textView];
     //添加注册按钮
-    UIButton* btn = [[UIButton alloc]initWithFrame:CGRectMake(90, 300, 195, 50)];
+    UIButton* btn = [[UIButton alloc]initWithFrame:CGRectMake(70, 300, [UIScreen mainScreen].bounds.size.width-140, 50)];
     //添加注册按钮的下划线效果
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"注册co-cloud账户"];
     NSRange strRange = {0,[str length]};
@@ -33,7 +34,6 @@
     [self.view addSubview:btn];
     //添加导航条标题 并为标题设置颜色
     [self.navigationItem setTitle:@"co-cloud账户"];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor blueColor]};
     //为注册按钮添加事件
     [btn addTarget: self action: @selector(Register:) forControlEvents: UIControlEventTouchUpInside];
     //添加后退按钮

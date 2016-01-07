@@ -22,7 +22,7 @@
                         </connections>
                     </switch>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3cq-iq-zT1">
-                        <rect key="frame" x="14" y="29" width="30" height="30"/>
+                        <rect key="frame" x="14" y="29" width="36" height="31"/>
                         <state key="normal">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>

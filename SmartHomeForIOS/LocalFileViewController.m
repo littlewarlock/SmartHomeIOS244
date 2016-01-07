@@ -24,7 +24,7 @@
 #import "CustomActionSheet.h"
 #import "AudioViewController.h"
 #import "KxMovieView.h"
-//#import "PlayViewController.h"
+#import "DeckTableViewController.h"
 #import "BackupTool.h"
 #import "FileUploadByBlockTool.h"
 #import "AlbumCollectionViewController.h"
@@ -107,6 +107,7 @@
     [pics removeAllObjects];
     [audiosUrl removeAllObjects];
     [audioPlayerThumbsArray removeAllObjects];
+    [selectedTableDataDic removeAllObjects];
     [self loadFileData];
 }
 
@@ -115,15 +116,31 @@
 - (void)footerButtonEventHandleAction:(id)sender {
     if(currentModel==0){//正常模式下的处理
         if(sender==self.footerBtn_1){ //主页
-            LocalFileViewController *localFileView = [[LocalFileViewController alloc] initWithNibName:@"LocalFileViewController" bundle:nil];
-            UINavigationController *localFileNav = [[UINavigationController alloc] initWithRootViewController:localFileView];
-            [self presentViewController:localFileNav animated:NO completion:nil];
+            if(self.isOpenFromAppList){
+                DeckTableViewController* leftController = [[DeckTableViewController alloc] initWithNibName:@"DeckTableViewController" bundle:nil];
+                leftController = [[UINavigationController alloc] initWithRootViewController:leftController];
+                
+                UIViewController *centerController = [[HomeViewController alloc] initWithNibName:@"HomeViewController" bundle:nil];
+                
+                centerController = [[UINavigationController alloc] initWithRootViewController:centerController];
+                
+                IIViewDeckController* deckController =  [[IIViewDeckController alloc] initWithCenterViewController:centerController
+                                                                                                leftViewController:leftController];
+                
+                deckController.delegateMode = IIViewDeckDelegateOnly;
+                // self.window.rootViewController = deckController;
+                [self presentViewController:deckController animated:NO completion:nil];
+            }else{
+                LocalFileViewController *localFileView = [[LocalFileViewController alloc] initWithNibName:@"LocalFileViewController" bundle:nil];
+                UINavigationController *localFileNav = [[UINavigationController alloc] initWithRootViewController:localFileView];
+                [self presentViewController:localFileNav animated:NO completion:nil];
+            }
         }
         else if(sender==self.footerBtn_2){//下载
             [self downloadAction];
         }
         else if(sender==self.footerBtn_3){//刷新
-            [self requestSuccessCallBack];
+            [self requestSuccessCallback];
         }
         else if(sender==self.footerBtn_4){//新建文件夹
             localFileHandler.opType=6;
@@ -260,18 +277,18 @@
         cell.accessoryView = accessoryButton;
     }
     
-    if([picArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
-        [pics addObject:fileinfo.fileUrl];
-    }else if([audioArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
-        [audiosUrl addObject:fileinfo.fileUrl];
-        NSDictionary* audioDataDic=[FileTools getAudioDataInfoFromFileURL:[NSURL fileURLWithPath:fileinfo.fileUrl]];
-        UIImage *image = [audioDataDic objectForKey:@"Artwork"];
-        if (image) {
-            [audioPlayerThumbsArray addObject:image];
-        }else{
-            [audioPlayerThumbsArray addObject:[UIImage imageNamed:@"audio_default"]];
-        }
-    }
+//    if([picArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
+//        [pics addObject:fileinfo.fileUrl];
+//    }else if([audioArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
+//        [audiosUrl addObject:fileinfo.fileUrl];
+//        NSDictionary* audioDataDic=[FileTools getAudioDataInfoFromFileURL:[NSURL fileURLWithPath:fileinfo.fileUrl]];
+//        UIImage *image = [audioDataDic objectForKey:@"Artwork"];
+//        if (image) {
+//            [audioPlayerThumbsArray addObject:image];
+//        }else{
+//            [audioPlayerThumbsArray addObject:[UIImage imageNamed:@"audio_default"]];
+//        }
+//    }
     BOOL isAudio = [audioArray containsObject:[[cell.fileinfo.fileUrl pathExtension] lowercaseString]];
     BOOL isVideo = [videoArray containsObject:[[cell.fileinfo.fileUrl pathExtension] lowercaseString]];
     BOOL isPic = [picArray containsObject:[[cell.fileinfo.fileUrl pathExtension] lowercaseString]];
@@ -334,20 +351,33 @@
     if(!self.fileListTableView.allowsMultipleSelectionDuringEditing){
         //如果是根目录点击的是相册cell则打开相册view
         if([fileinfo.fileType isEqualToString:@"folder"] && [self.cpath isEqualToString:kDocument_Folder] && (indexPath.row==0) ){
-            AlbumCollectionViewController *localFileView = [[AlbumCollectionViewController alloc] initWithNibName:@"AlbumCollectionViewController" bundle:nil];
-            UINavigationController *localFileNav =[[UINavigationController alloc]initWithRootViewController:localFileView];
-            [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
             
+            if(self.isOpenFromAppList){
+                AlbumCollectionViewController *localFileView = [[AlbumCollectionViewController alloc] initWithNibName:@"AlbumCollectionViewController" bundle:nil];
+                localFileView.isOpenFromAppList = YES;
+                [self.navigationController pushViewController:localFileView  animated:YES];
+            }else{
+                AlbumCollectionViewController *localFileView = [[AlbumCollectionViewController alloc] initWithNibName:@"AlbumCollectionViewController" bundle:nil];
+                UINavigationController *localFileNav =[[UINavigationController alloc]initWithRootViewController:localFileView];
+                [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
+            }
             
         }
         else if ([fileinfo.fileType isEqualToString:@"folder"] )
         {
-            LocalFileViewController *localFileView = [[LocalFileViewController alloc] initWithNibName:@"LocalFileViewController" bundle:nil];
-            localFileView.folderLocationStr = [NSString stringWithFormat:@"%@%@/", self.folderLocationStr, fileinfo.fileName];
-            localFileView.cpath = [NSString stringWithFormat:@"%@/%@", self.cpath , fileinfo.fileName];
-            localFileView.cfolder = fileinfo.fileName;
-            UINavigationController *localFileNav =[[UINavigationController alloc]initWithRootViewController:localFileView];
-            [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
+            if(self.isOpenFromAppList){
+                LocalFileViewController *localFileView = [[LocalFileViewController alloc] initWithNibName:@"LocalFileViewController" bundle:nil];
+                localFileView.isOpenFromAppList =YES;
+                localFileView.cpath =[self.cpath stringByAppendingPathComponent: fileinfo.fileName];
+                [self.navigationController pushViewController:localFileView  animated:YES];
+            }else{
+                LocalFileViewController *localFileView = [[LocalFileViewController alloc] initWithNibName:@"LocalFileViewController" bundle:nil];
+                localFileView.folderLocationStr = [NSString stringWithFormat:@"%@%@/", self.folderLocationStr, fileinfo.fileName];
+                localFileView.cpath = [NSString stringWithFormat:@"%@/%@", self.cpath , fileinfo.fileName];
+                localFileView.cfolder = fileinfo.fileName;
+                UINavigationController *localFileNav =[[UINavigationController alloc]initWithRootViewController:localFileView];
+                [self.navigationController presentViewController:localFileNav animated:NO completion:nil];
+            }
         }
     }else{
         if ([fileinfo.fileType isEqualToString:@"folder"] && [self.cpath isEqualToString:kDocument_Folder] && (indexPath.row==0) ) {
@@ -358,10 +388,18 @@
         if(cell && !([[selectedTableDataDic allKeys] containsObject:cell.fileinfo.fileUrl])){
             [selectedTableDataDic setObject:cell.fileinfo.fileUrl forKey:cell.fileinfo.fileUrl];
             [self setFooterButtonState]; //更新按钮的状态
-            if (selectedTableDataDic.count>0 && selectedTableDataDic.count == self.tableDataDic.count) {
-                isCheckedAll = YES;
-                UIImage *image = [UIImage imageNamed:@"checkall"];
-                [self.footerBtn_1 setImage:image forState:(UIControlStateNormal)];
+            if([self.cpath isEqualToString:kDocument_Folder] ){
+                if (selectedTableDataDic.count>0 && selectedTableDataDic.count == self.tableDataDic.count-1) {
+                    isCheckedAll = YES;
+                    UIImage *image = [UIImage imageNamed:@"checkall"];
+                    [self.footerBtn_1 setImage:image forState:(UIControlStateNormal)];
+                }
+            }else{
+                if (selectedTableDataDic.count>0 && selectedTableDataDic.count == self.tableDataDic.count) {
+                    isCheckedAll = YES;
+                    UIImage *image = [UIImage imageNamed:@"checkall"];
+                    [self.footerBtn_1 setImage:image forState:(UIControlStateNormal)];
+                }
             }
         }
     }
@@ -492,7 +530,16 @@
             audioPlayerView.songIndex =audioIndex;
             audioPlayerView.picURL =audioPlayerThumbsArray;
             audioPlayerView.netOrLocalFlag =@"1";
-            [self presentViewController:audioPlayerView animated:YES completion:nil];
+            
+            if(self.isOpenFromAppList){
+                audioPlayerView.isOpenFromAppList = YES;
+                [self.navigationController pushViewController:audioPlayerView  animated:YES];
+            }else{
+                UINavigationController *audioPlayerViewNav =[[UINavigationController alloc]initWithRootViewController:audioPlayerView];
+                [self.navigationController presentViewController:audioPlayerViewNav animated:NO completion:nil];
+            }
+            
+            //[self presentViewController:audioPlayerView animated:YES completion:nil];
         }
     }
     
@@ -575,11 +622,35 @@
     }
     self.tableDataDic = [FileTools getAllFiles:documentsPath skipDescendents:YES isShowAlbum:YES]; //根据路径获取该路径下的文件和目录
     self.cpath = documentsPath;
+    
+    
+    NSEnumerator *enumerator = [self.tableDataDic keyEnumerator];
+    id key;
+    while ((key = [enumerator nextObject])) {
+        FileInfo *fileinfo = (FileInfo*)[self.tableDataDic objectForKey:key];
+        if([picArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
+            [pics addObject:fileinfo.fileUrl];
+        }else if([audioArray containsObject:[[fileinfo.fileUrl pathExtension] lowercaseString]]){
+            [audiosUrl addObject:fileinfo.fileUrl];
+            NSDictionary* audioDataDic=[FileTools getAudioDataInfoFromFileURL:[NSURL fileURLWithPath:fileinfo.fileUrl]];
+            UIImage *image = [audioDataDic objectForKey:@"Artwork"];
+            if (image) {
+                [audioPlayerThumbsArray addObject:image];
+            }else{
+                [audioPlayerThumbsArray addObject:[UIImage imageNamed:@"audio_default"]];
+            }
+        }
+    }
+    
     [_fileListTableView reloadData];
 }
 
 - (void)returnBeforeWindowAction:(id)sender {
-    [self dismissViewControllerAnimated:NO completion:nil];
+    if (self.isOpenFromAppList){
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -683,6 +754,13 @@
     for (int row=0; row<self.tableDataDic.count; row++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
         [self.fileListTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        if(!([self.cpath isEqualToString:kDocument_Folder] && row==0)){
+            FDTableViewCell * cell=(FDTableViewCell*)[self tableView:self.fileListTableView cellForRowAtIndexPath:indexPath];
+            if(cell && !([[selectedTableDataDic allKeys] containsObject:cell.fileinfo.fileUrl])){
+                [selectedTableDataDic setObject:cell.fileinfo forKey:cell.fileinfo.fileUrl];
+            }
+        }
+        
     }
 }
 #pragma mark -
@@ -691,6 +769,7 @@
     for (int row=0; row<self.tableDataDic.count; row++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
         [self.fileListTableView deselectRowAtIndexPath:indexPath animated:NO ];
+        [selectedTableDataDic removeAllObjects];
     }
 }
 
@@ -779,7 +858,7 @@
                 [self loadFileData];
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"文件已复制" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
                 [alertView show];
-                [self requestSuccessCallBack];
+                [self requestSuccessCallback];
                 break;
             }
             case 4:{//移动
@@ -809,7 +888,7 @@
                 [self loadFileData];
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"文件已移动" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
                 [alertView show];
-                [self requestSuccessCallBack];
+                [self requestSuccessCallback];
                 break;
             }
             case 8:{//备份
@@ -836,7 +915,7 @@
                 BackupTool *backupTool = [[BackupTool alloc]init:sourceFilesArray sourceDirsArray:sourceDirsArray localCurrentDir:self.cpath targetDir:fileDialog.cpath userName:[g_sDataManager userName] password:[g_sDataManager password]];
                 backupTool.taskId = task.taskId;
                 [backupQueue addOperation:backupTool];
-                [self requestSuccessCallBack];
+                [self requestSuccessCallback];
                 [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
                 break;
             }
@@ -848,7 +927,7 @@
         [alertView show];
         return;
     }
-    [self requestSuccessCallBack];
+    [self requestSuccessCallback];
 }
 
 
@@ -951,12 +1030,15 @@
         self.fileListTableView.allowsMultipleSelectionDuringEditing=YES;
         [localFileHandler deleteFiles:selectedTableDataDic];
         
+        [selectedTableDataDic removeAllObjects];
+        [self setFooterButtonState];
+        
     }
 }
 
 #pragma mark -
 #pragma mark FileHandler 的代理方法 刷新
-- (void)requestSuccessCallBack{
+- (void)requestSuccessCallback{
     [self loadFileData];
     [self.fileListTableView reloadData];
     [selectedTableDataDic removeAllObjects];

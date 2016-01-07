@@ -149,11 +149,12 @@ static NSString *AlarmMessageDetailCellIdentifier = @"AlarmMessageDetailCellIden
     self.isFullScreen = NO;
     //kxvc
     //local
-    NSString *stream = @"/Users/apple2/Desktop/makeup/advertise.mp4";
+//    NSString *stream = @"/Users/apple2/Desktop/makeup/advertise.mp4";
+//    NSString *stream = @"/Users/apple2/Desktop/hgctestmp4-00000-00030.mp4";
     //http
 //        NSString *stream = @"http://172.16.9.95:82/smarthome/video/8-1video-H264-1";
     //right
-//    NSString *stream = self.rowData[@"videoUrl"];
+    NSString *stream = self.rowData[@"videoUrl"];
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[KxMovieParameterDisableDeinterlacing] = @(YES);

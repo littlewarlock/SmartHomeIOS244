@@ -9,10 +9,15 @@
 #import "UpdatePasswordViewController.h"
 #import "CloudLoginViewController.h"
 #import "DataManager.h"
+#import "LoginViewController.h"
 
 @interface UpdatePasswordViewController (){
     
-    IBOutlet UIActivityIndicatorView *activityView;
+    IBOutlet UIButton *updateBtn;
+    IBOutlet UIView *promotView;
+    IBOutlet UILabel *promotLabel;
+    __weak IBOutlet UIActivityIndicatorView *move;
+    
 }
 
 @end
@@ -22,15 +27,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationItem setTitle:@"co-cloud账户"];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor blueColor]};
     UIButton *left = [UIButton buttonWithType:UIButtonTypeCustom];
     left.frame =CGRectMake(0, 0, 32, 32);
     [left setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [left addTarget: self action: @selector(returnAction:) forControlEvents: UIControlEventTouchUpInside];
     UIBarButtonItem* itemLeft=[[UIBarButtonItem alloc]initWithCustomView:left];
     self.navigationItem.leftBarButtonItem=itemLeft;
-    activityView.frame = CGRectMake((self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100, (self.view.frame.size.width/2)-100, (self.view.frame.size.height/2)-100);
-    [activityView setHidden:YES];
+    [promotView setHidden:YES];
+    [self.oldPassword becomeFirstResponder];
+    promotView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    promotView.layer.borderWidth = 1;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -42,9 +48,10 @@
 }
 
 - (void)updateCheck{
-    [activityView setHidden:NO];
-    [activityView startAnimating];
-    NSDictionary *requestParam = @{@"email":self.email,@"cid":self.cid,@"passwd":self.oldPassword,@"new_pwd":self.NewPassword,@"mac":self.mac};
+    [move startAnimating];
+    promotLabel.text = @"修改中";
+    [promotView setHidden:NO];
+    NSDictionary *requestParam = @{@"email":self.email,@"cid":self.cid,@"passwd":self.oldPassword.text,@"new_pwd":self.NewPassword.text,@"mac":self.mac};
     //请求php
     NSString* url = @"123.57.223.91";
     MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
@@ -53,56 +60,215 @@
     //操作返回数据
     [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
         //get data
+        [move stopAnimating];
+        [promotView setHidden:YES];
         NSString *result = completedOperation.responseJSON[@"result"];
-        NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
-        int results = [result intValue];
-        [activityView setHidden:YES];
-        [activityView stopAnimating];
-        if(results==0){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"密码修改成功，下次登录情使用新密码" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        NSString *results = [NSString stringWithFormat:@"%@",result];
+        [updateBtn setEnabled:YES];
+        if([@"0" isEqualToString:results]){
+            [updateBtn setEnabled:NO];
+            [self logoutCheck];
+        }else if([@"201" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-            CloudLoginViewController* clog = [[CloudLoginViewController alloc]initWithNibName:@"CloudLoginViewController" bundle:nil];
-            clog.email = self.email;
-            clog.cid = self.cid;
-            clog.mac = self.mac;
-            [self.navigationController pushViewController:clog animated:YES];
-        }else if(results==201){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"密码错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"301" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备非法" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==301){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"设备非法" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"501" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"更新DB出错" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
-        }else if(results==501){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"更新DB出错" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-            [alert show];
-        }else if(results==601){
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"发送邮件失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        }else if([@"601" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"发送邮件失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }else{
-            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
             [alert show];
         }
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+        [updateBtn setEnabled:YES];
+        [move stopAnimating];
+        [promotView setHidden:YES];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"注销失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
         NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
     }];
     [engine enqueueOperation:op];
 }
 
 - (IBAction)update:(id)sender {
-    if([self.NewPassword.text isEqualToString:@""]||[self.passwordTwo.text isEqualToString:@""]){
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"密码不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-        [alert show];
-        return;
-    }else if([self.NewPassword.text isEqualToString:self.passwordTwo.text]){
-        //        self.passwordTwo = nil;
-        //        self.oldPassword = nil;
-        //        self.NewPassword = nil;
-        [self updateCheck];
-    }else{
-        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"请检查输入信息是否正确" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-        [alert show];
-        return;
-    }
     
+    [self miss];
+    self.oldPassword.inputView =nil;
+    self.NewPassword.inputView =nil;
+    self.passwordTwo.inputView =nil;
+    NSString *regex = @"^[a-zA-Z0-9_-]*$";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    
+    if([@"" isEqualToString:self.oldPassword.text]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"当前密码不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.oldPassword becomeFirstResponder];
+        return;
+    }else if([@"" isEqualToString:self.NewPassword.text]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"新密码不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return;
+    }else if([@"" isEqualToString:self.NewPassword.text]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"确认密码不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.passwordTwo becomeFirstResponder];
+        return;
+    }else if(self.NewPassword.text.length<8||self.NewPassword.text.length>16){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码长度应为8-16位" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return;
+    }else if([self.NewPassword.text characterAtIndex:0]=='-'||[self.NewPassword.text characterAtIndex:0]=='_'){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码不能以符号开头。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return ;
+    }else if([predicate evaluateWithObject:self.NewPassword.text] == NO) {
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码应为数字/字母大小写/-/_的组合。并至少有其中3种。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return ;
+    }else if(![self checkPassword:self.NewPassword.text]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"密码应为数字/字母大小写/-/_的组合。并至少有其中3种。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return ;
+    }else if(![self.NewPassword.text isEqualToString:self.passwordTwo.text]){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"确认密码和新密码不一致。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.NewPassword becomeFirstResponder];
+        return ;
+    }else{
+        [updateBtn setEnabled:NO];
+        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"系统提示" message:@"修改密码功能将修改密码并关闭远程访问连接。\n\n是否修改密码？" delegate:self cancelButtonTitle:nil otherButtonTitles:@"是",@"否",nil ];
+        [alert show];
+    }
 }
+
+- (IBAction)finish:(id)sender {
+    [sender resignFirstResponder];
+}
+
+- (IBAction)touch:(id)sender {
+    [self miss];
+}
+
+- (void)miss{
+    [self.oldPassword resignFirstResponder];
+    [self.NewPassword resignFirstResponder];
+    [self.passwordTwo resignFirstResponder];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex==0){
+        [self miss];
+        [self performSelector:@selector(updateCheck) withObject:nil afterDelay:0.5f];
+    }
+}
+
+- (void)logoutCheck{
+    [move startAnimating];
+    promotLabel.text = @"注销中";
+    [promotView setHidden:NO];
+    NSDictionary *requestParam = @{@"cid":self.cid,@"mac":self.mac};
+    //请求php
+    NSString* url = @"123.57.223.91";
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
+    [engine useCache];
+    MKNetworkOperation *op = [engine operationWithPath:@"logout.php" params:requestParam httpMethod:@"POST"];
+    //操作返回数据
+    [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
+        [move stopAnimating];
+        [promotView setHidden:YES];
+        [updateBtn setEnabled:YES];
+        //get data
+        NSString *result = completedOperation.responseJSON[@"result"];
+        NSString *results = [NSString stringWithFormat:@"%@",result];
+        if([@"0" isEqualToString:results]){
+            if ([g_sDataManager.requestHost rangeOfString:@"find"].location != NSNotFound||[g_sDataManager.requestHost rangeOfString:@"123.57.223.91"].location != NSNotFound) {
+                g_sDataManager.logoutFlag=@"1";
+                [g_sDataManager setUserName:@""];
+                [g_sDataManager setPassword:@""];
+                LoginViewController *loginView= [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:nil];
+                loginView.isPushHomeView =YES;
+                loginView.isShowLocalFileBtn =YES;
+                //                self.viewDeckController.toggleLeftView;
+                
+                [self.viewDeckController presentViewController:loginView animated:YES completion:nil];
+            }else{
+                CloudLoginViewController* clc = [[CloudLoginViewController alloc] initWithNibName:@"CloudLoginViewController" bundle:nil];
+                clc.cid = self.cid;
+                clc.email = self.email;
+                clc.mac = self.mac;
+                //检查是否为外网
+                [self.navigationController pushViewController:clc animated:YES];
+            }
+        }else if([@"301" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备非法。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.oldPassword becomeFirstResponder];
+        }else if([@"1" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备上登录状态更新失败。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.oldPassword becomeFirstResponder];
+        }else if([@"2" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备注销失败。" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.oldPassword becomeFirstResponder];
+        }else{
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.oldPassword becomeFirstResponder];
+        }
+    } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+        [move stopAnimating];
+        [updateBtn setEnabled:YES];
+        [promotView setHidden:YES];
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备注销失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        [self.oldPassword becomeFirstResponder];
+        NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+    }];
+    [engine enqueueOperation:op];
+}
+
+-(NSInteger)checkPassword:(NSString*)nss{
+    NSString *regex1 = @"^[a-zA-Z]*$";
+    NSString *regex2 = @"^[0-9]*$";
+    NSInteger a=0;
+    NSInteger b=0;
+    NSInteger c=0;
+    NSInteger d=0;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex1];
+    NSPredicate *predicates = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex2];
+    for(int s=0;s<nss.length;s++){
+        //        NSString *firstStr=[nss substringWithRange:NSMakeRange(s, s+1)];
+        char x=[nss characterAtIndex:s];
+        NSString *ss=[[NSString alloc]initWithFormat:@"%c",x];
+        if([predicate evaluateWithObject:ss] == YES){
+            a=1;
+        }
+        if([predicates evaluateWithObject:ss] == YES){
+            b=1;
+        }
+        if(x=='-'){
+            c=1;
+        }
+        if(x=='_'){
+            d=1;
+        }
+    }
+    if((a&&b&&c==1)||(a&&b&&d==1)||(a&&c&&d==1)||(b&&c&&d==1)){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 @end

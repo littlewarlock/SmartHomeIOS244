@@ -20,7 +20,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"更多功能";
+    self.title = @"AP管理";
     [_tableView registerClass:[AppNameAndIconCell class] forCellReuseIdentifier:CellTableIdentifier];
     _tableView.rowHeight =80;
     UINib *nib = [UINib nibWithNibName:@"AppNameAndIconCell" bundle:nil];

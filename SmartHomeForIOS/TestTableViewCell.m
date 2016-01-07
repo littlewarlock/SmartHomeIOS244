@@ -13,7 +13,37 @@
 
 - (void)awakeFromNib {
     // Initialization code
+    
+    //2015 12 29 hgc
+    
+//    //禁止自动转换AutoresizingMask
+//    self.buttonAlarm.translatesAutoresizingMaskIntoConstraints = NO;
+//    
+//    [self addConstraint:[NSLayoutConstraint
+//                        constraintWithItem:self.buttonAlarm
+//                        attribute:NSLayoutAttributeRight
+//                        relatedBy:NSLayoutRelationGreaterThanOrEqual
+//                        toItem:self.imagetest
+//                        attribute:NSLayoutAttributeRight
+//                        multiplier:0.0
+//                         constant:4.0]];
+//    
+//    //注册KVO方法
+//    [self.buttonAlarm addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:nil];
+    //2015 12 29 hgc ed
+    
 }
+
+//2015 12 29 hgc
+//KVO回调
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+//{
+//    if (object == self.buttonAlarm && [keyPath isEqualToString:@"bounds"])
+//    {
+//        [self.buttonAlarm setTitle:NSStringFromCGSize(self.buttonAlarm.bounds.size) forState:UIControlStateNormal];
+//    }
+//}
+//2015 12 29 hgc ed
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];

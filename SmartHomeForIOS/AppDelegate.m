@@ -17,21 +17,36 @@
 #import "AlarmMessagePopUpViewController.h"
 #import "AlarmMessageListViewController.h"
 #import "DeviceNetworkInterface.h"
+
+#import "TaskInfo.h"
+#import "ProgressBarViewController.h"
+#import "DataManager.h"
+#import "RequestConstant.h"
+#import "NSUUIDTool.h"
+#import "FileHandler.h"
+
 #import "FunctionManageTools.h"
+#import "NSOperationDownloadQueue.h"
+#import <CoreLocation/CoreLocation.h>
 @interface AppDelegate ()
 
 @property (strong,nonatomic)UIView *popUpView;
+@property (assign,nonatomic)BOOL flag;
+@property (assign, nonatomic) UIBackgroundTaskIdentifier bgTask;
 
+@property (strong, nonatomic) dispatch_block_t expirationHandler;
+@property (assign, nonatomic) BOOL jobExpired;
+@property (assign, nonatomic) BOOL background;
 @end
 
 @implementation AppDelegate
-
+CLLocationManager * locationManager;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
-
+    
     LoginViewController *loginView = [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:nil];
     loginView.isShowLocalFileBtn = YES;
     loginView.isPushHomeView = YES;
@@ -80,7 +95,7 @@
                                                 UIUserNotificationTypeAlert|
                                                 UIUserNotificationTypeBadge|
                                                 UIUserNotificationTypeSound
-        categories:nil];
+                                                                                 categories:nil];
         [application registerUserNotificationSettings:settings];
         [application registerForRemoteNotifications];
         NSLog(@"ios888");
@@ -92,8 +107,7 @@
          UIRemoteNotificationTypeSound];
         NSLog(@"ios777");
     }
-    
-    //2015 11 16 hgc end
+     //2015 11 16 hgc end
     
     return YES;
 }
@@ -102,15 +116,17 @@
     AVInstallation *currentInstallation = [AVInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
     [currentInstallation saveInBackground];
-    //
+    
+    //20160106 start
     [currentInstallation setChannels:[NSArray arrayWithObjects:@"123",nil]];
+    //20160106 end
     NSLog(@"---Token--%@", deviceToken);
     
-//发送消息到刚才订阅的"Giants"频道
-//    AVPush *push = [[AVPush alloc] init];
-//    [push setChannel:@"Giants"];
-//    [push setMessage:@"The Giants just scored!"];
-//    [push sendPushInBackground];
+    //发送消息到刚才订阅的"Giants"频道
+    //    AVPush *push = [[AVPush alloc] init];
+    //    [push setChannel:@"Giants"];
+    //    [push setMessage:@"The Giants just scored!"];
+    //    [push sendPushInBackground];
     //
 }
 
@@ -118,7 +134,7 @@
     if (application.applicationState == UIApplicationStateActive) {
         //
         NSLog(@"active");
-    
+        
         //2015 12 03 start
         float version = [[[UIDevice currentDevice] systemVersion] floatValue];
         if (version >= 8.0) {
@@ -151,7 +167,7 @@
         
         NSLog(@"userInfo not active== %@",userInfo);
         //
-
+        
         //2015 12 03 start
         float version = [[[UIDevice currentDevice] systemVersion] floatValue];
         if (version >= 8.0) {
@@ -169,11 +185,11 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"PUSHTOALARMDETAIL" object:userInfo];
     }
     
-//    NSString *message = [[userInfo objectForKey:@"aps"]objectForKey:@"alert"];
-//    
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-//    
-//    [alert show];
+    //    NSString *message = [[userInfo objectForKey:@"aps"]objectForKey:@"alert"];
+    //
+    //    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:message delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+    //
+    //    [alert show];
 }
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
     
@@ -181,13 +197,13 @@
 }
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
- //
+    //
     NSLog(@"Application did receive local notifications");
     //
     NSLog(@"notification===%@",notification);
     NSLog(@"notification.userinfo===%@",notification.userInfo);
     //
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"PUSHCONTENT" object:@"ddd"];
+    //    [[NSNotificationCenter defaultCenter] postNotificationName:@"PUSHCONTENT" object:@"ddd"];
     //popUpView
     if (self.popUpView != NULL) {
         NSLog(@"start");
@@ -196,7 +212,7 @@
             [self.popUpView setAlpha:0.0];
             self.popUpView.frame = CGRectMake(0.0f, -120.0f, self.window.frame.size.width, 120.0f);
         } completion:^(BOOL finished) {
-//            [self.popUpView removeFromSuperview];
+            //            [self.popUpView removeFromSuperview];
         }];
         self.popUpView = NULL;
     }
@@ -225,11 +241,11 @@
         alarmMessagePopUpViewController.labelTitle.text = notification.userInfo[@"type"];
     }
     //labelFrom
-//    alarmMessagePopUpViewController.labelFrom.text = @"for Test";
+    //    alarmMessagePopUpViewController.labelFrom.text = @"for Test";
     if (![DeviceNetworkInterface isObjectNULLwith:notification.userInfo[@"devname"]]) {
         alarmMessagePopUpViewController.labelFrom.text = [NSString stringWithFormat:@"来自%@",notification.userInfo[@"devname"]];
     }
-
+    
     //labelTime
     if (![DeviceNetworkInterface isObjectNULLwith:notification.userInfo[@"datetime"]]) {
         alarmMessagePopUpViewController.labelDate.text = notification.userInfo[@"datetime"];
@@ -251,7 +267,7 @@
     
     //subView
     [self.window addSubview:self.popUpView];
-
+    
     [UIView animateWithDuration:0.5f delay:0.0f options:UIViewAnimationCurveEaseInOut|UIViewAnimationOptionAllowUserInteraction animations:^{
         self.popUpView.frame = CGRectMake(0.0f, 20.0f, self.window.frame.size.width, 120.0f);
         self.popUpView.alpha = 1.0f;
@@ -264,10 +280,10 @@
             }
         }
     }];
-//
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hello" message:@"welcome" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//    [alert setBackgroundColor:[UIColor clearColor]];
-//    [alert show];
+    //
+    //    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hello" message:@"welcome" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    //    [alert setBackgroundColor:[UIColor clearColor]];
+    //    [alert show];
     
 }
 - (void)localNotiClose{
@@ -316,7 +332,7 @@
         // 设置通知的提醒时间
         NSDate *currentDate   = [NSDate date];
         notification.timeZone = [NSTimeZone defaultTimeZone]; // 使用本地时区
-//        notification.fireDate = [currentDate dateByAddingTimeInterval:3.0];
+        //        notification.fireDate = [currentDate dateByAddingTimeInterval:3.0];
         notification.fireDate = [currentDate dateByAddingTimeInterval:0.0];
         
         // 设置重复间隔
@@ -327,13 +343,17 @@
         notification.soundName= UILocalNotificationDefaultSoundName;
         
         // 设置应用程序右上角的提醒个数
-//        notification.applicationIconBadgeNumber++;
+        //        notification.applicationIconBadgeNumber++;
         
         // 设定通知的userInfo，用来标识该通知
-//        NSMutableDictionary *aUserInfo = [[NSMutableDictionary alloc] init];
-//        aUserInfo[@"kLocalNotificationID"] = @"LocalNotificationID";
-//        notification.userInfo = aUserInfo;
-        notification.userInfo = userInfo;
+        if (userInfo) {
+            NSLog(@"userInfotest == %@",userInfo);
+            notification.userInfo = userInfo;
+        }else{
+            NSMutableDictionary *aUserInfo = [[NSMutableDictionary alloc] init];
+            aUserInfo[@"kLocalNotificationID"] = @"LocalNotificationID";
+            notification.userInfo = aUserInfo;
+        }
         
         // 将通知添加到系统中
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
@@ -347,20 +367,22 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    NSOperationDownloadQueue *downloadQueue = [NSOperationDownloadQueue sharedInstance];
+    [downloadQueue freezeOperations];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    NSInteger num=application.applicationIconBadgeNumber;
+    NSInteger num = application.applicationIconBadgeNumber;
     if(num!=0){
         AVInstallation *currentInstallation = [AVInstallation currentInstallation];
         [currentInstallation setBadge:0];
@@ -369,6 +391,10 @@
     }
     [application cancelAllLocalNotifications];
     //...
+    NSLog(@"App is active");
+    //切换到前台时恢复操作
+    NSOperationDownloadQueue *downloadQueue = [NSOperationDownloadQueue sharedInstance];
+    [downloadQueue checkAndRestoreFrozenOperations];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -379,7 +405,6 @@
 
 #pragma mark -
 #pragma mark LoadData
-
 - (void)loadData
 {
     static NSString * const AppNameKey = @"appName";
@@ -399,14 +424,14 @@
     _appArray = [NSMutableArray arrayWithCapacity:array.count];
     [array enumerateObjectsUsingBlock:^(NSDictionary *dict, NSUInteger idx, BOOL *stop) {
         AppInfo *appInfo = [[AppInfo alloc] init];
-        appInfo.appName= dict[AppNameKey];
+        appInfo.appName = dict[AppNameKey];
         appInfo.appIconName = dict[AppIconNameKey];
         appInfo.appKey = (int)[dict[AppKey] integerValue];
-        
-        appInfo.appInfo= dict[AppInfoKey];
+        appInfo.appInfo = dict[AppInfoKey];
         appInfo.appVersion = dict[AppVersionKey];
-        
         [_appArray addObject:appInfo];
     }];
 }
+
+
 @end

@@ -44,14 +44,11 @@
             }
             if (downloadOperation && ![self.taskInfo.taskStatus isEqualToString:CANCLED]) {
                 [downloadOperation cancel]; //（暂停）取消当前操作
-                if(downloadOperation.isExecuting){//如果正在队列中执行，需要等待，队列成功取消的消息
-                    self.pauseBtn.enabled = NO;
-                }else{//没有在队列中执行的话，可直接取消
-                    NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
-                    [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
-                }
+                NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
+                [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
+                
                 self.taskInfo.taskStatus = CANCLED;
-            }else{
+            }else if([self.taskInfo.taskStatus isEqualToString:CANCLED] || ([self.taskInfo.taskStatus isEqualToString:FAILURE])){
                 [sender setTitle:@"暂停" forState:UIControlStateNormal];
                 self.taskInfo.taskStatus = RUNNING;
                 FileDownloadOperation *downloadOperation = [[FileDownloadOperation alloc] initWithTaskInfo:self.taskInfo];

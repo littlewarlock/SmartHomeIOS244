@@ -19,7 +19,8 @@
     UILabel*    nameLabel;
     UILabel*    timeLabel;
     UISlider*   processSlider;
-    UISlider*   volumeSlider;
+    //UISlider*   volumeSlider;
+    MPVolumeView        *volumeView;
     NSTimer*    processTimer;
     
     id playbackTimeObserver;
@@ -31,6 +32,7 @@
 @property (nonatomic, strong) NSMutableArray *netOrLocalArray;
 @property (nonatomic, strong) NSString       *netOrLocalFlag;
 @property (nonatomic, strong) NSMutableArray *picURL;
+@property  BOOL isOpenFromAppList; // 从首页进入为no 从app列表进入为yes
 
 -(void)loadMusic:(NSString*) filePath netOrLocalFlag:(NSString *) netOrLocalFlag netOrLocalArrValue:(NSString*) netOrLocalArrValue;
 

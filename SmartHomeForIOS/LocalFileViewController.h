@@ -35,6 +35,7 @@
 @property (strong, nonatomic) NSString *cpath; //当前路径
 @property (strong, nonatomic) NSString *cfolder;
 @property  int requestType;
+@property  BOOL isOpenFromAppList; // 从首页进入为no 从app列表进入为yes
 @property (strong, nonatomic) NSString *opType; //操作的类型，op=1，是删除 op=2，时是上传 op=3时是复制 op=4时是移动 op=5 是重命名 op=6是新建文件夹 op=7 时下载 8时 备份-1时是取消
 //- (IBAction)copyFileAction:(id)sender;
 //- (IBAction)moveFileAction:(id)sender;

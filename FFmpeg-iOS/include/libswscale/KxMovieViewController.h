@@ -35,7 +35,6 @@ extern NSString * const KxMovieParameterDisableDeinterlacing;   // BOOL
 
 //hgc
 - (UIView *) frameView;
-- (void) dealloc;
 - (void)testClose;
 
 @end

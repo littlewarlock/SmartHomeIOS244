@@ -48,6 +48,41 @@ AppDelegate *appDelegate ;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+//    @try {
+//        NSString* requestUrl=[NSString stringWithFormat: @"http://%@/%@",[g_sDataManager requestHost],REQUEST_FETCH_URL ] ;
+//        
+//        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+//        [request setTimeoutInterval:10];
+//        [request setURL:[NSURL URLWithString:requestUrl]];
+//        [request setHTTPMethod:@"POST"];//设置请求方式为POST，默认为GET
+//        NSError * error=nil;
+//        NSString* post=[NSString stringWithFormat:@"uname=%@&upasswd=%@&cpath=%@",[g_sDataManager userName],[g_sDataManager password],@"/"];
+//        NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding];//设置参数
+//        [request setHTTPBody:postData];
+//        NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+//        if (!error){
+//            NSError * jsonError=nil;
+//            id jsonObject = [NSJSONSerialization JSONObjectWithData:received options:NSJSONReadingAllowFragments error:&jsonError];
+//            if ([jsonObject isKindOfClass:[NSDictionary class]]){
+//                NSString* result =[NSString stringWithFormat:@"%@",[jsonObject objectForKey:@"result"]];
+//                if([result isEqualToString: @"1"]){
+//                    
+//                }
+//                else if([result isEqualToString: @"0"]){
+//                    //此文件已被共享
+//                }
+//                
+//            }
+//        }
+//        
+//    }
+//    @catch (NSException *exception) {
+//        
+//    }
+//    //return;
+
+    
 // 2015 11 25 start
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(comeFromRemoteNotiHome:) name:@"PUSHTOALARMDETAIL" object:nil];
 // 2015 11 25 end
@@ -151,7 +186,6 @@ AppDelegate *appDelegate ;
         {
             if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"0"])//成功
             {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                 UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
                 UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
                 UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -164,12 +198,9 @@ AppDelegate *appDelegate ;
                 // 设置底部滑动条
                 CGRect frame = CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
                 bottomView.frame = frame;
-
-                [alert show];
                 
             }else if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"1"])//修改成功
             {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                 UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
                 UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
                 UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -182,10 +213,8 @@ AppDelegate *appDelegate ;
                 // 设置底部滑动条
                 CGRect frame = CGRectMake(kMainScreenWidth / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
                 bottomView.frame = frame;
-                [alert show];
                 
             }else if ([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"mode"]] isEqualToString: @"2"]){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                 UIButton *homeButton = (UIButton *)[self.view viewWithTag:100];
                 UIButton *egressButton = (UIButton *)[self.view viewWithTag:101];
                 UIButton *sleepButton = (UIButton *)[self.view viewWithTag:102];
@@ -198,7 +227,6 @@ AppDelegate *appDelegate ;
                 // 设置底部滑动条
                 CGRect frame = CGRectMake(kMainScreenWidth * 2 / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
                 bottomView.frame = frame;
-                [alert show];
             }
         }
     }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
@@ -256,10 +284,6 @@ AppDelegate *appDelegate ;
     [super viewWillAppear:animated];
     _appList = appDelegate.selectedAppArray;
     [self.tableView reloadData];
-    
-    
-    NSLog(@"初始化完成！！！！！！！！");
-    
 }
 
 
@@ -333,6 +357,10 @@ AppDelegate *appDelegate ;
             break;
         }
         case 4:{
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"功能升级中..." delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            break;
+            
             BaiDuCloudViewController *baiduCloudVC = [[BaiDuCloudViewController alloc]
                                                       initWithNibName:@"BaiDuCloudViewController" bundle:nil];
             [self.navigationController pushViewController:baiduCloudVC animated:YES];
@@ -364,29 +392,22 @@ AppDelegate *appDelegate ;
             MKNetworkOperation *op = [engine operationWithPath:@"checkshowstatus.php" params:nil httpMethod:@"POST"];
             //操作返回数据
             [op addCompletionHandler:^(MKNetworkOperation *completedOperation) {
-//<<<<<<< .mine
                 NSString *result = completedOperation.responseJSON[@"result"];
                 NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
-//=======
-//                NSString *result = completedOperation.responseJSON[@"result"];
-//                NSLog(@"op.responseJSON==%@",completedOperation.responseJSON);
-//                //        NSString* value = op.responseJSON[@"value"];
-//>>>>>>> .r440
-                int results = [result intValue];
-                if(results==0){
-                    UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"十分抱歉，设备上登录信息取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                if([@"0" isEqualToString:result]){
+                    UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备上登录信息取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
                     [alert show];
-                }else if(results==1){
+                }else if([@"1" isEqualToString:result]){
                     NSString *cologinflg = completedOperation.responseJSON[@"cologinflg"];
-                    int cfg = [cologinflg intValue];
+                    //                    int cfg = [cologinflg intValue];
                     NSString *registerflg = completedOperation.responseJSON[@"registerflg"];
-                    int rfg = [registerflg intValue];
-                    if(cfg==0&&rfg==0){
+                    //                    int rfg = [registerflg intValue];
+                    NSString *mac = completedOperation.responseJSON[@"mac"];
+                    if([@"0" isEqualToString:cologinflg]&&[@"0" isEqualToString:registerflg]){
                         RootLoginViewController *cloudLogin = [[RootLoginViewController alloc]initWithNibName:@"RootLoginViewController" bundle:nil];
-                        NSString *mac = completedOperation.responseJSON[@"mac"];
                         cloudLogin.mac = mac;
                         [self.navigationController pushViewController:cloudLogin animated:YES];
-                    }else if(rfg==1&&cfg==0){
+                    }else if([@"0" isEqualToString:cologinflg]&&[@"1" isEqualToString:registerflg]){
                         NSString *cids = completedOperation.responseJSON[@"cid"];
                         NSString *emails = completedOperation.responseJSON[@"email"];
                         NSString *efg = completedOperation.responseJSON[@"emailflg"];
@@ -397,10 +418,10 @@ AppDelegate *appDelegate ;
                         clg.emailflg = efg;
                         clg.mac = mac;
                         [self.navigationController pushViewController:clg animated:YES];
-                    }else if(cfg==1&&rfg==0){
-                        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:nil message:@"你在逗我？" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+                    }else if([@"1" isEqualToString:cologinflg]&&[@"0" isEqualToString:registerflg]){
+                        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"系统提示" message:@"未知错误" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
                         [alert show];
-                    }else if(cfg==1&&rfg==1){
+                    }else if([@"1" isEqualToString:cologinflg]&&[@"1" isEqualToString:registerflg]){
                         NSString *cids = completedOperation.responseJSON[@"cid"];
                         NSString *emails = completedOperation.responseJSON[@"email"];
                         NSString *mac = completedOperation.responseJSON[@"mac"];
@@ -410,17 +431,27 @@ AppDelegate *appDelegate ;
                         clg.mac = mac;
                         [self.navigationController pushViewController:clg animated:YES];
                     }else{
-                        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:nil message:@"你在逗我？" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+                        UIAlertView* alert = [[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
                         [alert show];
                     }
                 }else{
-                    UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"未知错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
                     [alert show];
                 }
             } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+                UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"中转服务器连接失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                [alert show];
                 NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
             }];
             [engine enqueueOperation:op];
+            break;
+        }
+        case 8:{
+            LocalFileViewController *localFileView = [[LocalFileViewController alloc]
+                                                      initWithNibName:@"LocalFileViewController" bundle:nil];
+            localFileView.isOpenFromAppList = YES;
+            [self.navigationController pushViewController:localFileView animated:YES];
+            break;
         }
         default:
             break;
@@ -457,8 +488,6 @@ AppDelegate *appDelegate ;
     CGRect frame = CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
     self.modeChanging = YES;
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-    [alert show];
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     __block NSError *error = nil;
     [dic setValue:@"setmode" forKey:@"opt"];
@@ -476,11 +505,11 @@ AppDelegate *appDelegate ;
         
         if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
         {
-
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-                self.modeChanging = NO;
-                [alert show];
-            
+//
+//                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"在家模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+//                self.modeChanging = NO;
+//                [alert show];
+//            
             
         }
     }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
@@ -512,8 +541,6 @@ AppDelegate *appDelegate ;
     CGRect frame = CGRectMake(kMainScreenWidth / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
     self.modeChanging = YES;
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-    [alert show];
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     __block NSError *error = nil;
     [dic setValue:@"setmode" forKey:@"opt"];
@@ -532,9 +559,9 @@ AppDelegate *appDelegate ;
         if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
         {
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-            self.modeChanging = NO;
-            [alert show];
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"外出模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+//            self.modeChanging = NO;
+//            [alert show];
         }
     }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
         NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
@@ -566,8 +593,6 @@ AppDelegate *appDelegate ;
     CGRect frame = CGRectMake(kMainScreenWidth * 2 / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
     bottomView.frame = frame;
     self.modeChanging = YES;
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式变更已发送" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-    [alert show];
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     __block NSError *error = nil;
     [dic setValue:@"setmode" forKey:@"opt"];
@@ -585,10 +610,10 @@ AppDelegate *appDelegate ;
         
         if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"success"])//成功
         {
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
-            self.modeChanging = NO;
-            [alert show];
+//            
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"睡眠模式设置成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+//            self.modeChanging = NO;
+//            [alert show];
         }
     }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
         NSLog(@"MKNetwork request error : %@", [err localizedDescription]);

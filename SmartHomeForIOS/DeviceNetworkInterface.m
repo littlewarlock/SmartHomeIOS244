@@ -213,7 +213,7 @@
 
 }
 
-+ (void)realTimeCameraStreamWithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *, NSString *, NSString *, NSString *, NSString *, NSError *))block
++(void)realTimeCameraStreamWithDeviceId:(NSString *)deviceId withBlock:(void (^)(NSString *, NSString *, NSString *, NSString *, NSString *, NSString *, NSString *, NSError *))block
 {
     NSDictionary *requestParam = @{@"session_id":@"session_id",@"opt":@"stream",@"devid":deviceId};
     
@@ -239,16 +239,18 @@
         NSString *stream = op.responseJSON[@"stream"];
         NSString *ptz = op.responseJSON[@"ptz"];
         NSString *monitoring = op.responseJSON[@"monitoring"];
+        NSString *recording = op.responseJSON[@"recording"];
+        NSString *mode = op.responseJSON[@"recording"];
         
         if (block) {
             if ([[op.responseJSON objectForKey:@"result"] isEqualToString:@"success"]) {
-                block(result,message,stream,ptz,monitoring,nil);
+                block(result,message,stream,ptz,monitoring,recording,mode,nil);
             }
         }
     } onError:^(NSError *error) {
         NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
         if (block) {
-            block(nil,@"网络异常",nil,nil,nil,error);
+            block(nil,@"网络异常",nil,nil,nil,nil,nil,error);
         }
     }];
     
@@ -530,8 +532,11 @@
     NSDictionary *requestParam = @{@"session_id":@"session_id",
                                    @"opt":@"brand",
                                    @"brand":brand,
-                                   @"model ":model
+                                   @"model":model
                                    };
+    NSLog(@"brand==%@",brand);
+    NSLog(@"model==%@",model);
+    
     //请求php
     NSString* url = [DeviceNetworkInterface getRequestUrl];
     MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
@@ -1179,5 +1184,47 @@
     
     [engine enqueueOperation:op];
 }
+
++ (void)getCameraModeRecordHistoryWithDeviceId:(NSString *)deviceId andDay:(NSString *)day withBlock:(void (^)(NSString *, NSString *, NSArray *, NSArray *, NSError *))block
+{
+    NSLog(@"day====%@",deviceId);
+    NSLog(@"day====%@",day);
+    NSDictionary *requestParam = @{@"session_id":@"session_id",
+                                   @"opt":@"recordlist",
+                                   @"devid":deviceId,
+                                   @"day":day
+                                   };
+    //请求php
+    NSString* url = [DeviceNetworkInterface getRequestUrl];
+    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:url customHeaderFields:nil];
+    [engine useCache];
+    MKNetworkOperation *op = [engine operationWithPath:@"camera.php" params:requestParam httpMethod:@"POST"];
+    //操作返回数据
+    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+        
+        if([operation isCachedResponse]) {
+            NSLog(@"Data from cache %@", [operation responseString]);
+        }
+        else {
+            NSLog(@"Data from server %@", [operation responseString]);
+        }
+        //get data
+        NSString *result = operation.responseJSON[@"result"];
+        NSString *message = operation.responseJSON[@"message"];
+        NSArray *times = operation.responseJSON[@"times"];
+        NSArray *videos = operation.responseJSON[@"videos"];
+        if (block) {
+            block(result,message,times,videos,nil);
+        }
+    } errorHandler:^(MKNetworkOperation *errorOp,NSError *error) {
+        NSLog(@"MKNetwork request error : %@", [error localizedDescription]);
+        if (block) {
+            block(nil,@"网络异常",nil,nil,error);
+        }
+    }];
+    
+    [engine enqueueOperation:op];
+}
+
 
 @end

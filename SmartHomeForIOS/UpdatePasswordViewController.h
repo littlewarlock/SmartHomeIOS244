@@ -17,5 +17,7 @@
 @property (strong, nonatomic) NSString* mac;
 
 - (IBAction)update:(id)sender;
+- (IBAction)finish:(id)sender;
+- (IBAction)touch:(id)sender;
 
 @end

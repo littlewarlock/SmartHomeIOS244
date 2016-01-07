@@ -225,8 +225,12 @@ static NSString* _cellId = @"album";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     CollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:_cellId forIndexPath:indexPath];
+
     //   cell.backgroundView = bgView;
     FileInfo *fileinfo = [[FileInfo alloc] init];
+    if (cell == nil) {
+        cell = [[CollectionViewCell alloc] init];
+    }
     NSInteger rowNo = indexPath.row;
     NSInteger section = indexPath.section;
     ALAsset* thumbPhoto = [photosArray[section] objectAtIndex:rowNo];
@@ -294,7 +298,7 @@ static NSString* _cellId = @"album";
     CollectionViewCell * cell =  (CollectionViewCell*)[self.albumGrid cellForItemAtIndexPath:indexPath];
     NSInteger section = indexPath.section;
     ALAsset *cellAsset = [photosArray[section] objectAtIndex:indexPath.row];
-    
+    NSLog(@"indexPath.row=========%d",indexPath.row);
     if(self.albumGrid.allowsSelection ==YES){
         if(cell && !([[selectedItemsDic allKeys] containsObject:cell.fileinfo.fileUrl])){
             [selectedItemsDic setObject:cellAsset forKey:cell.fileinfo.fileUrl];
@@ -528,8 +532,11 @@ static NSString* _cellId = @"album";
 }
 
 - (void)returnAction:(UIBarButtonItem *)sender {
-    [self dismissViewControllerAnimated:NO completion:nil];
-    //[self.navigationController popViewControllerAnimated:YES];
+    if (self.isOpenFromAppList){
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 #pragma mark -
@@ -542,10 +549,25 @@ static NSString* _cellId = @"album";
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
             ALAsset *cellAsset = [photosArray[i] objectAtIndex:indexPath.row];
             [self.albumGrid selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-            CollectionViewCell * cell=(CollectionViewCell*)[self.albumGrid cellForItemAtIndexPath:indexPath];
+            
+           // CollectionViewCell * cell=(CollectionViewCell*)[self.albumGrid cellForItemAtIndexPath:indexPath];
+            NSURL *url = [[cellAsset defaultRepresentation]url];
+            NSString *strUrl=[url absoluteString];
+            
+            
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *cachesDirectory = [paths objectAtIndex:0];
+            
+            NSArray * expStr = [strUrl componentsSeparatedByString:@"&ext="];
+            NSArray * uuidStr = [expStr[0] componentsSeparatedByString:@"id="];
+            
+            
+            NSString* filePath = [NSString stringWithFormat:@"%@/%@.%@",cachesDirectory,[uuidStr objectAtIndex:1],[expStr objectAtIndex:1]];
+            
+            NSString *fileUrl = filePath;
             if(self.albumGrid.allowsSelection ==YES){
-                if(![[selectedItemsDic allKeys] containsObject:cell.fileinfo.fileUrl]){
-                    [selectedItemsDic setObject:cellAsset forKey:cell.fileinfo.fileUrl];
+                if(![[selectedItemsDic allKeys] containsObject:fileUrl] && fileUrl!=nil){
+                    [selectedItemsDic setObject:cellAsset forKey:fileUrl];
                 }
             }
         }

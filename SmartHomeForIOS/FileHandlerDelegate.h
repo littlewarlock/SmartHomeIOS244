@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @protocol FileHandlerDelegate <NSObject>
-- (void)requestSuccessCallBack;
+- (void)requestSuccessCallback;
 @end

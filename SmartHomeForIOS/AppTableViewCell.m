@@ -44,7 +44,8 @@
     //文字居中显示
     label.textAlignment = NSTextAlignmentLeft;
     //设置字体
-    label.font=[UIFont fontWithName:@"Arial-BoldItalicMT" size:17];
+    //label.font=[UIFont fontWithName:@"Arial-BoldItalicMT" size:17];
+    label.font=[UIFont systemFontOfSize: 17.0];
     [self.contentView addSubview:label];
     
     UIButton *arrow = [[UIButton alloc] init];

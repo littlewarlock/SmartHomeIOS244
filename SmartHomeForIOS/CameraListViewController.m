@@ -14,7 +14,7 @@ UIActivityIndicatorView *activityIndicator;
 #import "CameraDetailViewController.h"
 #import "CameraListSetSingleViewController.h"
 #import "DeviceNetworkInterface.h"
-
+#import <AVOSCloud/AVOSCloud.h>
 
 static NSString *CellTableIdentifier = @"CellTableIdentifier";
 
@@ -34,6 +34,19 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 {
     [super viewDidLoad];
 
+    //2016 01 05 hgc channels
+//    AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+//    [currentInstallation addUniqueObject:@"234" forKey:@"channels"];
+//    [currentInstallation saveInBackground];
+
+//    AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+//    [currentInstallation removeObject:@"Giants" forKey:@"channels"];
+//    [currentInstallation saveInBackground];
+    //
+    NSArray *subscribedChannels = [AVInstallation currentInstallation].channels;
+    NSLog(@"subscribedChannels===%@",subscribedChannels);
+    //2016 01 05 hgc channels
+    
     //navigation
     self.navigationItem.title = @"监控管理";
 //    UIBarButtonItem *rightBtn = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(cameraAllSetting:)];
@@ -129,7 +142,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
             }else{
                 [self.navigationController.toolbar setUserInteractionEnabled:YES];
                 if (self.navigationController.toolbarHidden) {
-                    [UIView animateWithDuration:2.0f animations:^{
+                    [UIView animateWithDuration:0.3f animations:^{
                         [self.navigationController setToolbarHidden:NO animated:YES];
                     }];
                 }
@@ -264,6 +277,8 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"addition"]])
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"onlining"]])
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"monitoring"]])
+        || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"recording"]])
+        || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"mode"]])
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"alarming"]])
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"devid"]])
         || ([DeviceNetworkInterface isObjectNULLwith:rowData[@"type"]])
@@ -313,6 +328,45 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
         cell.labelr3.text = @"录像关闭";
         [cell.imageRec setHidden:YES];
     }
+    
+//about recording mode
+    NSString *tempRecording = [NSString stringWithFormat:@"%@",rowData[@"recording"]];
+    NSString *tempMode = [NSString stringWithFormat:@"%@",rowData[@"mode"]];
+    
+    //2016 01 06 start
+//    if ([tempRecording isEqualToString:@"1"]) {
+//        [cell.imageModeRec setHidden:NO];
+//    }else{
+//        [cell.imageModeRec setHidden:YES];
+//    }
+    
+    if (![tempRecording isEqualToString:@"0"]) {
+        //模式录像开启
+        if ([tempMode isEqualToString:@"0"]) {
+            //在家
+            cell.imageModeRec.image = [UIImage imageNamed:@"at_home_camera"];
+        }else if ([tempMode isEqualToString:@"1"]){
+            //外出
+            cell.imageModeRec.image = [UIImage imageNamed:@"go_out_camera"];
+        }else if([tempMode isEqualToString:@"2"]){
+            //睡眠
+            cell.imageModeRec.image = [UIImage imageNamed:@"sleep_camera"];
+        }
+    }else{
+        //模式录像关闭
+        if ([tempMode isEqualToString:@"0"]) {
+            //在家
+            cell.imageModeRec.image = [UIImage imageNamed:@"at_home_prohibt"];
+        }else if ([tempMode isEqualToString:@"1"]){
+            //外出
+            cell.imageModeRec.image = [UIImage imageNamed:@"go_out_prohibt"];
+        }else if([tempMode isEqualToString:@"2"]){
+            //睡眠
+            cell.imageModeRec.image = [UIImage imageNamed:@"sleep_prohibt"];
+        }
+    }
+    //2016 01 06 end
+    
 //about alarming
     NSString *tempAlarming = rowData[@"alarming"];
     cell.alarming = rowData[@"alarming"];
@@ -433,7 +487,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     //HGC to camera setting VC
     CameraListSetSingleViewController *cameraListSetSingleVC = [[CameraListSetSingleViewController alloc]initWithNibName:@"CameraListSetSingleViewController" bundle:nil];
 // 1109
-    [UIView animateWithDuration:1.0f animations:^{
+    [UIView animateWithDuration:0.3f animations:^{
         [self.navigationController setToolbarHidden:YES animated:YES];
     } completion:^(BOOL finished) {
          [self.navigationController pushViewController:cameraListSetSingleVC animated:YES];

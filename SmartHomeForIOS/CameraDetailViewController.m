@@ -38,6 +38,9 @@
 @property (strong,nonatomic) UIImageView *imageViewRecord;
 @property (strong,nonatomic) NSString *ptz;
 @property (strong,nonatomic) NSString *monitoring;
+@property (strong,nonatomic) NSString *recording;
+@property (strong,nonatomic) NSString *mode;
+@property (strong,nonatomic) UIImageView *imageViewModeRecord;
 
 @property UIView *toolBarView;
 @property (strong,nonatomic) UIButton *buttonFullScreen;
@@ -77,6 +80,8 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
 @property (assign,nonatomic) CGFloat receivedDataForDispaly;
 @property (assign,nonatomic) NSInteger savedReceivedData;
 @property (assign,nonatomic) NSInteger originalReceivedData;
+//1231
+@property KxMovieViewController *kxvc;
 
 @property NSTimer *timeTest;
 
@@ -145,7 +150,9 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     
     //data
     
-//    [self getRealTimeStream:self];
+//    [self getRealTimeStream];
+    
+
     
 }
 
@@ -224,20 +231,25 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
 //}
 
 
--(void)getRealTimeStream:(id)sender{
+-(void)getRealTimeStream{
 
-    [DeviceNetworkInterface realTimeCameraStreamWithDeviceId:self.deviceID withBlock:^(NSString *result, NSString *message, NSString *stream, NSString *ptz, NSString *monitoring, NSError *error) {
+    [DeviceNetworkInterface realTimeCameraStreamWithDeviceId:self.deviceID withBlock:^(NSString *result, NSString *message, NSString *stream, NSString *ptz, NSString *monitoring, NSString *recording, NSString *mode, NSError *error) {
         if (!error) {
             NSLog(@"result===%@",result);
             NSLog(@"mseeage===%@",message);
             NSLog(@"stream===%@",stream);
             NSLog(@"ptc===%@",ptz);
             NSLog(@"monitoring===%@",monitoring);
-            
+            NSLog(@"recording===%@",recording);
+            NSLog(@"mode===%@",mode);
+
             //add 2015 10 28 hgc
             
             self.ptz = [NSString stringWithFormat:@"%@",ptz];
             self.monitoring = [NSString stringWithFormat:@"%@",monitoring];
+            self.recording = [NSString stringWithFormat:@"%@",recording];
+            self.mode = [NSString stringWithFormat:@"%@",mode];
+            
             if ([self.ptz isEqualToString:@"0"]) {
                 [self.buttonControl setEnabled:NO];
                 self.canControl = NO;
@@ -271,25 +283,33 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                 NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
                 parameters[KxMovieParameterDisableDeinterlacing] = @(YES);
                 
-                _kxvc = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
+//                if (self.kxvc != NULL) {
+//                    [self.kxvc.view removeFromSuperview ];
+//                    // 2015 12 23 hgc start
+//                    [self.kxvc removeFromParentViewController];
+//                    // 2015 12 23 hgc ended
+//                    self.kxvc = NULL;
+//                }
                 
-                [self addChildViewController:_kxvc];
-                _kxvc.view.frame = CGRectMake(8, 70, self.view.bounds.size.width - 16, 202);
-                [self.movieView setFrame:_kxvc.view.frame];
+                self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
+                
+                [self addChildViewController:self.kxvc];
+                self.kxvc.view.frame = CGRectMake(8, 70, self.view.bounds.size.width - 16, 202);
+                [self.movieView setFrame:self.kxvc.view.frame];
                 
                 //2015 12 18 hgc
                 NSLog(@"self.kxvc.view.frame===%f",self.kxvc.view.frame.size.width);
                 NSLog(@"self.kxvc.view.frame===%f",[self.kxvc frameView].frame.size.width);
                 //2015 12 18 hgc
                 
-                //            [_kxvc.view setFrame:self.movieView.bounds];
-                [self.view addSubview:_kxvc.view];
+                //            [self.kxvc.view setFrame:self.movieView.bounds];
+                [self.view addSubview:self.kxvc.view];
                 [self.movieView setHidden:YES];
                 //
-                //            [self.movieView addSubview:_kxvc.view];
-                [_kxvc setHidesBottomBarWhenPushed:YES];
-                [_kxvc toolBarHidden];
-                [_kxvc setAllControlHidden];
+                //            [self.movieView addSubview:self.kxvc.view];
+                [self.kxvc setHidesBottomBarWhenPushed:YES];
+                [self.kxvc toolBarHidden];
+                [self.kxvc setAllControlHidden];
             
                 // 2015 11 02 hgc
                 if (![self.monitoring isEqualToString:@"0"]){
@@ -298,8 +318,41 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                         self.imageViewRecord.image = [UIImage imageNamed:@"rec-small"];
                     }
                     [self.kxvc.view addSubview:self.imageViewRecord];
-                    }
+                }
                 // 2015 11 02 hgc
+                // 2016 01 06 hgc
+                if (![self.recording isEqualToString:@""]){
+                    if (self.imageViewModeRecord == NULL) {
+                        self.imageViewModeRecord = [[UIImageView alloc]initWithFrame:CGRectMake(10, 10, 37, 37)];
+                        if (![self.recording isEqualToString:@"0"]) {
+                            //模式录像开启
+                            if ([self.mode isEqualToString:@"0"]) {
+                                //在家
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"at_home_camera"];
+                            }else if ([self.mode isEqualToString:@"1"]){
+                                //外出
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"go_out_camera"];
+                            }else if([self.mode isEqualToString:@"2"]){
+                                //睡眠
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"sleep_camera"];
+                            }
+                        }else{
+                            //模式录像关闭
+                            if ([self.mode isEqualToString:@"0"]) {
+                                //在家
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"at_home_prohibt"];
+                            }else if ([self.mode isEqualToString:@"1"]){
+                                //外出
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"go_out_prohibt"];
+                            }else if([self.mode isEqualToString:@"2"]){
+                                //睡眠
+                                self.imageViewModeRecord.image = [UIImage imageNamed:@"sleep_prohibt"];
+                            }
+                        }
+                    }
+                    [self.kxvc.view addSubview:self.imageViewModeRecord];
+                }
+                // 2016 01 06 hgc
                 
                 //为kxvc添加一个新view
                 if (self.toolBarView == NULL) {
@@ -351,9 +404,9 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                 
             }
 //            self.navigationController.navigationBarHidden = YES;
-////            [_kxvc toolBarHidden];
-//                        [self presentViewController:_kxvc animated:YES completion:nil];
-//            [self.navigationController pushViewController:_kxvc animated:YES];
+////            [self.kxvc toolBarHidden];
+//                        [self presentViewController:self.kxvc animated:YES completion:nil];
+//            [self.navigationController pushViewController:self.kxvc animated:YES];
             //   [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
         }
         else{
@@ -389,6 +442,8 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
         [self.buttonControlFullScreen setHidden:YES];
         //imageViewRecord
         self.imageViewRecord.frame = CGRectMake(self.kxvc.view.frame.size.width - 50, 10, 40, 20);
+        //imageViewModeRecord
+        self.imageViewModeRecord.frame = CGRectMake(10, 10, 37, 37);
         //1112 GeestureRecognizerPan
         [self.kxvc.view removeGestureRecognizer:self.panGestureRecognizer];
         //topView
@@ -443,7 +498,8 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
         }
         //imageViewRecord
         self.imageViewRecord.frame = CGRectMake(self.kxvc.view.frame.size.height - 50, 10, 40, 20);
-        
+        //imageViewModeRecord
+        self.imageViewModeRecord.frame = CGRectMake(10, 10 + 40 , 37, 37);
         //1112 GeestureRecognizerPan
         self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlerPanGesture:)];
         if (self.isControl) {
@@ -617,11 +673,20 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    //2015 12 31 hgc start
+    [self.navigationController setToolbarHidden:YES animated:NO];
+
+    //2015 12 31 hgc end
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self.buttonFullScreen setEnabled:NO];
-    [self getRealTimeStream:self];
+    [self getRealTimeStream];
     self.cameraControlDirection = cameraControlDirectionNull;
 // 2015 11 11 离线摄像头
     if ([self.onlining isEqualToString:@"0"]) {
@@ -632,7 +697,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     }
 // 2015 11 11
     NSLog(@"view did appera--------------------------");
-//    [_kxvc play];
+//    [self.kxvc play];
     
 //test 1124
     self.downloadSpeedForDisplay = 0.0f;
@@ -650,11 +715,29 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     
 }
 
+- (void)viewDidDisappear:(BOOL)animated{
+
+    if (self.kxvc != NULL) {
+        [self.kxvc.view removeFromSuperview ];
+        // 2015 12 23 hgc start
+        [self.kxvc removeFromParentViewController];
+        // 2015 12 23 hgc ended
+        self.kxvc = NULL;
+    }
+    //
+    NSLog(@"self.kxvc1212==%@",self.kxvc);
+}
+
 - (void)viewWillDisappear:(BOOL)animated{
+//    [super viewWillAppear:animated];
+    
     [self.timeTest invalidate];
     self.savedReceivedData = 0.0f;
     self.receivedDataForDispaly = 0.0f;
     self.originalReceivedData = 0;
+    //
+    NSLog(@"self.kxvc==%@",self.kxvc);
+    
 }
 
 - (void)getNetWorkSpeed{
@@ -666,7 +749,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     self.savedReceivedData = string.intValue;
     //
     [self.labelForDownloadSpeed setText:[NSString stringWithFormat:@"%.1fK/s",self.downloadSpeedForDisplay]];
-    [self.labelForReceivedData setText:[NSString stringWithFormat:@"%.1fMB",self.receivedDataForDispaly]];
+    [self.labelForReceivedData setText:[NSString stringWithFormat:@"%.0fMB",self.receivedDataForDispaly]];
     NSLog(@"downloadSpeedForDisplay===%.1fK/s",self.downloadSpeedForDisplay);
     NSLog(@"receivedDataForDispaly===%.1fMB",self.receivedDataForDispaly);
 }

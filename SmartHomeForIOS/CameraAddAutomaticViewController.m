@@ -229,6 +229,25 @@
             
             
             // hgc 2015 11 05 start
+            // hgc 2015 12 30 start
+            if ([DeviceNetworkInterface isObjectNULLwith:brands]) {
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"系统错误" message:@"网络接口出现错误，请停止操作" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                [alert show];
+                if (self.navigationController) {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            }
+            // hgc 2015 12 30 end
+            // hgc 2015 12 31 start
+            if (brands.count <= 0) {
+                NSLog(@"warning!!!!! brand.count ==0");
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"系统错误" message:@"网络接口出现错误，请停止操作" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                [alert show];
+                if (self.navigationController) {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            }
+            // hgc 2015 12 31 end
             if (
                 ([DeviceNetworkInterface isObjectNULLwith:brands[0][@"userid"]])
                 || ([DeviceNetworkInterface isObjectNULLwith:brands[0][@"passwd"]])

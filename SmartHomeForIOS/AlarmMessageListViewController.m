@@ -258,6 +258,8 @@ static NSString *NumOfAlarmList = @"10";
     //
     if ([rowData[@"readonly"] isEqualToString:@"1"]) {
         [cell.imagePoint setHidden:YES];
+    }else{
+        [cell.imagePoint setHidden:NO];
     }
     
     return cell;

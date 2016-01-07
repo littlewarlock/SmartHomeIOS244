@@ -39,6 +39,8 @@
 
 - (IBAction)confirmAction:(id)sender {
     
+    NSString *regexs = @"^[a-zA-Z0-9]*$";
+    NSPredicate *predicates = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexs];
     if(self.passwordOld.text.length==0 ){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"请输入旧密码" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
         [alert show];
@@ -50,6 +52,12 @@
         [alert show];
     }else if ([self.passwordNewConfirm.text compare: self.passwordNew.text]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"新密码不一致" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+    }else if(self.passwordNew.text.length>20 ){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"密码长度不能超过20位" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alert show];
+    }else if ([predicates evaluateWithObject:self.passwordNewConfirm.text] == NO) {
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"密码应该由字母或数字组成" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alert show];
     }else{
         

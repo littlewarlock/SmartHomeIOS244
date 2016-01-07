@@ -16,6 +16,10 @@
 #import "CameraPhotoViewController.h"
 #import "KxMovieView.h"
 
+#define kMainScreenHeight [[UIScreen mainScreen] bounds].size.height
+#define kMainScreenWidth  [[UIScreen mainScreen] bounds].size.width
+
+
 @interface CameraRecordHistoryViewController ()
 @property (strong, nonatomic) IBOutlet UICollectionView *collectionView;
 
@@ -33,13 +37,22 @@
 @property (strong, nonatomic) IBOutlet UIToolbar *mytoolBar;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *barbuttonVideo;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *barbuttonSnapshot;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *barbuttonModeVideo;
+//20160105
+@property (strong, nonatomic) IBOutlet UIButton *buttonModeVideo;
+@property (strong, nonatomic) IBOutlet UIButton *buttonVideo;
+@property (strong, nonatomic) IBOutlet UIButton *buttonSnapshot;
+@property UIView *bottomView;
+
+@property Boolean isSnapshotPressing;
 @property Boolean isVideoPressing;
+@property Boolean isModeVideoPressing;
 @property Boolean isKxvcAppear;
 
 
 @end
 
-static NSString* cellID = @"cameraRecordHistoryCell";
+static NSString *cellID = @"cameraRecordHistoryCell";
 static NSString *headerId = @"headerId";
 static NSString *footerId = @"footerId";
 
@@ -51,10 +64,21 @@ static NSString *footerId = @"footerId";
     NSLog(@"viewDidLoad");
     //fullscreen
     self.isFullScreen = NO;
+    //
+    //2016 01 05 hgc start
+    // 添加底部蓝色滑块
+    self.bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4)];
+    [self.bottomView setBackgroundColor:[UIColor colorWithRed:0.0 / 255 green:160.0 / 255 blue:226.0 / 255 alpha:1]];
+    [self.view addSubview:self.bottomView];
+    //2016 01 05 hgc end
+    
     
     UIApplication *app = [UIApplication sharedApplication];
     UIInterfaceOrientation currentOrientation = app.statusBarOrientation;
     [self doLayoutForOrientation:currentOrientation];
+    
+    
+    
     
     //navigationItem
 //    self.navigationItem.title = @"历史纪录";
@@ -205,7 +229,9 @@ static NSString *footerId = @"footerId";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.isVideoPressing = YES;
+    self.isVideoPressing = NO;
+    self.isSnapshotPressing = NO;
+    self.isModeVideoPressing = YES;
     self.isKxvcAppear = NO;
 }
 
@@ -216,7 +242,14 @@ static NSString *footerId = @"footerId";
     NSLog(@"_titleDate==%@",_titleDate);
 
     //get data
-    [self loadData];
+    if (self.isVideoPressing) {
+        [self loadData];
+    }else if (self.isSnapshotPressing){
+        [self loadDataForSnapshot];
+    }else if (self.isModeVideoPressing){
+        [self loadDataForModeVideo];
+    }
+    
     
     if (_titleDate == NULL) {
     }else{
@@ -331,6 +364,55 @@ static NSString *footerId = @"footerId";
         }
     }];
 }
+//2015 12 30
+- (void)loadDataForModeVideo{
+    
+    //param
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyyMMdd"];
+    NSString *paramDate = [df stringFromDate:_titleDate];
+    
+    //getdata
+    [DeviceNetworkInterface getCameraModeRecordHistoryWithDeviceId:_deviceID andDay:paramDate withBlock:^(NSString *result, NSString *message, NSArray *times, NSArray *videos, NSError *error) {
+        if (!error) {
+            NSLog(@"result===%@",result);
+            NSLog(@"mseeage===%@",message);
+            NSLog(@"times===%@",times);
+            //            NSLog(@"videos===%@",videos);
+            NSLog(@"++++++++++++++++getCameraRecordHistoryWithDeviceId++++++++++++++++");
+            self.doubleArrayUrl = [[NSMutableArray alloc]init];
+            self.testArray = [[NSMutableArray alloc]init];
+            for (NSArray *i in videos ) {
+                NSMutableArray *arrayTimes = [[NSMutableArray alloc]init];
+                NSMutableArray *arrayUrls = [[NSMutableArray alloc]init];
+                for (NSArray *j in i) {
+                    NSLog(@"videos==%@",j);
+                    NSLog(@"videos==%@",j[0]);
+                    [arrayTimes addObject:j[0]];
+                    [arrayUrls addObject:j[1]];
+                }
+                
+                [self.testArray addObject:arrayTimes];
+                [self.doubleArrayUrl addObject:arrayUrls];
+                //                NSLog(@"videos==%@",i);
+            }
+            NSLog(@"self.doubleArrayUrl==%@",self.doubleArrayUrl);
+            NSLog(@"self.testArray==%@",self.testArray);
+            
+            self.testSectionHeader = times;
+            [self.collectionView reloadData];
+            
+            //warning 2015 10 23
+            //            if (self.testArray.count == 0 ) {
+            //                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"历史记录" message:@"您所选择的日期没有历史记录" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            //                [alert show];
+            //            }
+        }
+        else{
+            NSLog(@"cameraControlStopwithDeviceId error");
+        }
+    }];
+}
 
 
 - (void)didReceiveMemoryWarning {
@@ -359,7 +441,7 @@ static NSString *footerId = @"footerId";
     [cell.image setHighlightedImage:highlightedImage];
     
     // 2015 12 16 hgc added
-    if (!self.isVideoPressing) {
+    if (self.isSnapshotPressing) {
         
         NSInteger section = indexPath.section;
         NSInteger row = indexPath.row;
@@ -406,7 +488,7 @@ static NSString *footerId = @"footerId";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.isVideoPressing) {
+    if (self.isSnapshotPressing) {
         NSLog(@"in the photo");
         NSInteger section = indexPath.section;
         NSInteger row = indexPath.row;
@@ -675,49 +757,112 @@ toInterfaceOrientation duration:(NSTimeInterval)duration {
     self.buttonFullScreen.frame = CGRectMake(self.kxvc.view.frame.size.width - 40 , self.kxvc.view.frame.size.height - 40, 30, 30);
 
 }
+
 //20151201 hgc
-- (IBAction)barbuttonVideoPressed:(UIBarButtonItem *)sender {
+- (IBAction)barbuttonVideoPressed:(id)sender {
+    //
+    self.isModeVideoPressing = NO;
+    self.isSnapshotPressing = NO;
+    //
     if (self.isVideoPressing) {
         NSLog(@"do nothing");
     }else{
         NSLog(@"refresh data for video");
-        [self.barbuttonSnapshot setImage:[UIImage imageNamed:@"camera_history_photo_prohibt"]];
-        [self.barbuttonSnapshot setTintColor:[UIColor lightGrayColor]];
+        [self.buttonSnapshot setImage:[UIImage imageNamed:@"camera_history_photo_prohibt"] forState:UIControlStateNormal];
+        [self.buttonSnapshot setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         //
-        [self.barbuttonVideo setImage:[UIImage imageNamed:@"camera_history_video_down"]];
-        [self.barbuttonVideo setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+        [self.buttonVideo setImage:[UIImage imageNamed:@"camera_history_video_down"] forState:UIControlStateNormal];
+        [self.buttonVideo setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+        //
+        [self.buttonModeVideo setImage:[UIImage imageNamed:@"camera_history_video_prohibt"] forState:UIControlStateNormal];
+        [self.buttonModeVideo setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+        //
+        if (self.isKxvcAppear) {
+            [self closeKXVC];
+        }
         //
         self.isVideoPressing = !self.isVideoPressing;
         //
         [self loadData];
         [self.collectionView reloadData];
+        //
+        // 设置底部滑动条 2016 01 05
+        CGRect frame = CGRectMake(kMainScreenWidth / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+        self.bottomView.frame = frame;
     }
     
     
 }
-- (IBAction)barbuttonSnapshotPressed:(UIBarButtonItem *)sender {
-    if (self.isVideoPressing) {
+- (IBAction)barbuttonSnapshotPressed:(id)sender {
+    //
+    self.isModeVideoPressing = NO;
+    self.isVideoPressing = NO;
+    //
+    if (!self.isSnapshotPressing) {
         NSLog(@"refresh data for photo");
-        [self.barbuttonSnapshot setImage:[UIImage imageNamed:@"camera_history_photo_down"]];
-        [self.barbuttonSnapshot setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+        [self.buttonSnapshot setImage:[UIImage imageNamed:@"camera_history_photo_down"] forState:UIControlStateNormal];
+        [self.buttonSnapshot setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
         //
-        [self.barbuttonVideo setImage:[UIImage imageNamed:@"camera_history_video_prohibt"]];
-        [self.barbuttonVideo setTintColor:[UIColor lightGrayColor]];
+        [self.buttonVideo setImage:[UIImage imageNamed:@"camera_history_video_prohibt"] forState:UIControlStateNormal];
+        [self.buttonVideo setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
 
+        //
+        [self.buttonModeVideo setImage:[UIImage imageNamed:@"camera_history_video_prohibt"] forState:UIControlStateNormal];
+        [self.buttonModeVideo setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         //
         if (self.isKxvcAppear) {
             [self closeKXVC];
         }
         NSLog(@"self.kxvc isBeingPresented===%d",self.kxvc.isBeingPresented);
         NSLog(@"self.kxvc isBeingPresented===%d",self.kxvc.isBeingDismissed);
-        [self loadDataForSnapshot];
-        
         //
-        self.isVideoPressing = !self.isVideoPressing;
+        [self loadDataForSnapshot];
+        //
+        self.isSnapshotPressing = !self.isSnapshotPressing;
+        //
+        // 设置底部滑动条 2016 01 05
+        CGRect frame = CGRectMake(kMainScreenWidth * 2 / 3, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+        self.bottomView.frame = frame;
+        
     }else{
         NSLog(@"do nothing");
     }
 }
+//2015 12 30
+- (IBAction)barbuttonModeVideoPressed:(id)sender {
+    //
+    self.isVideoPressing = NO;
+    self.isSnapshotPressing = NO;
+    //
+    NSLog(@"mode");
+    if (self.isModeVideoPressing) {
+        NSLog(@"do nothing");
+    }else{
+        NSLog(@"refresh data for video");
+        [self.buttonSnapshot setImage:[UIImage imageNamed:@"camera_history_photo_prohibt"] forState:UIControlStateNormal];
+        [self.buttonSnapshot setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+        //
+        [self.buttonVideo setImage:[UIImage imageNamed:@"camera_history_video_prohibt"] forState:UIControlStateNormal];
+        [self.buttonVideo setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+        //
+        [self.buttonModeVideo setImage:[UIImage imageNamed:@"camera_history_video_down"] forState:UIControlStateNormal];
+        [self.buttonModeVideo setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+        //
+        if (self.isKxvcAppear) {
+            [self closeKXVC];
+        }
+        //
+        self.isModeVideoPressing = !self.isModeVideoPressing;
+        //
+        [self loadDataForModeVideo];
+
+        // 设置底部滑动条 2016 01 05
+        CGRect frame = CGRectMake(0, kMainScreenHeight - 4, kMainScreenWidth / 3, 4);
+        self.bottomView.frame = frame;
+    }
+    
+}
+
 
 
 - (IBAction)switchViews:(id)sender {

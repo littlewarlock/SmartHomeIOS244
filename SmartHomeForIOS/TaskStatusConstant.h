@@ -12,6 +12,7 @@
 //任务状态
 #define FINISHED   @"finished"
 #define CANCLED   @"cancled"
+#define FAILURE   @"failure"
 #define RUNNING   @"running"
 
 #endif /* TaskStatusConstant_h */

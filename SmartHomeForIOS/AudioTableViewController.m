@@ -254,7 +254,11 @@ static NSString* cellIdentifier = @"cellId";
     }
 }
 - (void)returnAction:(UIBarButtonItem *)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.isOpenFromAppList){
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self dismissViewControllerAnimated:NO completion:nil];
+    }
 }
 
 #pragma mark -

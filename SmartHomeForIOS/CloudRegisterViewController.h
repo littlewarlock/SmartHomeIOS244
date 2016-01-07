@@ -18,5 +18,7 @@
 
 - (IBAction)finish:(id)sender;
 - (IBAction)registers:(id)sender;
+- (IBAction)change:(id)sender;
+- (IBAction)touch:(id)sender;
 
 @end

@@ -43,8 +43,8 @@
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"文件已删除" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
         [alertView show];
         
-        if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-            [self.localFileHandlerDelegate requestSuccessCallBack];//调用委托方法
+        if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+            [self.localFileHandlerDelegate requestSuccessCallback];//调用委托方法
         }
     }else{
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"错误" message:@"请先选择文件" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -130,8 +130,8 @@
                     [self.queue addOperation:opreation];
                 }
 
-                if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                    [self.localFileHandlerDelegate requestSuccessCallBack];//调用委托方法
+                if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                    [self.localFileHandlerDelegate requestSuccessCallback];//调用委托方法
                 }
                 
             }
@@ -176,8 +176,8 @@
                 if([fileManager createDirectoryAtPath:folderDir withIntermediateDirectories:YES attributes:nil error:nil]){
                     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"新建文件夹成功" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
                     [alertView show];
-                    if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallBack)]) {
-                        [self.localFileHandlerDelegate requestSuccessCallBack];//调用委托方法
+                    if ([self.localFileHandlerDelegate respondsToSelector:@selector(requestSuccessCallback)]) {
+                        [self.localFileHandlerDelegate requestSuccessCallback];//调用委托方法
                     }
                 }else{
                     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"新建文件夹失败" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;

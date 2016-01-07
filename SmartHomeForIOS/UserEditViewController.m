@@ -199,6 +199,21 @@ static NSString * UserCell = @"UserCell";
         [alert show];
         return ;
     }
+    
+    NSString *regexs = @"^[a-zA-Z0-9]*$";
+    NSPredicate *predicates = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexs];
+    if ([predicates evaluateWithObject:self.nameTextField.text] == NO) {
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"用户名称应该由字母或数字组成" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        return ;
+    }
+    
+    if([self.nameTextField.text length]>20){
+        UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"提示" message:@"用户名长度不能超过20位" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        return ;
+    }
+    
     self.addUserBtn.enabled = NO;
     NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
     __block NSError *error = nil;

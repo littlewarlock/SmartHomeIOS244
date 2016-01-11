@@ -11,9 +11,9 @@
 #import "FileDialogViewController.h"
 #import "LocalFileHandler.h"
 #import "MWPhotoBrowser.h"
+#import "CustomIOSAlertView.h"
 
-
-@interface LocalFileViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UIDocumentInteractionControllerDelegate,FileDialogDelegate,MWPhotoBrowserDelegate,UIGestureRecognizerDelegate>
+@interface LocalFileViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UIDocumentInteractionControllerDelegate,FileDialogDelegate,MWPhotoBrowserDelegate,UIGestureRecognizerDelegate,CustomIOSAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *fileListTableView;
 @property (strong, nonatomic) IBOutlet UIView *footerView;

@@ -14,7 +14,7 @@
 
 -(void)sendSearchBroadcast: (NSString *) localHost{
     //发广播查询输入id是否有匹配ip
-    [self sendToUDPServer:@"SMARTHOMEv1.0" address:localHost port:8888];
+    [self sendToUDPServer:@"SMARTHOMEv1.0" address:localHost port:9999];
 }
 
 -(void)sendToUDPServer:(NSString*) msg address:(NSString*)address port:(int)port{
@@ -22,7 +22,7 @@
     [self.udpSocket enableBroadcast:YES error:nil];
     NSData *data=[msg dataUsingEncoding:NSUTF8StringEncoding];
     //[udpSocket sendData:data toHost:address port:port withTimeout:0 tag:1]; //发送udp
-    [self.udpSocket sendData :data toHost:@"255.255.255.255" port:port withTimeout:5 tag:0];
+    [self.udpSocket sendData :data toHost:@"224.0.0.1" port:port withTimeout:5 tag:0];
     [self.udpSocket receiveWithTimeout:5 tag:0];
     
 }
@@ -34,7 +34,7 @@
     NSLog(@"onUdpSocket:didReceiveData:---%@",rData);
     //base 64
     NSData *dataDecodeBefore=[rData dataUsingEncoding:NSUTF8StringEncoding];
-    dataDecodeBefore=  [GTMBase64 decodeData:dataDecodeBefore];
+    //dataDecodeBefore=  [GTMBase64 decodeData:dataDecodeBefore];
     NSString *dataDecodeAfter=[[NSString alloc] initWithData:dataDecodeBefore encoding:NSUTF8StringEncoding] ;
     NSLog(@"onUdpSocket:decode ip:---%@",dataDecodeAfter);
     if(![dataDecodeAfter isEqualToString: @""] ){

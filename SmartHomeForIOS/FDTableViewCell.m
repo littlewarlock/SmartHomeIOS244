@@ -37,7 +37,7 @@
         self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:file.fileName];
         [self.contentView addSubview:button];
         
-        CGSize scaleToSize = {50.0,50.0};
+        CGSize scaleToSize = {34.0,24.0};
         BOOL bRet = [[NSFileManager defaultManager] fileExistsAtPath:file.fileUrl];
         if (bRet) {
             self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
@@ -45,6 +45,9 @@
             NSArray *audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
             BOOL isAudio = [audioArray containsObject:[[file.fileUrl pathExtension] lowercaseString]];
             if(isAudio){
+                
+            self.imageView.image =  [UIImage imageNamed:@"music-icon"];
+             CGSize scaleToSize = self.imageView.image.size;
             NSDictionary* audioDataDic=[FileTools getAudioDataInfoFromFileURL:[NSURL fileURLWithPath:file.fileUrl]];
             UIImage *image =  [audioDataDic objectForKey:@"Artwork"];
                 if(image){
@@ -75,6 +78,25 @@
                                    @"avi",@"wmv",@"rmvb",@"flv",@"f4v",@"swf",@"mkv",@"dat",@"vob",@"mts",@"ogg",@"mpg",@"h264", nil];
             BOOL isVideo = [videoArray containsObject:[[file.fileUrl pathExtension] lowercaseString]];
             if(isVideo){
+                
+                
+//                const char* queueName = [[[NSDate date] description] UTF8String];
+//                dispatch_queue_t myQueue = dispatch_queue_create(queueName, NULL);
+//                dispatch_queue_t mainQueue = dispatch_get_main_queue();
+//                
+//                dispatch_async(myQueue, ^{
+//                    //新线程中要操作的（例如数据库的读取，存储等）
+//                    UIImage *image = [FileTools getVideoDuartionAndThumb:file.fileUrl];
+//                    NSError *error = nil;
+//                    if(image && !error){
+//                        self.imageView.image = [PhotoTools getScaleImage:image scaleToSize:scaleToSize];
+//                    }
+//                    dispatch_async(mainQueue, ^{
+//                        //主线程中要操作的（例如UI页面刷新）
+//                    });
+//                });
+//                
+                
                 UIImage *image = [FileTools getVideoDuartionAndThumb:file.fileUrl];
                 NSError *error = nil;
                 if(image && !error){
@@ -84,35 +106,123 @@
 
         }else{
             self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
-//              显示云端视频缩略图
-//            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-//            __block NSError *error = nil;
-//            [dic setValue:[g_sDataManager userName] forKey:@"uname"];
-//            [dic setValue:file.cpath forKey:@"filePath"];
-//            [dic setValue:self.fileinfo.fileName forKey:@"fileName"];
-//            
-//            NSString* requestHost = [g_sDataManager requestHost];
-//            NSString* requestUrl = [NSString stringWithFormat:@"%@",requestHost];
-//            MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
-//            
-//            MKNetworkOperation *op = [engine operationWithPath:REQUEST_VIDEO_URL params:dic httpMethod:@"POST" ssl:NO];
-//            [op addCompletionHandler:^(MKNetworkOperation *operation) {
-//                NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
-//                NSString *videoPath =  [responseJSON objectForKey:@"videopath"];
+            
+            NSArray *audioArray=  [NSArray arrayWithObjects:@"mp3", nil];
+            BOOL isAudio = [audioArray containsObject:[[file.fileName pathExtension] lowercaseString]];
+             CGSize scaleToSize = [UIImage imageNamed:@"music-icon"].size;
+            if(isAudio){
+                NSError *error = nil;
+                if([UIImage imageNamed:@"music-icon"] && !error){
+                    self.imageView.image =  [UIImage imageNamed:@"music-icon"];
+                }
+            }
+            
+            NSArray *picArray=  [NSArray arrayWithObjects:@"jpg",@"png",@"jpeg", nil];
+            BOOL isPic = [picArray containsObject:[[file.fileName pathExtension] lowercaseString]];
+            if(isPic){
+                
+                NSMutableString *picUrl = [NSMutableString stringWithFormat:@"http://%@/%@",[g_sDataManager requestHost],REQUEST_PIC_URL];
+                picUrl =[NSMutableString stringWithFormat:@"%@?uname=%@&filePath=%@&fileName=%@",picUrl,[[g_sDataManager userName] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[file.cpath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[file.fileName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:picUrl]];
+                    UIImage *image = [UIImage imageWithData:data];
+                    NSError *error = nil;
+                    if(image && !error){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                        self.imageView.image =  [PhotoTools getScaleImage:image scaleToSize:scaleToSize];
+                        });
+                    }
+                });
+            }
+            
+            NSArray *videoArray=  [NSArray arrayWithObjects:@"mp4",@"mov",@"m4v",@"wav",@"flac",@"ape",@"wma",
+                                   @"avi",@"wmv",@"rmvb",@"flv",@"f4v",@"swf",@"mkv",@"dat",@"vob",@"mts",@"ogg",@"mpg",@"h264", nil];
+            BOOL isVideo = [videoArray containsObject:[[file.fileName pathExtension] lowercaseString]];
+            if(isVideo){
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    //self.imageView.image =  [UIImage imageNamed:@"music-icon"];
+                    //显示云端视频缩略图
+                    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+                    __block NSError *error = nil;
+                    [dic setValue:[g_sDataManager userName] forKey:@"uname"];
+                    [dic setValue:file.cpath forKey:@"filePath"];
+                    [dic setValue:self.fileinfo.fileName forKey:@"fileName"];
+                    
+                    NSString* requestHost = [g_sDataManager requestHost];
+                    NSString* requestUrl = [NSString stringWithFormat:@"%@",requestHost];
+                    MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+                    
+                    MKNetworkOperation *op = [engine operationWithPath:REQUEST_VIDEO_URL params:dic httpMethod:@"POST" ssl:NO];
+                    [op addCompletionHandler:^(MKNetworkOperation *operation) {
+                        NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+                        NSString *videoPath =  [responseJSON objectForKey:@"videopath"];
+                        
+                        NSRange range  = [videoPath rangeOfString:@"/smarty_storage"];
+                        NSString *subVideoPath = [videoPath  substringFromIndex:range.location];
+                        NSString *videoUrl = [NSString stringWithFormat:@"%@%@%@",@"http://",requestHost,subVideoPath];
+                        UIImage *imageMK = [FileTools getVideoDuartionAndThumb:videoUrl];
+                        
+                        if(imageMK){
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                self.imageView.image = [PhotoTools getScaleImage:imageMK scaleToSize:scaleToSize];
+                            });
+                        }else{
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                            self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
+                            });
+                        }
+                    }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+                        NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+                    }];
+                    [engine enqueueOperation:op];
+
+ 
+                });
+                
+                
+//                //self.imageView.image =  [UIImage imageNamed:@"music-icon"];
+//                              //显示云端视频缩略图
+//                            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+//                            __block NSError *error = nil;
+//                            [dic setValue:[g_sDataManager userName] forKey:@"uname"];
+//                            [dic setValue:file.cpath forKey:@"filePath"];
+//                            [dic setValue:self.fileinfo.fileName forKey:@"fileName"];
 //                
-//                NSRange range  = [videoPath rangeOfString:@"/smarty_storage"];
-//                NSString *subVideoPath = [videoPath  substringFromIndex:range.location];
-//                NSString *videoUrl = [NSString stringWithFormat:@"%@%@%@",@"http://",requestHost,subVideoPath];
-//                UIImage *imageMK = [self getVideoDuartionAndThumb:videoUrl];
-//                if(imageMK){
-//                    self.imageView.image = [PhotoTools getScaleImage:imageMK scaleToSize:scaleToSize];
-//                }else{
-//                    self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
-//                }
-//            }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
-//                NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
-//            }];
-//            [engine enqueueOperation:op];
+//                            NSString* requestHost = [g_sDataManager requestHost];
+//                            NSString* requestUrl = [NSString stringWithFormat:@"%@",requestHost];
+//                            MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:requestUrl customHeaderFields:nil];
+//                
+//                            MKNetworkOperation *op = [engine operationWithPath:REQUEST_VIDEO_URL params:dic httpMethod:@"POST" ssl:NO];
+//                            [op addCompletionHandler:^(MKNetworkOperation *operation) {
+//                                NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
+//                                NSString *videoPath =  [responseJSON objectForKey:@"videopath"];
+//                
+//                                NSRange range  = [videoPath rangeOfString:@"/smarty_storage"];
+//                                NSString *subVideoPath = [videoPath  substringFromIndex:range.location];
+//                                NSString *videoUrl = [NSString stringWithFormat:@"%@%@%@",@"http://",requestHost,subVideoPath];
+//                                UIImage *imageMK = [FileTools getVideoDuartionAndThumb:videoUrl];
+//                                if(imageMK){
+//                                    self.imageView.image = [PhotoTools getScaleImage:imageMK scaleToSize:scaleToSize];
+//                                }else{
+//                                    self.imageView.image = [ImageFactory getImage:file.fileSubtype size:1];
+//                                }
+//                            }errorHandler:^(MKNetworkOperation *errorOp, NSError* err) {
+//                                NSLog(@"MKNetwork request error : %@", [err localizedDescription]);
+//                            }];
+//                            [engine enqueueOperation:op];
+            }
+            
+            NSArray *documentArray=  [NSArray arrayWithObjects:@"doc",@"docx",@"xls",@"xlsx",@"txt", nil];
+            BOOL isDocument = [documentArray containsObject:[[file.fileName pathExtension] lowercaseString]];
+            if(isDocument){
+                NSError *error = nil;
+                if([UIImage imageNamed:@"text-icon"] && !error){
+                    self.imageView.image =  [PhotoTools getScaleImage:[UIImage imageNamed:@"text-icon"] scaleToSize:scaleToSize];
+                }
+            }
+            
+            
             
         }
         self.textLabel.text = file.fileName;

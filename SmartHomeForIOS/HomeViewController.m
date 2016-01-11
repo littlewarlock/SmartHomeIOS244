@@ -49,40 +49,6 @@ AppDelegate *appDelegate ;
 {
     [super viewDidLoad];
     
-//    @try {
-//        NSString* requestUrl=[NSString stringWithFormat: @"http://%@/%@",[g_sDataManager requestHost],REQUEST_FETCH_URL ] ;
-//        
-//        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-//        [request setTimeoutInterval:10];
-//        [request setURL:[NSURL URLWithString:requestUrl]];
-//        [request setHTTPMethod:@"POST"];//设置请求方式为POST，默认为GET
-//        NSError * error=nil;
-//        NSString* post=[NSString stringWithFormat:@"uname=%@&upasswd=%@&cpath=%@",[g_sDataManager userName],[g_sDataManager password],@"/"];
-//        NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding];//设置参数
-//        [request setHTTPBody:postData];
-//        NSData *received = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-//        if (!error){
-//            NSError * jsonError=nil;
-//            id jsonObject = [NSJSONSerialization JSONObjectWithData:received options:NSJSONReadingAllowFragments error:&jsonError];
-//            if ([jsonObject isKindOfClass:[NSDictionary class]]){
-//                NSString* result =[NSString stringWithFormat:@"%@",[jsonObject objectForKey:@"result"]];
-//                if([result isEqualToString: @"1"]){
-//                    
-//                }
-//                else if([result isEqualToString: @"0"]){
-//                    //此文件已被共享
-//                }
-//                
-//            }
-//        }
-//        
-//    }
-//    @catch (NSException *exception) {
-//        
-//    }
-//    //return;
-
-    
 // 2015 11 25 start
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(comeFromRemoteNotiHome:) name:@"PUSHTOALARMDETAIL" object:nil];
 // 2015 11 25 end
@@ -94,6 +60,9 @@ AppDelegate *appDelegate ;
     [left addTarget: self.viewDeckController action: @selector(toggleLeftView) forControlEvents: UIControlEventTouchUpInside];
     UIBarButtonItem* item=[[UIBarButtonItem alloc]initWithCustomView:left];
     self.navigationItem.leftBarButtonItem=item;
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:15.0/255 green:131.0/255 blue:255.0/255 alpha:1];
+
+    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.layer.borderWidth = 0;
@@ -126,6 +95,7 @@ AppDelegate *appDelegate ;
     CGFloat height = size.height;
 
     self.navigationItem.title = @"首页";
+    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],UITextAttributeTextColor,nil]];
     UIButton *homeButton = [[UIButton alloc] initWithFrame:CGRectMake(0,height - 50,width/3,50)];
     
     [homeButton setTitle:@"在家" forState:UIControlStateNormal];

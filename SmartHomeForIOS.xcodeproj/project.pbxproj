@@ -117,6 +117,8 @@
 		20DF81641BF1E1410031ADC7 /* DeckTableViewController.h in Resources */ = {isa = PBXBuildFile; fileRef = 20DF81611BF1E1410031ADC7 /* DeckTableViewController.h */; };
 		20DF81661BF1E1410031ADC7 /* DeckTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20DF81631BF1E1410031ADC7 /* DeckTableViewController.xib */; };
 		20E0BAC21C200C3A003D1CF5 /* UIView+PBExtend.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E0BAC11C200C3A003D1CF5 /* UIView+PBExtend.m */; };
+		20EB87AF1C4381A900FE69D0 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 20EB87AE1C4381A900FE69D0 /* camera.png */; };
+		20EB87B11C4381AE00FE69D0 /* video_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 20EB87B01C4381AE00FE69D0 /* video_icon.png */; };
 		20EC766C1C17C28C0026C91B /* H264ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EC766A1C17C28C0026C91B /* H264ViewController.m */; };
 		20EC766D1C17C28C0026C91B /* H264ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20EC766B1C17C28C0026C91B /* H264ViewController.xib */; };
 		221AC7771BE07091005643CC /* iconfont-luzhiguanli.png in Resources */ = {isa = PBXBuildFile; fileRef = 221AC76D1BE07091005643CC /* iconfont-luzhiguanli.png */; };
@@ -719,6 +721,8 @@
 		20DF81631BF1E1410031ADC7 /* DeckTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeckTableViewController.xib; sourceTree = "<group>"; };
 		20E0BAC01C200C3A003D1CF5 /* UIView+PBExtend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+PBExtend.h"; sourceTree = "<group>"; };
 		20E0BAC11C200C3A003D1CF5 /* UIView+PBExtend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+PBExtend.m"; sourceTree = "<group>"; };
+		20EB87AE1C4381A900FE69D0 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
+		20EB87B01C4381AE00FE69D0 /* video_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = video_icon.png; sourceTree = "<group>"; };
 		20EC76691C17C28C0026C91B /* H264ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264ViewController.h; sourceTree = "<group>"; };
 		20EC766A1C17C28C0026C91B /* H264ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = H264ViewController.m; sourceTree = "<group>"; };
 		20EC766B1C17C28C0026C91B /* H264ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = H264ViewController.xib; sourceTree = "<group>"; };
@@ -2131,6 +2135,8 @@
 		480AE38E1BB4FAD4006C1ACD /* Device */ = {
 			isa = PBXGroup;
 			children = (
+				20EB87B01C4381AE00FE69D0 /* video_icon.png */,
+				20EB87AE1C4381A900FE69D0 /* camera.png */,
 				20BF60D71C3BA3AB00EFB569 /* camera_history_photo_down.png */,
 				20BF60D81C3BA3AB00EFB569 /* camera_history_photo_prohibt.png */,
 				20BF60D91C3BA3AB00EFB569 /* camera_history_video_down.png */,
@@ -3303,6 +3309,7 @@
 				48D8A9B71B9EBA8D00DC0D97 /* renamebuttonup.png in Resources */,
 				22F7E5A51BE849DB007AD9AA /* sleep-down@2x.png in Resources */,
 				48D8A98A1B9EBA8D00DC0D97 /* java_x.png in Resources */,
+				20EB87B11C4381AE00FE69D0 /* video_icon.png in Resources */,
 				48D8A9431B9EBA8D00DC0D97 /* ai_x.png in Resources */,
 				48D8A9901B9EBA8D00DC0D97 /* log.png in Resources */,
 				48D8A9AA1B9EBA8D00DC0D97 /* pdf.png in Resources */,
@@ -3400,6 +3407,7 @@
 				22775E7D1BEA170900470D28 /* CameraRenameViewController.xib in Resources */,
 				48D8A9BE1B9EBA8D00DC0D97 /* status_delete_small.png in Resources */,
 				48D8A9851B9EBA8D00DC0D97 /* ifo.png in Resources */,
+				20EB87AF1C4381A900FE69D0 /* camera.png in Resources */,
 				20EC766D1C17C28C0026C91B /* H264ViewController.xib in Resources */,
 				48D8A94F1B9EBA8D00DC0D97 /* avi.png in Resources */,
 				48D8A98D1B9EBA8D00DC0D97 /* jpg.png in Resources */,

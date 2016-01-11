@@ -45,8 +45,7 @@
             if (downloadOperation && ![self.taskInfo.taskStatus isEqualToString:CANCLED]) {
                 [downloadOperation cancel]; //（暂停）取消当前操作
                 NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
-                [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
-                
+                [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];                
                 self.taskInfo.taskStatus = CANCLED;
             }else if([self.taskInfo.taskStatus isEqualToString:CANCLED] || ([self.taskInfo.taskStatus isEqualToString:FAILURE])){
                 [sender setTitle:@"暂停" forState:UIControlStateNormal];

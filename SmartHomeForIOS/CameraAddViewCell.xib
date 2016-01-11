@@ -15,7 +15,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="437" height="111"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="camera" translatesAutoresizingMaskIntoConstraints="NO" id="e7t-uQ-jrT">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="camera-1" translatesAutoresizingMaskIntoConstraints="NO" id="e7t-uQ-jrT">
                         <rect key="frame" x="8" y="10" width="100" height="91"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="100" id="2g0-SZ-aUT"/>
@@ -86,7 +86,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="camera" width="69" height="53"/>
+        <image name="camera-1" width="69" height="53"/>
         <image name="history-bj" width="7" height="7"/>
     </resources>
 </document>

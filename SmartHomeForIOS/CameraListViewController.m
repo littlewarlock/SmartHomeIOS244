@@ -60,8 +60,17 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
                                  target:self
                                  action:@selector(cameraAllSetting:)];
     self.navigationItem.rightBarButtonItem = rightBTN;
-    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
-    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+    
+    //2016 01 09 start
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+//    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],UITextAttributeTextColor,nil]];
+    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,nil]];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0.0/255 green:153.0/255 blue:255.0/255 alpha:1]];
+    //2016 01 09 end
+    
+    
+//    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+//    [self.navigationItem.leftBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     
     // hgc 2015 11 09 start
     
@@ -73,6 +82,7 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     [btn setTitle:@"添加摄像头" forState:UIControlStateNormal];
     btn.backgroundColor = [UIColor clearColor];
     [btn setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1] forState:UIControlStateNormal];
+//    [btn setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     [btn setImage:[UIImage imageNamed:@"add-icon"] forState:UIControlStateNormal];
     [btn setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     [btn.titleLabel setFont:[UIFont systemFontOfSize:18.0]];
@@ -92,8 +102,9 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 // hgc 2015 11 09 end
     
     
-    //hgc
-    [self webViewDidStartLoad];
+    //hgc 2016 01 11 start
+//    [self webViewDidStartLoad];
+    //hgc 2016 01 11 end
     
     [self setupRefresh:self];
 
@@ -135,18 +146,18 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
             NSLog(@"self.devices===%@",self.devices);
             
             //2015 12 24 hgc
-            if (self.devices.count >= 4 ) {
+            NSLog(@"====%d",self.navigationController.toolbar.userInteractionEnabled);
+            if (self.devices.count >= 2 ) {
                 NSLog(@"self.devices.count");
-                [self.navigationController.toolbar setUserInteractionEnabled:NO];
                 [self.navigationController setToolbarHidden:YES animated:YES];
+                [self.navigationController.toolbar setUserInteractionEnabled:NO];
+                
             }else{
+                [self.navigationController setToolbarHidden:NO animated:YES];
                 [self.navigationController.toolbar setUserInteractionEnabled:YES];
-                if (self.navigationController.toolbarHidden) {
-                    [UIView animateWithDuration:0.3f animations:^{
-                        [self.navigationController setToolbarHidden:NO animated:YES];
-                    }];
-                }
+                
             }
+            NSLog(@"====%d",self.navigationController.toolbar.userInteractionEnabled);
             //2015 12 24 hgc
             
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
@@ -196,6 +207,8 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 
     [super viewWillAppear:animated];
     
+    [self webViewDidStartLoad];
+    
 //    [self.control beginRefreshing];
     [self loadData:self.control];
     
@@ -206,9 +219,17 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 {
     [super viewDidAppear:animated];
     
+//    [self.navigationController setToolbarHidden:NO animated:YES];
+    NSLog(@"hellohellohello");
+    self.navigationController.toolbar.userInteractionEnabled = NO;
+    NSLog(@"====%d",self.navigationController.toolbar.userInteractionEnabled);
+    NSLog(@"hellohellohello121212");
+    
 // 2015 12 24 start
 //    [UIView animateWithDuration:2.0f animations:^{
-//        [self.navigationController setToolbarHidden:NO animated:YES];
+    NSLog(@"toolbartoolbar");
+    
+//    [self.navigationController.toolbar setTintColor:[UIColor grayColor]];
 //    }];
 // 2015 12 24 end
 
@@ -218,8 +239,15 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 {
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES animated:YES];
+    [self.navigationController.toolbar setUserInteractionEnabled:NO];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+//    [self.navigationController setToolbarHidden:YES];
+    [super viewDidDisappear:animated];
+
+}
 
 - (void)didReceiveMemoryWarning
 {

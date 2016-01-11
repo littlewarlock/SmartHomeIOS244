@@ -53,12 +53,20 @@ static NSString *NumOfAlarmList = @"10";
                                  target:self
                                  action:@selector(editTableCell)];
     self.navigationItem.rightBarButtonItem = rightBTN;
-    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+//    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
 
     // 设置myToolBar上的字体颜色
     [self.allSelectedBtn setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     [self.deleteBtn setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     [self.allReadedBtn setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+    
+    //2016 01 09 start
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    //    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],UITextAttributeTextColor,nil]];
+    [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,nil]];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0.0/255 green:153.0/255 blue:255.0/255 alpha:1]];
+    //2016 01 09 end
+    
     
     //下拉刷新
     [self example01];
@@ -87,6 +95,14 @@ static NSString *NumOfAlarmList = @"10";
     self.tableView = (id)[self.view viewWithTag:3001];
     UINib *nib = [UINib nibWithNibName:@"AlarmMessageListCell" bundle:nil];
     [self.tableView registerNib:nib forCellReuseIdentifier:AlarmMessageCellIdentifier];
+    
+    //2016 01 12
+    UIEdgeInsets contentInset = self.tableView.contentInset;
+    contentInset.top = 10;
+    [self.tableView setContentInset:contentInset];
+    
+    //
+    
     self.tableView.rowHeight = 90;
     self.tableView.allowsMultipleSelectionDuringEditing = YES;
     //
@@ -458,7 +474,7 @@ static NSString *NumOfAlarmList = @"10";
     
     result = [UIImage imageWithData:data];
     
-    UIImage *placeholder = [UIImage imageNamed:@"camera"];
+    UIImage *placeholder = [UIImage imageNamed:@"video_icon"];
     if ([DeviceNetworkInterface isObjectNULLwith:result]) {
         result =  placeholder;
     }
@@ -475,6 +491,7 @@ static NSString *NumOfAlarmList = @"10";
         [weakSelf refreshData];
 //        NSLog(@"refresh data11111");
     }];
+    self.tableView.mj_header.ignoredScrollViewContentInsetTop = 12.0f;
     
     // 马上进入刷新状态
     [self.tableView.mj_header beginRefreshing];

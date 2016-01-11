@@ -13,5 +13,5 @@
 @property NSArray *devices;
 
 - (void)chooseAppAction:(UIButton *)sender;
-- (void)loadData:(id)sender;
+
 @end

@@ -28,13 +28,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     leftBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认返回"                                              style:UIBarButtonItemStyleBordered target:self action:@selector(confirmReturnAction:)];
+    [leftBtn setTintColor:[UIColor whiteColor]];
     self.navigationItem.leftBarButtonItem = leftBtn;
     rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     rightBtn.frame =CGRectMake(200, 0, 50, 50);
     [rightBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
 
     [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
-    [rightBtn setTitleColor:[UIColor colorWithRed:48.0/255 green:131.0/255 blue:251.0/255 alpha:1] forState:UIControlStateNormal];
+    [rightBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [rightBtn addTarget: self action: @selector(returnAction:) forControlEvents: UIControlEventTouchUpInside];
     UIBarButtonItem* item=[[UIBarButtonItem alloc]initWithCustomView:rightBtn];
     self.navigationItem.rightBarButtonItem=item;

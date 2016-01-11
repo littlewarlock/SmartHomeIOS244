@@ -28,6 +28,9 @@
 #import "BackupTool.h"
 #import "FileUploadByBlockTool.h"
 #import "AlbumCollectionViewController.h"
+#import "TableViewDelegate.h"
+#import "FileHandler.h"
+
 #define AU_Cell_Height 52
 
 
@@ -52,6 +55,12 @@
     NSArray *audioArray;
     NSArray *videoArray;
     NSArray *picArray;
+    
+    NSMutableDictionary *selectedItemsDic;//文件下载选择的文件名
+    UITableView *tableView;
+    TableViewDelegate *tableViewDelegate;
+    NSMutableArray *duplicateFileNamesArray;
+    FileHandler *fileHandler;
 }
 @property KxMovieView *kxvc;
 @end
@@ -70,7 +79,8 @@
     
     rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     rightBtn.frame =CGRectMake(200, 0, 50, 30);
-    [rightBtn setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]forState:UIControlStateNormal];
+    //[rightBtn setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]forState:UIControlStateNormal];
+    [rightBtn setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
     rightBtn.titleLabel.font = [UIFont systemFontOfSize: 16.0];
     [rightBtn setTitle:@"编辑" forState:UIControlStateNormal];
     [rightBtn addTarget: self action: @selector(switchTableViewModel:) forControlEvents: UIControlEventTouchUpInside];
@@ -98,6 +108,7 @@
     pics = [[NSMutableArray alloc] init];
     audiosUrl = [[NSMutableArray alloc] init];
     audioPlayerThumbsArray = [[NSMutableArray alloc] init];
+    fileHandler = [[FileHandler alloc] init];
     [self loadFileData];
 }
 
@@ -751,17 +762,34 @@
 #pragma mark -
 #pragma mark selectAllRows 设置TableView的全选
 - (void) selectAllRows{
+//    for (int row=0; row<self.tableDataDic.count; row++) {
+//        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+//        [self.fileListTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+//        if(!([self.cpath isEqualToString:kDocument_Folder] && row==0)){
+//            //FDTableViewCell * cell=(FDTableViewCell*)[self tableView:self.fileListTableView cellForRowAtIndexPath:indexPath];
+//            FDTableViewCell * cell=(FDTableViewCell*)[self tableView:self.fileListTableView cellForRowAtIndexPath:indexPath];
+//            if(cell && !([[selectedTableDataDic allKeys] containsObject:cell.fileinfo.fileUrl])){
+//                [selectedTableDataDic setObject:cell.fileinfo forKey:cell.fileinfo.fileUrl];
+//            }
+//        }
+//        
+//    }
+    
+
     for (int row=0; row<self.tableDataDic.count; row++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
         [self.fileListTableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        if(!([self.cpath isEqualToString:kDocument_Folder] && row==0)){
-            FDTableViewCell * cell=(FDTableViewCell*)[self tableView:self.fileListTableView cellForRowAtIndexPath:indexPath];
-            if(cell && !([[selectedTableDataDic allKeys] containsObject:cell.fileinfo.fileUrl])){
-                [selectedTableDataDic setObject:cell.fileinfo forKey:cell.fileinfo.fileUrl];
+    }
+    
+    for (NSString *keys in [self.tableDataDic allKeys]){
+        FileInfo *fileinfo = (FileInfo *)[self.tableDataDic valueForKey:keys];
+        if(!([self.cpath isEqualToString:kDocument_Folder] && [fileinfo.fileName isEqualToString:@"My Photos"])){
+            if(  !([[selectedTableDataDic allKeys] containsObject:fileinfo.fileUrl])){
+                [selectedTableDataDic setObject:fileinfo forKey:fileinfo.fileUrl];
             }
         }
-        
     }
+    
 }
 #pragma mark -
 #pragma mark deSelectAllRows 取消TableView的全选
@@ -934,30 +962,66 @@
 #pragma mark -
 #pragma mark chooseFileAction FileDialogViewController委托方法
 - (void)chooseFileAction:(UIButton *)sender{
-    BOOL  opreationIsExist= false;
-    opreationIsExist= false;
+//    BOOL  opreationIsExist= false;
+//    opreationIsExist= false;
+//    NSString *fileName = fileDialog.selectedFile;
+//    for (FileDownloadTools *operation in [downLoadQueue operations]) {
+//        if ([operation.fileName isEqualToString:fileName]) {
+//            opreationIsExist = true;
+//        }
+//    }
+//    if (!opreationIsExist) {
+//        FileDownloadTools *opreation = [[FileDownloadTools alloc] initWithFileInfo];
+//        TaskInfo* task = [[TaskInfo alloc] init];
+//        task.taskId = [NSUUIDTool gen_uuid];
+//        task.taskName =fileName;
+//        task.taskType = @"下载";
+//        opreation.fileName = fileName;
+//        opreation.filePath = fileDialog.cpath;
+//        opreation.cachePath =self.cpath;
+//        opreation.progressBarView = [ProgressBarViewController sharedInstance];
+//        opreation.taskId = task.taskId;
+//        [downLoadQueue addOperation:opreation];
+//        [[ProgressBarViewController sharedInstance].taskDic  setObject:task forKey:task.taskId];
+//        [[ProgressBarViewController sharedInstance] addProgressBarRow:task];
+//    }
+//    [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
+    
     NSString *fileName = fileDialog.selectedFile;
-    for (FileDownloadTools *operation in [downLoadQueue operations]) {
-        if ([operation.fileName isEqualToString:fileName]) {
-            opreationIsExist = true;
+    NSString *targetPath =self.cpath;
+    
+    
+    selectedItemsDic = [[NSMutableDictionary alloc] init];
+    [selectedItemsDic setObject:fileName forKey:fileName];
+    //1.先判断队列中是否已有该文件
+    for(FileDownloadOperation *operation in [NSOperationDownloadQueue sharedInstance].operations) {
+        NSString *fileName = operation.taskInfo.fileName;
+        NSString *fileNamePath = [targetPath stringByAppendingPathComponent:fileName];
+        if ([selectedItemsDic objectForKey:fileName] && [fileNamePath isEqualToString:operation.taskInfo.cachePath]) { //如果当前下载队列中包含该文件，且该文件的目标路径和当前操作要下载到的目标路径相同
+            [selectedItemsDic removeObjectForKey:fileName];
         }
     }
-    if (!opreationIsExist) {
-        FileDownloadTools *opreation = [[FileDownloadTools alloc] initWithFileInfo];
-        TaskInfo* task = [[TaskInfo alloc] init];
-        task.taskId = [NSUUIDTool gen_uuid];
-        task.taskName =fileName;
-        task.taskType = @"下载";
-        opreation.fileName = fileName;
-        opreation.filePath = fileDialog.cpath;
-        opreation.cachePath =self.cpath;
-        opreation.progressBarView = [ProgressBarViewController sharedInstance];
-        opreation.taskId = task.taskId;
-        [downLoadQueue addOperation:opreation];
-        [[ProgressBarViewController sharedInstance].taskDic  setObject:task forKey:task.taskId];
-        [[ProgressBarViewController sharedInstance] addProgressBarRow:task];
+    //2.再判断未完成已取消任务中是否有该文件
+    for(NSString *taskId in [[ProgressBarViewController sharedInstance].taskDic allKeys] ){
+        TaskInfo *taskInfo = [[ProgressBarViewController sharedInstance].taskDic objectForKey:taskId];
+        for (NSString *fileName in [selectedItemsDic allKeys]) {
+            if ([taskInfo.taskName isEqualToString:fileName] && ([taskInfo.taskStatus isEqualToString:CANCLED]|| [taskInfo.taskStatus isEqualToString:FAILURE])) {
+                [selectedItemsDic removeObjectForKey:fileName];
+            }
+        }
+        
     }
-    [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
+    //3.判断是否目标路径下已经包含一个同名的文件
+    duplicateFileNamesArray =[FileTools getDuplicateFileNames: targetPath fileNames:[selectedItemsDic allKeys]];
+    if(duplicateFileNamesArray.count>0){//如果目标路径下包含重名的文件，提示用户是否需要覆盖
+        [self launchDialog:duplicateFileNamesArray];
+    }else{
+        [fileHandler downloadFiles:[NSOperationDownloadQueue sharedInstance] selectedItemsDic:selectedItemsDic cpath:fileDialog.cpath cachePath:targetPath];
+        [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
+        [selectedItemsDic removeAllObjects];
+    }
+
+    
 }
 
 #pragma mark -
@@ -1058,6 +1122,71 @@
         self.opType =@"-1";
     }
     return self;
+}
+
+//自定义alertView相关的代码
+- (void)launchDialog:(NSArray*)fileNamesArray
+{
+    // Here we need to pass a full frame
+    CustomIOSAlertView *alertView = [[CustomIOSAlertView alloc] init];
+    // Add some custom content to the alert view
+    [alertView setContainerView:[self createAlertView:fileNamesArray]];
+    // Modify the parameters
+    [alertView setButtonTitles:[NSMutableArray arrayWithObjects:@"确定", @"取消", nil]];
+    [alertView setDelegate:self];
+    // You may use a Block, rather than a delegate.
+    [alertView setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
+        NSLog(@"Block: Button at position %d is clicked on alertView %d.", buttonIndex, (int)[alertView tag]);
+        [alertView close];
+    }];
+    
+    [alertView setUseMotionEffects:true];
+    // And launch the dialog
+    [alertView show];
+}
+
+- (void)customIOS7dialogButtonTouchUpInside: (CustomIOSAlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
+{
+    if(buttonIndex==0){//按下确定按钮
+        NSString *targetPath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",[g_sDataManager userName]]];
+        if (tableViewDelegate.selectedFileNamesDic.count>0) {
+            for (int i=0; i<duplicateFileNamesArray.count; i++) {
+                if ([tableViewDelegate.selectedFileNamesDic objectForKey:duplicateFileNamesArray[i]]==nil) {
+                    [selectedItemsDic removeObjectForKey:duplicateFileNamesArray[i]];
+                }
+            }
+            [fileHandler downloadFiles:[NSOperationDownloadQueue sharedInstance] selectedItemsDic:selectedItemsDic cpath:self.cpath cachePath:targetPath];
+            [self.navigationController pushViewController:[ProgressBarViewController sharedInstance] animated:YES];
+            [selectedItemsDic removeAllObjects];
+        }
+    }else{
+        
+    }
+
+    NSLog(@"Delegate: Button at position %d is clicked on alertView %d.", (int)buttonIndex, (int)[alertView tag]);
+    
+}
+
+- (UIView *)createAlertView:(NSArray*)fileNamesArray
+{
+    UIView *demoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 290, 270)];
+    
+    UILabel *label= [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 270, 60)];
+    label.lineBreakMode = UILineBreakModeWordWrap;
+    label.numberOfLines = 0;
+    label.text = [NSString stringWithFormat:@"目标路径下存在以下%d个同名的文件，确定覆盖吗",fileNamesArray.count];
+    [demoView addSubview:label];
+    tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 70, 290, 200)];
+    [tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
+    tableViewDelegate = [[TableViewDelegate alloc]init];
+    tableViewDelegate.fileNamesArray = fileNamesArray;
+    tableView.delegate = tableViewDelegate;
+    tableView.dataSource = tableViewDelegate;
+    tableView.allowsMultipleSelectionDuringEditing = YES;
+    [tableView setEditing:YES animated:YES];
+    [demoView addSubview:tableView];
+    
+    return demoView;
 }
 
 @end

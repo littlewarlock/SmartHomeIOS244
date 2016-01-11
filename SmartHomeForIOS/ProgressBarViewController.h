@@ -22,6 +22,7 @@
 -(void)setPauseBtnState:(NSMutableDictionary*) btnStateDic;
 - (void)setTaskStatusInfo:(NSMutableDictionary *)taskStatusDic;
 - (void)setPauseBtnStateCaptionAndTaskStatus:(NSMutableDictionary *)taskStatusDic;
-
+#pragma mark 设置progressView的TaskInfo对象
+- (void)setProgressViewTaskInfo:(TaskInfo *)taskInfo;
 + (instancetype)sharedInstance;
 @end

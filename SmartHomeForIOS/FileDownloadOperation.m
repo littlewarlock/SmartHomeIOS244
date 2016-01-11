@@ -117,7 +117,8 @@
                                         }
                                     }
                                     else if(streamChunk!=0 && ![fm fileExistsAtPath:self.taskInfo.cachePath]){//如果任务失败，则停止下载
-                                        self.taskInfo.cachePath = [kDocument_Folder stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", [g_sDataManager userName]]];
+                                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"下载文件出错！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] ;
+                                        [alert show];
                                         self.taskInfo.transferedBlocks =0;
                                         self.taskInfo.transferedBytes = 0;
                                         self.taskInfo.currentProgress = 0;
@@ -127,7 +128,6 @@
                                         return;
                                     }
                                     else {
-                                  //      [FileTools deleteFileByUrl:self.taskInfo.cachePath];
                                         [fileData writeToFile:self.taskInfo.cachePath options:NSAtomicWrite error:nil];
                                     }
                                 }//释放锁
@@ -174,7 +174,6 @@
                         NSMutableDictionary * taskStatusDic=[[NSMutableDictionary alloc] initWithObjectsAndKeys:self.taskInfo.taskId,@"taskId",@"已暂停" ,@"taskStatus",@"enable",@"btnState",@"继续",@"caption", nil];
                         //在主线程刷新UI
                         [[ProgressBarViewController sharedInstance] performSelectorOnMainThread:@selector(setPauseBtnStateCaptionAndTaskStatus:) withObject:taskStatusDic waitUntilDone:NO];
-                        self.taskInfo.taskStatus = CANCLED;
                     }else if(streamChunk==streamNum){
                         self.taskInfo.taskStatus = FINISHED;
                     }
@@ -183,8 +182,9 @@
         }
     }
     @catch (NSException *exception) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"下载文件出错！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] ;
+        [alert show];
         NSLog(@"==================");
     }
 }
-
 @end

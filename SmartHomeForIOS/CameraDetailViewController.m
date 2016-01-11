@@ -117,7 +117,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
 //    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor whiteColor]];
     
     //2015 12 24 add
-    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+//    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     //2015 12 24 end
     
     //摄像头设置页 navigatison Left按钮
@@ -294,7 +294,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
                 self.kxvc = [KxMovieViewController movieViewControllerWithContentPath:stream parameters:parameters];
                 
                 [self addChildViewController:self.kxvc];
-                self.kxvc.view.frame = CGRectMake(8, 70, self.view.bounds.size.width - 16, 202);
+                self.kxvc.view.frame = CGRectMake(8, 72, self.view.bounds.size.width - 16, 202);
                 [self.movieView setFrame:self.kxvc.view.frame];
                 
                 //2015 12 18 hgc
@@ -428,7 +428,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
         //
         self.kxvc.view.transform = CGAffineTransformMakeRotation(0 *M_PI / 180.0);
         //
-        self.kxvc.view.frame = CGRectMake(8, 68, self.view.bounds.size.width - 16, 202);
+        self.kxvc.view.frame = CGRectMake(8, 72, self.view.bounds.size.width - 16, 202);
         //
         self.toolBarView.frame = CGRectMake(0, self.kxvc.view.frame.size.height - 50, self.kxvc.view.frame.size.width, 50);
         self.buttonFullScreen.frame = CGRectMake(self.toolBarView.frame.size.width - 40 , self.toolBarView.frame.size.height - 40, 30, 30);
@@ -677,7 +677,7 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
 {
     [super viewWillAppear:animated];
     //2015 12 31 hgc start
-    [self.navigationController setToolbarHidden:YES animated:NO];
+//    [self.navigationController setToolbarHidden:YES animated:NO];
 
     //2015 12 31 hgc end
 }
@@ -689,11 +689,19 @@ typedef NS_ENUM(NSUInteger, cameraControlDirection) {
     [self getRealTimeStream];
     self.cameraControlDirection = cameraControlDirectionNull;
 // 2015 11 11 离线摄像头
-    if ([self.onlining isEqualToString:@"0"]) {
+    if ([self.onlining isEqualToString:@"1"]) {
+        //zai xian
+    }else {
         [self.buttonControl setEnabled:NO];
         [self.buttonRecond setEnabled:NO];
         [self.buttonSnapshot setEnabled:NO];
         [self.kxvc.view setHidden:YES];
+        
+        //2016 01 08 start hgc
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(8, 72, self.view.bounds.size.width - 16, 202)];
+        [imageView setImage:[UIImage imageNamed:@"camera_disconnect"]];
+        [self.view addSubview:imageView];
+        //2016 01 08 end hgc
     }
 // 2015 11 11
     NSLog(@"view did appera--------------------------");

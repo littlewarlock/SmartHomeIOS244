@@ -138,6 +138,11 @@
             [alert show];
             [self.passwordText becomeFirstResponder];
             self.passwordText.text=nil;
+        }else if([@"8" isEqualToString:results]){
+            UIAlertView* alert=[[UIAlertView alloc]initWithTitle:@"系统提示" message:@"设备IP取得失败" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alert show];
+            [self.passwordText becomeFirstResponder];
+            self.passwordText.text=nil;
         }else if([@"1" isEqualToString:results]){
             CloudLoginSuccessViewController* clog = [[CloudLoginSuccessViewController alloc]initWithNibName:@"CloudLoginSuccessViewController" bundle:nil];
             clog.cocloudid = self.cid;

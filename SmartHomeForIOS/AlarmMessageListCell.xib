@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -17,14 +17,12 @@
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Hello World" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iw4-j3-UoK">
                         <rect key="frame" x="158" y="27" width="87" height="21"/>
-                        <animations/>
                         <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="camera" translatesAutoresizingMaskIntoConstraints="NO" id="1CK-3y-UYF">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="video_icon" translatesAutoresizingMaskIntoConstraints="NO" id="1CK-3y-UYF">
                         <rect key="frame" x="8" y="8" width="114" height="83"/>
-                        <animations/>
                         <constraints>
                             <constraint firstAttribute="width" constant="100" id="GnD-Cu-gZo"/>
                             <constraint firstAttribute="height" constant="70" id="oKr-pA-q0b"/>
@@ -32,28 +30,24 @@
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="来自C6（14422）" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IVY-0v-cmN">
                         <rect key="frame" x="158" y="56" width="123" height="21"/>
-                        <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="16:00:59" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="crj-S9-9jd">
                         <rect key="frame" x="253" y="27" width="59" height="21"/>
-                        <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="unread-icon" translatesAutoresizingMaskIntoConstraints="NO" id="tfW-WY-a2O">
                         <rect key="frame" x="130" y="29" width="17" height="17"/>
-                        <animations/>
                         <constraints>
                             <constraint firstAttribute="width" constant="17" id="1aY-CW-BrP"/>
                             <constraint firstAttribute="height" constant="17" id="qf4-jf-klO"/>
                         </constraints>
                     </imageView>
                 </subviews>
-                <animations/>
                 <constraints>
                     <constraint firstItem="tfW-WY-a2O" firstAttribute="leading" secondItem="1CK-3y-UYF" secondAttribute="trailing" constant="8" id="JkS-Bk-Dhh"/>
                     <constraint firstItem="Iw4-j3-UoK" firstAttribute="leading" secondItem="tfW-WY-a2O" secondAttribute="trailing" constant="11" id="TA7-sb-9mY"/>
@@ -62,7 +56,6 @@
                     <constraint firstItem="1CK-3y-UYF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="nJz-oB-set"/>
                 </constraints>
             </tableViewCellContentView>
-            <animations/>
             <connections>
                 <outlet property="imagePoint" destination="tfW-WY-a2O" id="eoe-Y9-DTa"/>
                 <outlet property="imageSnapshot" destination="1CK-3y-UYF" id="gC0-MC-nHr"/>
@@ -74,7 +67,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="camera" width="69" height="53"/>
         <image name="unread-icon" width="17" height="17"/>
+        <image name="video_icon" width="69" height="53"/>
     </resources>
 </document>

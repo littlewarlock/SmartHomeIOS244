@@ -70,7 +70,6 @@
     }];
     self.arrayIps2 = [[NSMutableArray alloc]init];
     
-    //self.arrayIps2 = [NSMutableArray arrayWithObjects:nil];
     self.tvList.dataSource = self;
     self.tvList.delegate = self;
     self.tvList.tag = TAG_TV_LIST;
@@ -142,7 +141,7 @@
 
 -(void)sendSearchBroadcast: (NSString *) localHost{
     //这里发送广播
-    [self sendToUDPServer:@"SMARTHOMEv1.0" address:localHost port:8888];
+    [self sendToUDPServer:@"SMARTHOMEv1.0" address:localHost port:9999];
 }
 
 -(void)sendToUDPServer:(NSString*) msg address:(NSString*)address port:(int)port{
@@ -150,7 +149,7 @@
     [udpSocket enableBroadcast:YES error:nil];
     NSData *data=[msg dataUsingEncoding:NSUTF8StringEncoding];
     //[udpSocket sendData:data toHost:address port:port withTimeout:0 tag:1]; //发送udp
-    [udpSocket sendData :data toHost:@"255.255.255.255" port:port withTimeout:5 tag:0];
+    [udpSocket sendData :data toHost:@"224.0.0.1" port:port withTimeout:5 tag:0];
     [udpSocket receiveWithTimeout:5 tag:0];
     
 }
@@ -159,17 +158,28 @@
 -(BOOL)onUdpSocket:(AsyncUdpSocket *)sock didReceiveData:(NSData *)data withTag:(long)tag
           fromHost:(NSString *)host port:(UInt16)port{
     NSString* rData= [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"onUdpSocket:didReceiveData:---%@",rData);
+    //NSLog(@"onUdpSocket:didReceiveData:---%@",rData);
     //base 64
     NSData *dataDecodeBefore=[rData dataUsingEncoding:NSUTF8StringEncoding];
-    dataDecodeBefore=  [GTMBase64 decodeData:dataDecodeBefore];
+    //dataDecodeBefore=  [GTMBase64 decodeData:dataDecodeBefore];
     NSString *dataDecodeAfter=[[NSString alloc] initWithData:dataDecodeBefore encoding:NSUTF8StringEncoding] ;
-    NSLog(@"onUdpSocket:decode ip:---%@",dataDecodeAfter);
+    //NSLog(@"onUdpSocket:decode ip:---%@",dataDecodeAfter);
     self.tvSearch.hidden=NO;
-    if(![self.arrayIps2 containsObject:dataDecodeAfter]){
-        [self.arrayIps2 addObject:dataDecodeAfter];
-        [self.tvSearch reloadData];
+    
+    if(![dataDecodeAfter containsString:@"="]){
+        if(![self.arrayIps2 containsObject:dataDecodeAfter]){
+            [self.arrayIps2 addObject:dataDecodeAfter];
+            [self.tvSearch reloadData];
+        }
+    }else{
+        NSRange range  = [dataDecodeAfter rangeOfString:@"="];
+        //self.textFieldIp.text = [searchedOrSavedAdressStr  substringToIndex:range.location];
+        if(![self.arrayIps2 containsObject:[dataDecodeAfter  substringToIndex:range.location]]){
+            [self.arrayIps2 addObject:[dataDecodeAfter  substringToIndex:range.location]];
+            [self.tvSearch reloadData];
+        }
     }
+    
     if (self.loadingView && !self.isConnetNetServer)
     {
         [self.loadingView removeFromSuperview];
@@ -195,7 +205,7 @@
 }
 
 -(void)onUdpSocket:(AsyncUdpSocket *)sock didNotReceiveDataWithTag:(long)tag dueToError:(NSError *)error{
-    NSLog(@"didNotReceiveDataWithTag----");
+    //NSLog(@"didNotReceiveDataWithTag----");
     if (self.loadingView)
     {
         [self.loadingView removeFromSuperview];
@@ -208,12 +218,12 @@
 }
 
 -(void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
-    NSLog(@"didSendDataWithTag----");
+    //NSLog(@"didSendDataWithTag----");
     
 }
 
 -(void)onUdpSocketDidClose:(AsyncUdpSocket *)sock{
-    NSLog(@"onUdpSocketDidClose----");
+    //NSLog(@"onUdpSocketDidClose----");
     if (self.loadingView)
     {
         [self.loadingView removeFromSuperview];
@@ -229,7 +239,7 @@
     }
     self.postLoginIp = loginHandler.postLoginIp;
     [self loginAction :nil];
-    NSLog(@"handlerDidReceiveData----");
+    //NSLog(@"handlerDidReceiveData----");
 }
 
 - (void)handlerDidNotSendDataWithTag{
@@ -243,7 +253,7 @@
 }
 
 - (void)handlerDidNotReceiveDataWithTag{
-    NSLog(@"handlerDidNotSendDataWithTag----");
+    //NSLog(@"handlerDidNotSendDataWithTag----");
     if (self.loadingView){
         [self.loadingView removeFromSuperview];
         self.loadingView = nil;
@@ -272,7 +282,6 @@
     self.tvList.hidden = TRUE;
     self.tvSearch.hidden=TRUE;
     [self.arrayIps2 removeAllObjects];
-    //self.loadingView = [UIHelper addLoadingViewWithSuperView: self.view text:@"正在获取IP" :nil];
     self.loadingView = [self addLoadingViewWithSuperView:self.view text:@"正在获取IP" ];
     [self sendSearchBroadcast: @""];//发送广播
 }
@@ -391,9 +400,15 @@
                     reuseIdentifier:cellId];
         }
         cell.layer.borderWidth = 0;
+        
+        
         NSRange range  = [self.arrayIps2[indexPath.row] rangeOfString:@"="];
         //NSString *subIP = [searchedOrSavedAdressStr  substringFromIndex:range.location+1];
-        cell.textLabel.text = [self.arrayIps2[indexPath.row]  substringToIndex:range.location];
+        if(range.location!= NSNotFound){
+            cell.textLabel.text = [self.arrayIps2[indexPath.row]  substringToIndex:range.location];
+        }else{
+            cell.textLabel.text = self.arrayIps2[indexPath.row];
+        }
         cell.textLabel.font = [UIFont systemFontOfSize: 20.0];
         cell.backgroundColor = [UIColor clearColor];
         return cell;
@@ -481,12 +496,20 @@
 }
 //登录按钮按下
 - (IBAction)loginAction:(UIButton *)sender {
-//    if([[self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""] ||
-//       [[self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString: @""]
-    if([self.userNameField.text  isEqualToString: @""] ||
-       [self.userPasswordField.text  isEqualToString: @""]
+    NSString *regexs = @"^[a-zA-Z0-9=.]*$";
+     NSPredicate *predicates = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexs];
+    if(([predicates evaluateWithObject:self.textFieldIp.text] == NO)
        ){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"用户名或密码不能为空!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"输入内容含非法字符!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
+        [alertView show];
+        return;
+    }
+    
+    if([self.userNameField.text  isEqualToString: @""] ||
+       [self.userPasswordField.text  isEqualToString: @""] ||
+       [self.textFieldIp.text  isEqualToString: @""]
+       ){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"输入内容不能为空!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil] ;
         [alertView show];
         return;
     }
@@ -508,34 +531,24 @@
     if (self.isConnetNetServer) {
         requestHost = [NSString stringWithFormat:@"%@%@%@",@"123.57.223.91",@"/find/",self.postLoginIp];
     }
-    // 登录110
-    // NSString * requestHost = [NSString stringWithFormat:@"%@",self.textFieldIp .text];
     NSMutableDictionary *header = [[NSMutableDictionary alloc] init];
     [header setValue:@"text/xml; charset=utf-8" forKey:@"Content-Type"];
     MKNetworkEngine *engine = [[MKNetworkEngine alloc] initWithHostName:[requestHost stringByAppendingString:@"/smarty_storage/phone"] customHeaderFields:nil];
     MKNetworkOperation *op = [engine operationWithPath:@"login.php" params:dic httpMethod:@"POST" ssl:NO];
-//    self.userNameField.text = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-//    self.userPasswordField.text = [self.userPasswordField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     self.userNameField.text = self.userNameField.text ;
     self.userPasswordField.text = self.userPasswordField.text;
     [op addCompletionHandler:^(MKNetworkOperation *operation) {
         NSDictionary *responseJSON=[NSJSONSerialization JSONObjectWithData:[operation responseData] options:kNilOptions error:&error];
-        
         if([[NSString stringWithFormat:@"%@",[responseJSON objectForKey:@"result"]] isEqualToString: @"1"])//登陆成功
         {
-            
             if (self.loadingView)
             {
                 [self.loadingView removeFromSuperview];
                 self.loadingView = nil;
             }
             [FileTools saveIPInPlist :self.textFieldIp.text];
-            //if(self.checkBox.selected){
             [FileTools saveUserInPlist:self.userNameField.text passWord:self.userPasswordField.text isAutoLogin:self.checkBox.selected];
-//            }else{
-//                [FileTools removeUserFromPliset];
-//            }
-            
+
             [g_sDataManager setUserName:self.userNameField.text ];
             [g_sDataManager setPassword:self.userPasswordField.text];
             [g_sDataManager setRequestHost:requestHost];
@@ -562,7 +575,6 @@
                                                                                                 leftViewController:leftController];
                 
                 deckController.delegateMode = IIViewDeckDelegateOnly;
-                // self.window.rootViewController = deckController;
                 if ( [self  isIP:self.textFieldIp.text ]) {
                     //请求php
                     NSString* url = [NSString stringWithFormat:@"%@/smarty_storage/phone",[g_sDataManager requestHost]];
@@ -712,14 +724,12 @@
     
     if([searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//非ip也非id 转成ip
         NSRange range  = [searchedOrSavedAdressStr rangeOfString:@"="];
-        //NSString *subIP = [searchedOrSavedAdressStr  substringFromIndex:range.location+1];
         self.textFieldIp.text = [searchedOrSavedAdressStr  substringToIndex:range.location];
         self.postLoginIp =[searchedOrSavedAdressStr  substringToIndex:range.location];
     }else if(![searchedOrSavedAdressStr containsString:@"="] && [self isIP:searchedOrSavedAdressStr]){//ip 登录
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;
-    }else if(![searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//id mac 登录 转成ip
-        //self.ifConvertIdToIp = YES;
+    }else if(![searchedOrSavedAdressStr containsString:@"="] && ![self isIP:searchedOrSavedAdressStr]){//id 登录 转成ip
         self.textFieldIp.text = searchedOrSavedAdressStr;
         self.postLoginIp =searchedOrSavedAdressStr;
     }

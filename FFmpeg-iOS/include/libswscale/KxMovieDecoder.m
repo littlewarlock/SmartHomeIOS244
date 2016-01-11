@@ -696,7 +696,9 @@ static int interrupt_callback(void *ctx);
 
 + (void)initialize
 {
-    av_log_set_callback(FFLog);
+    //2016 01 08 zhushi hgc start
+//    av_log_set_callback(FFLog);
+    //2016 01 08 zhushi hgc end
     av_register_all();
     avformat_network_init();
 }

@@ -42,7 +42,7 @@ NSString *stringAlarmValue;
                                  target:self
                                  action:@selector(saveSetting:)];
     self.navigationItem.rightBarButtonItem = rightBTN;
-    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
+//    [self.navigationItem.rightBarButtonItem setTintColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]];
     
 // 2015 11 04 hgc start
 //    UIBarButtonItem *rightBtn = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveSetting:)];

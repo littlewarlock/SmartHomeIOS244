@@ -82,6 +82,7 @@
         TaskInfo *pendingTask = [NSKeyedUnarchiver unarchiveObjectWithFile:archivePath];
         if(![pendingTask.taskStatus isEqualToString:CANCLED]){
             FileDownloadOperation *pendingOperation = [[FileDownloadOperation alloc]initWithTaskInfo:pendingTask];
+            [[ProgressBarViewController sharedInstance]  setProgressViewTaskInfo:pendingTask];//设置progressView 的TaskInfo
             pendingOperation.taskId = pendingTask.taskId;
             pendingOperation.completionBlock = ^(void){ //如果是任务执行完成则设置暂停按钮不可用
                 if ([pendingTask.taskStatus isEqualToString:FINISHED]) {

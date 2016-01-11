@@ -12,6 +12,8 @@
 #import "CameraAddManualViewController.h"
 #import "CameraListSetSingleViewController.h"
 #import "CameraAddAutomaticViewController.h"
+#import "MJRefresh.h"
+
 
 static NSString *CellTableIdentifier = @"CellTableIdentifier";
 
@@ -26,7 +28,6 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     [super viewDidLoad];
     
     self.navigationItem.title = @"摄像头";
-//    [self startActivityIndicatorView];
     
     //2015 12 24 hgc
 //    [self webViewDidStartLoad];
@@ -76,12 +77,6 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     [self setToolbarItems:[NSArray arrayWithObjects:left,barButton,right,nil] animated:YES];
   
 // hgc 2015 11 09 end
-    
-    //设置下拉刷新
-    [self startRefresh:self];
-    
-    //getData
-//    [self loadData:self];
 
     self.tableView.rowHeight = 112;
     UINib *nib = [UINib nibWithNibName:@"CameraAddViewCell" bundle:nil];
@@ -93,22 +88,31 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     contentInset.top = 10;
     [self.tableView setContentInset:contentInset];
     
-//    [self.navigationController.toolbar setHidden:NO];
+    //
+    //下拉刷新 2016 01 11
+    [self example01];
     
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     //2015 12 24 hgc
-    [self webViewDidStartLoad];
-    //getData
-    [self loadData:self];
-    //2015 12 24 hgc
+
+    [self.navigationController.toolbar setUserInteractionEnabled:YES];
+    
+    //
+    //getData 2016 01 11
+    [self.tableView.mj_header beginRefreshing];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+
+    [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
 
@@ -145,11 +149,10 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
 }
 //for 刷新数据时加载动画 add by hgc 2015 10 19 end
 - (void)startActivityIndicatorView{
-//    self.view.frame =[UIScreen mainScreen].applicationFrame;
+//
     self.activityIndicatorView=[[UIActivityIndicatorView alloc]initWithFrame:[UIScreen mainScreen].applicationFrame];
     self.activityIndicatorView.bounds = [UIScreen mainScreen].bounds;
-//    self.activityIndicatorView.center=CGPointMake(self.view.center.x, (self.view.center.y - 60.0f));
-//    self.activityIndicatorView.center = self.view.center;
+
     [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [self.activityIndicatorView setBackgroundColor:[UIColor whiteColor]];
     [self.activityIndicatorView setColor:[UIColor blackColor]];
@@ -157,42 +160,13 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     [self.view addSubview:self.activityIndicatorView];
     [self.activityIndicatorView startAnimating];
 }
--(void)endActivityIndicatorView{
-    [self.activityIndicatorView stopAnimating];
-}
-
--(void)startRefresh:(id)sender{
-    
-    self.refreshControl = [[UIRefreshControl alloc]init];
-    self.refreshControl.tintColor = [UIColor grayColor];
-//    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"下拉刷新"];
-    [self.refreshControl addTarget:self action:@selector(refreshData) forControlEvents:UIControlEventValueChanged];
-//    [self.refreshControl beginRefreshing];
-}
-
--(void)refreshData
-{
-//    [self performSelector:@selector(handelData) withObject:nil afterDelay:2];
-    [self loadData:self];
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"正在刷新..."];
-//    [self.refreshControl endRefreshing];
-}
-
-- (void) handelData
-{
-//    [self loadData:self];
-//    self.refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@"正在刷新..."];
-//    [self.refreshControl endRefreshing];
-//    [self.tableView reloadData];
-}
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
--(void)loadData:(id)sender {
+-(void)refreshData {
     NSLog(@"setuprefresss");
     [DeviceNetworkInterface cameraDiscovery:self withBlock:^(NSArray *deviceList, NSError *error) {
         if (!error) {
@@ -204,9 +178,8 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
         else{
              NSLog(@"cameraDiscovery error");
         }
-//        [self endActivityIndicatorView];
-        [self.refreshControl endRefreshing];
-        [self webViewDidFinishLoad];
+//        [self webViewDidFinishLoad];
+        [self.tableView.mj_header endRefreshing];
     }];
 }
 
@@ -430,5 +403,22 @@ static NSString *CellTableIdentifier = @"CellTableIdentifier";
     CameraAddManualViewController *cameraAddManualVC = [[CameraAddManualViewController alloc]initWithNibName:@"CameraAddManualViewController" bundle:nil];
     [self.navigationController pushViewController:cameraAddManualVC animated:YES];
 }
+
+#pragma mark UITableView + 下拉刷新 默认
+- (void)example01
+{
+    __unsafe_unretained __typeof(self) weakSelf = self;
+    
+    // 设置回调（一旦进入刷新状态就会调用这个refreshingBlock）
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf refreshData];
+        //        NSLog(@"refresh data11111");
+    }];
+    self.tableView.mj_header.ignoredScrollViewContentInsetTop = 10.0;
+    
+    // 马上进入刷新状态
+//    [self.tableView.mj_header beginRefreshing];
+}
+
 
 @end

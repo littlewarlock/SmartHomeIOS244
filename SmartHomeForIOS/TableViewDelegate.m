@@ -9,6 +9,7 @@
 #import "TableViewDelegate.h"
 #define AU_Cell_Height 30
 @implementation TableViewDelegate
+
 - (id) init {
     if((self = [super init]))
     {
@@ -43,7 +44,11 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *fileName = self.fileNamesArray[indexPath.row];
     
+    if(fileName && ([[self.selectedFileNamesDic allKeys] containsObject:fileName])){
+        [self.selectedFileNamesDic removeObjectForKey:fileName];
+    }
 }
 //UITableViewDelegate协议中的方法
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

@@ -67,7 +67,7 @@
     //设置右侧按钮
     rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     rightBtn.frame =CGRectMake(200, 0, 50, 30);
-    [rightBtn setTitleColor:[UIColor colorWithRed:0.0/255 green:160.0/255 blue:226.0/255 alpha:1]forState:UIControlStateNormal];
+    [rightBtn setTitleColor:[UIColor whiteColor]forState:UIControlStateNormal];
     rightBtn.titleLabel.font = [UIFont systemFontOfSize: 16.0];
     [rightBtn setTitle:@"编辑" forState:UIControlStateNormal];
     [rightBtn addTarget: self action: @selector(switchTableViewModel:) forControlEvents: UIControlEventTouchUpInside];
@@ -153,6 +153,7 @@
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     FileInfo *fileinfo = (FileInfo *)[tableDataDic objectForKey: [NSString stringWithFormat:@"%zi",indexPath.row]];
+    fileinfo.cpath = self.cpath;
     FDTableViewCell *cell = (FDTableViewCell *)[tableView dequeueReusableCellWithIdentifier:fileinfo.fileName];
     if (cell == nil) {
         cell = [[FDTableViewCell alloc] initWithFile:fileinfo];
@@ -329,8 +330,11 @@
     [dic setValue:[g_sDataManager password] forKey:@"upasswd"];
     if (self.cpath && [self.cpath length]>0) {
         [dic setValue:self.cpath forKey:@"cpath"];
+        
     }
-    
+    if([self.cpath isEqualToString:@"/"]){
+        [dic setValue:@"" forKey:@"cpath"];
+    }
 
     if (isShowLoading) {
         loadingView = [UIHelper addLoadingViewWithSuperView: self.view text:@"正在获取目录" ];

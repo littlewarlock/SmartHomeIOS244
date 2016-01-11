@@ -217,5 +217,11 @@
     [self.taskDic removeAllObjects];
 }
 
+#pragma mark 设置progressView的TaskInfo对象
+- (void)setProgressViewTaskInfo:(TaskInfo *)taskInfo{
+    ProgressView* progressView =[self.progressBarDic objectForKey:taskInfo.taskId];
+    progressView.taskInfo = taskInfo;
+}
+
 
 @end

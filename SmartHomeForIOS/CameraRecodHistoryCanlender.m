@@ -77,6 +77,10 @@
     [self.calendar setMenuMonthsView:self.calendarMenuView];
     [self.calendar setContentView:self.calendarContentView];
     [self.calendar setDataSource:self];
+    
+    //2016 01 09
+    [self.calendar.menuMonthsView setHidden:YES];
+    [self.calendar.contentView setHidden:YES];
 }
 
 - (void)canlenderCancel{
@@ -105,6 +109,10 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    //2016 01 09
+    [self.calendar.menuMonthsView setHidden:NO];
+    [self.calendar.contentView setHidden:NO];
     
 // 2015 11 03 hgc start
 //    self.eventDate = [[NSArray alloc]init];
